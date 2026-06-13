@@ -467,6 +467,4 @@ A parking lot design boils down to **managing state on spots**: a car enters →
 
 ---
 
-**Day 3 complete.** Paste Day 4 when ready.
-
-[← Back to Day 3 Index](./README.md)
+[← Day 3 Index](./README.md)

@@ -216,6 +216,4 @@ A URL shortener teaches the complete design workflow in miniature: requirements,
 
 ---
 
-**Day 1 complete.** When you're ready, paste Day 2 topics and we'll continue building the series.
-
-[← Back to Day 1 Index](./README.md)
+[← When to Use System Design](./04-when-to-use-system-design.md) | [Day 1 Index](./README.md)

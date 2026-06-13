@@ -269,6 +269,4 @@ Sharding splits data across multiple databases to scale writes and storage beyon
 
 ---
 
-**Day 6 complete.** Paste Day 7 when ready.
-
-[← Back to Day 6 Index](./README.md) | [Day 5: DB Scaling](../day-05/06-db-scaling.md)
+[← Replication](./11-replication.md) | [Day 6 Index](./README.md)

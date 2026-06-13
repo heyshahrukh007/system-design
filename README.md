@@ -16,6 +16,7 @@ Each day is published under `docs/day-XX/`. Every day folder contains focused to
 | 4 | What Happens When You Visit a Website | [docs/day-04](./docs/day-04/) |
 | 5 | Core Infrastructure Components (DNS, LB, CDN, Caching, DB Scaling, Queue, Workers) | [docs/day-05](./docs/day-05/) |
 | 6 | Database Internals (Storage, Keys, Indexes, Transactions, ORM, Replication, Sharding) | [docs/day-06](./docs/day-06/) |
+| 7 | Caching Deep Dive (Patterns, Invalidation, TTL, Redis, Cache Problems) | [docs/day-07](./docs/day-07/) |
 
 ## Structure
 
@@ -74,4 +75,18 @@ system-design/
         ├── 10-connection-pooling.md
         ├── 11-replication.md
         └── 12-sharding.md
+    └── day-07/
+        ├── README.md
+        ├── 01-why-caching.md
+        ├── 02-what-is-a-cache.md
+        ├── 03-where-to-place-cache.md
+        ├── 04-what-to-cache.md
+        ├── 05-cache-aside-pattern.md
+        ├── 06-write-through-cache.md
+        ├── 07-write-back-cache.md
+        ├── 08-cache-invalidation.md
+        ├── 09-ttl.md
+        ├── 10-distributed-cache.md
+        ├── 11-cache-problems.md
+        └── 12-other-patterns-and-best-practices.md
 ```

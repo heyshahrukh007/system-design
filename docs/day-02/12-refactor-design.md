@@ -210,6 +210,4 @@ Refactor design evolves existing systems safely through incremental changes — 
 
 ---
 
-**Day 2 complete.** Paste Day 3 topics when ready.
-
-[← Back to Day 2 Index](./README.md) | [Day 1](../day-01/README.md)
+[← Observability Design](./11-observability-design.md) | [Day 2 Index](./README.md)
