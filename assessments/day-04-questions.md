@@ -1,269 +1,211 @@
-# Day 4 — MCQ Questions (14)
+# Website Request Lifecycle — MCQ Questions (14)
 
-Multi-select format: each question has **two or more** correct answers.
+Multi-select format: each question has **two or more** correct answers. Questions tagged **[Case Study]** include a business context block.
 
----
-
-### Q01 [Easy] — Request Path Order
-
-**Select all that apply.**
-
-Which steps occur in the correct order when Alice visits `https://shop.example.com/products`?
-
-- [ ] A. Browser parses URL → DNS lookup → TCP handshake
-- [ ] B. TLS handshake → HTTPS request → load balancer
-- [ ] C. Backend/database → response → browser render
-- [ ] D. Browser render → DNS lookup → TCP handshake
-
-**Answer:** A, B, C
-
-**Explanation:** The chain is browser → DNS → TCP → TLS → HTTP → LB → web server → backend → response → render. Render happens last, not before DNS (D).
-
-**Source:** [docs/day-04/01-visit-website-scenario.md](../docs/day-04/01-visit-website-scenario.md)
+> **Answers and explanations:** see [answer-key/day-04-answers.md](./answer-key/day-04-answers.md)
 
 ---
 
-### Q02 [Easy] — Browser Cache Layers
+### Q01 [Easy] — Tracing a Shopper's Click
+
 
 **Select all that apply.**
 
-Which browser cache layers are listed in the scenario?
+A user types `https://shop.example.com/products` and presses Enter (first visit, cache miss). Which steps occur in the correct order before the page renders?
 
-- [ ] A. Memory cache — recently visited pages
-- [ ] B. Disk cache — HTML, CSS, JS, images
-- [ ] C. Service Worker — offline-capable apps
-- [ ] D. Redis cache — browser-local key-value store
-
-**Answer:** A, B, C
-
-**Explanation:** Memory, disk, and Service Worker caches are browser layers. Redis is an application/server cache, not a browser layer (D).
-
-**Source:** [docs/day-04/01-visit-website-scenario.md](../docs/day-04/01-visit-website-scenario.md)
+- [ ] A. Browser parses URL → DNS resolves hostname → TCP handshake
+- [ ] B. TLS negotiation → HTTP GET request → load balancer picks a server
+- [ ] C. Backend loads data → HTML response → browser builds DOM and paints
+- [ ] D. Browser paints the page → DNS lookup → TCP handshake
 
 ---
 
-### Q03 [Easy] — DNS Records
+### Q02 [Easy] — Browser-Side Caching on Repeat Visits
+
 
 **Select all that apply.**
 
-Which DNS record types are relevant in the website visit scenario?
+Which storage layers can a modern browser use to avoid network requests?
 
-- [ ] A. A record — domain to IPv4 address
-- [ ] B. AAAA record — domain to IPv6 address
-- [ ] C. CNAME — alias to another domain
-- [ ] D. TTL — how long to cache the answer
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four appear in the DNS section of the scenario walkthrough.
-
-**Source:** [docs/day-04/01-visit-website-scenario.md](../docs/day-04/01-visit-website-scenario.md)
+- [ ] A. Memory cache for recently visited pages
+- [ ] B. Disk cache for HTML, CSS, JS, and images
+- [ ] C. Service Worker cache for offline-capable apps
+- [ ] D. Server-side Redis as part of the browser process
 
 ---
 
-### Q04 [Easy] — TCP Three-Way Handshake
+### Q03 [Easy] — DNS Records for a Storefront
+
 
 **Select all that apply.**
 
-Which packets are part of the TCP three-way handshake?
+You configure DNS for `shop.example.com` pointing shoppers to your origin. Which record types are relevant?
+
+- [ ] A. A record — hostname to IPv4 address
+- [ ] B. AAAA record — hostname to IPv6 address
+- [ ] C. CNAME — alias pointing to another hostname
+- [ ] D. TTL — how long resolvers cache the answer
+
+---
+
+### Q04 [Easy] — Establishing a Secure Connection
+
+
+**Select all that apply.**
+
+Which messages belong to the TCP three-way handshake before HTTPS data flows?
 
 - [ ] A. SYN — client initiates connection
-- [ ] B. SYN-ACK — server accepts and responds
-- [ ] C. ACK — client confirms; connection open
-- [ ] D. FIN-ACK — first step of every new connection
-
-**Answer:** A, B, C
-
-**Explanation:** SYN, SYN-ACK, and ACK establish the connection. FIN-ACK is for closing connections, not the initial handshake (D).
-
-**Source:** [docs/day-04/01-visit-website-scenario.md](../docs/day-04/01-visit-website-scenario.md)
+- [ ] B. SYN-ACK — server acknowledges and responds
+- [ ] C. ACK — client confirms; connection is open
+- [ ] D. FIN-ACK — required first packet of every new session
 
 ---
 
-### Q05 [Easy] — TLS Certificate Checks
+### Q05 [Easy] — TLS Certificate Validation Failures
+
 
 **Select all that apply.**
 
-What does the browser verify during TLS certificate validation?
+Before sending cookies and payment data, the browser validates the server's TLS certificate. Which checks does it perform?
 
-- [ ] A. Certificate signed by a trusted CA
-- [ ] B. Domain matches the URL (e.g., `shop.example.com`)
-- [ ] C. Certificate is not expired
-- [ ] D. Certificate matches the server's RAM size
-
-**Answer:** A, B, C
-
-**Explanation:** CA signature, domain match, expiry, and revocation are checked. RAM size is irrelevant to TLS validation (D).
-
-**Source:** [docs/day-04/01-visit-website-scenario.md](../docs/day-04/01-visit-website-scenario.md)
+- [ ] A. Certificate chain trusted by a known CA
+- [ ] B. Certificate domain matches `shop.example.com`
+- [ ] C. Certificate is within its validity period
+- [ ] D. Certificate matches the server's RAM capacity
 
 ---
 
-### Q06 [Medium] — Load Balancer Responsibilities
+### Q06 [Medium] [Case Study] — 503 During ShopExample Flash Sale
+
+
+**Context:** ShopExample runs three web servers behind an ALB. During a flash sale, users see `503 Service Unavailable`. CloudWatch shows two servers failing `/health` checks after a bad deploy; the third is at 99% CPU. TLS terminates at the load balancer.
 
 **Select all that apply.**
 
-What does the load balancer do in this scenario?
+Which load balancer responsibilities are relevant to this incident?
 
-- [ ] A. Distribute traffic (round-robin, least connections, IP hash)
-- [ ] B. Health checks — stop sending traffic to dead servers
-- [ ] C. SSL termination — decrypt HTTPS, forward HTTP internally
-- [ ] D. Execute SQL queries against PostgreSQL directly
-
-**Answer:** A, B, C
-
-**Explanation:** LB distributes, health-checks, and may terminate SSL. SQL queries run in backend services, not the load balancer (D).
-
-**Source:** [docs/day-04/01-visit-website-scenario.md](../docs/day-04/01-visit-website-scenario.md)
+- [ ] A. Distribute traffic using round-robin or least-connections
+- [ ] B. Remove unhealthy backends from the pool via health checks
+- [ ] C. Terminate SSL/TLS and forward plain HTTP internally
+- [ ] D. Execute SQL queries against PostgreSQL on behalf of shoppers
 
 ---
 
-### Q07 [Medium] — Backend Cache-Aside
+### Q07 [Medium] [Case Study] — Slow Product Page Backend
+
+
+**Context:** ShopExample's `/products` page is slow. Traces show the app checks Redis key `products:page:1` first. Hit rate is 30%; misses run a PostgreSQL query averaging 180ms. Product data changes every few minutes.
 
 **Select all that apply.**
 
-For `/products`, which cache-aside steps are described?
+Which cache-aside behaviors should the backend implement?
 
-- [ ] A. Check Redis key `products:page:1` first
-- [ ] B. Cache HIT → return cached JSON (~5ms)
-- [ ] C. Cache MISS → query DB, store in cache (~50ms)
-- [ ] D. Always query DB first; never use cache for product lists
-
-**Answer:** A, B, C
-
-**Explanation:** The backend checks Redis first; HIT is fast, MISS queries PostgreSQL and populates cache. Caching is explicitly used (D is false).
-
-**Source:** [docs/day-04/01-visit-website-scenario.md](../docs/day-04/01-visit-website-scenario.md)
+- [ ] A. On cache HIT — return cached JSON immediately
+- [ ] B. On cache MISS — query DB, store result in Redis, then return
+- [ ] C. Always skip cache to guarantee freshest data on every request
+- [ ] D. Use a cache key like `products:page:1` for paginated lists
 
 ---
 
-### Q08 [Medium] — HTTP Response Headers
+### Q08 [Medium] — HTTP Response Headers Shoppers Rely On
+
 
 **Select all that apply.**
 
-Which response header meanings are correctly described?
+ShopExample returns HTML for `/products`. Which response headers affect browser behavior?
 
-- [ ] A. `Content-Type: text/html` — browser renders as HTML
-- [ ] B. `Content-Encoding: gzip` — body is compressed
-- [ ] C. `Cache-Control: max-age=60` — browser may cache 60 seconds
-- [ ] D. `Set-Cookie` with `HttpOnly; Secure` — session cookie stored securely
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four header explanations match the response section.
-
-**Source:** [docs/day-04/01-visit-website-scenario.md](../docs/day-04/01-visit-website-scenario.md)
+- [ ] A. `Content-Type: text/html` — interpret body as HTML
+- [ ] B. `Content-Encoding: gzip` — decompress body before parsing
+- [ ] C. `Cache-Control: max-age=60` — browser may reuse response for 60 seconds
+- [ ] D. `Set-Cookie` with `HttpOnly; Secure` — store session cookie safely
 
 ---
 
-### Q09 [Medium] — Browser Rendering Pipeline
+### Q09 [Medium] — Why the Page Is Not Visible Immediately
+
 
 **Select all that apply.**
 
-Which steps are part of the browser rendering pipeline?
+Which steps are part of the browser rendering pipeline after HTML arrives?
 
-- [ ] A. Parse HTML → build DOM tree
-- [ ] B. Parse CSS → build CSSOM tree
+- [ ] A. Parse HTML into a DOM tree
+- [ ] B. Parse CSS into a CSSOM tree
 - [ ] C. Build render tree → layout → paint → composite
-- [ ] D. DNS lookup → TLS handshake → paint
-
-**Answer:** A, B, C
-
-**Explanation:** DOM, CSSOM, render tree, layout, paint, and composite are rendering steps. DNS and TLS happen before rendering (D mixes network with render).
-
-**Source:** [docs/day-04/01-visit-website-scenario.md](../docs/day-04/01-visit-website-scenario.md)
+- [ ] D. DNS lookup → TLS handshake → paint pixels
 
 ---
 
 ### Q10 [Medium] — Render-Blocking Resources
 
+
 **Select all that apply.**
 
-Which resources can block rendering per the scenario?
+ShopExample's HTML references CSS, synchronous JS, and product images. Which resources can delay first paint?
 
-- [ ] A. CSS — browser waits (render-blocking)
-- [ ] B. JS without defer/async — blocks HTML parsing
-- [ ] C. Images — block entire page paint until all load
-- [ ] D. Images — page shows; images fill in later (non-blocking)
-
-**Answer:** A, B, D
-
-**Explanation:** CSS and synchronous JS block rendering. Images do not block the full page — layout shows while images load (C contradicts D).
-
-**Source:** [docs/day-04/01-visit-website-scenario.md](../docs/day-04/01-visit-website-scenario.md)
+- [ ] A. CSS — browser waits for styles before painting
+- [ ] B. JavaScript without `defer`/`async` — blocks HTML parsing
+- [ ] C. Images — typically do not block the entire page shell
+- [ ] D. Images — always block all painting until every byte loads
 
 ---
 
-### Q11 [Hard] — Steps Before Backend
+### Q11 [Hard] [Case Study] — Where the Request Spends Time
+
+
+**Context:** A shopper's first visit to `shop.example.com/products` shows a blank screen for 1.2s. APM shows: DNS 80ms, TCP+TLS 150ms, LB 3ms, backend 420ms, transfer 90ms, render+assets 500ms. No browser cache yet.
 
 **Select all that apply.**
 
-Which steps occur **before** the HTTP request reaches the backend application server?
+Which steps complete **before** the HTTP request reaches the backend application server?
 
-- [ ] A. DNS resolution
-- [ ] B. TCP three-way handshake
-- [ ] C. TLS handshake and certificate verification
-- [ ] D. Load balancer routing to a web server
-
-**Answer:** A, B, C, D
-
-**Explanation:** All network and front-door steps (DNS, TCP, TLS, LB, web server routing) precede the application backend handling business logic.
-
-**Source:** [docs/day-04/01-visit-website-scenario.md](../docs/day-04/01-visit-website-scenario.md)
+- [ ] A. DNS resolution to an IP address
+- [ ] B. TCP three-way handshake and TLS certificate verification
+- [ ] C. Load balancer routing to a healthy web server
+- [ ] D. PostgreSQL query for product rows
 
 ---
 
-### Q12 [Hard] — Failure Scenarios
+### Q12 [Hard] [Case Study] — ShopExample Outage Triage
+
+
+**Context:** Support tickets spike. Users report different errors: some see certificate warnings, others `503`, others a blank page for 30s then `500 Internal Server Error`. The incident commander needs a layer-by-layer map.
 
 **Select all that apply.**
 
-Which failure-and-experience pairings are from the "What Can Go Wrong?" table?
+Which failure-to-symptom pairings are plausible?
 
-- [ ] A. DNS domain expired → "Site can't be reached"
-- [ ] B. TLS expired certificate → security warning
-- [ ] C. All LB backends unhealthy → 503 Service Unavailable
-- [ ] D. Backend database timeout → 404 Not Found
-
-**Answer:** A, B, C
-
-**Explanation:** DNS, TLS, and LB failures match the table. Database timeout causes 500 Internal Server Error, not 404 (D).
-
-**Source:** [docs/day-04/01-visit-website-scenario.md](../docs/day-04/01-visit-website-scenario.md)
+- [ ] A. Expired TLS certificate → browser security warning
+- [ ] B. All load balancer backends unhealthy → `503 Service Unavailable`
+- [ ] C. Database query timeout in backend → `500 Internal Server Error`
+- [ ] D. Database timeout → `404 Not Found` to the shopper
 
 ---
 
-### Q13 [Hard] — Typical Timings
+### Q13 [Hard] — Latency Budget for First Meaningful Paint
+
 
 **Select all that apply.**
 
-Which timing ranges match the timeline summary?
+ShopExample targets ~500ms–2s for first meaningful paint on a cold visit. Which typical timing ranges are realistic for individual layers?
 
-- [ ] A. DNS lookup: 20–120ms (typical)
-- [ ] B. TLS handshake: 40–200ms
-- [ ] C. Backend + database: 50–300ms
-- [ ] D. Total first meaningful paint: ~500ms – 2s
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four ranges appear in the timeline summary table.
-
-**Source:** [docs/day-04/01-visit-website-scenario.md](../docs/day-04/01-visit-website-scenario.md)
+- [ ] A. DNS lookup — roughly 20–120ms when cached locally
+- [ ] B. TLS handshake — roughly 40–200ms
+- [ ] C. Backend + database — roughly 50–300ms
+- [ ] D. Total first meaningful paint — often ~500ms–2s end-to-end
 
 ---
 
-### Q14 [Hard] — Mapping to System Design Concepts
+### Q14 [Hard] [Case Study] — Engineering Practices in One Page Load
+
+
+**Context:** Alice loads `https://shop.example.com/products` on a cold visit. The path touches DNS cache miss, TLS, ALB health checks, Nginx routing, Redis cache-aside, PostgreSQL, gzip response, CDN for images, and browser critical rendering path.
 
 **Select all that apply.**
 
-Which Day 2 concepts appear in the website visit scenario?
+Which system design capabilities are actively exercised during this single page load?
 
-- [ ] A. HLD — load balancer → web server → backend services
-- [ ] B. Caching — DNS cache, Redis, browser cache, CDN
-- [ ] C. Security — HTTPS, TLS certificates, HttpOnly cookies
-- [ ] D. Observability — access logs and latency metrics per layer
-
-**Answer:** A, B, C, D
-
-**Explanation:** The "How This Maps to System Design" table links all four concepts (plus scalability, performance, reliability) to steps in the scenario.
-
-**Source:** [docs/day-04/01-visit-website-scenario.md](../docs/day-04/01-visit-website-scenario.md)
+- [ ] A. Layered caching — browser, CDN, Redis, and DNS cache
+- [ ] B. Security — HTTPS, TLS verification, HttpOnly session cookies
+- [ ] C. Reliability — load balancer health checks and multiple web servers
+- [ ] D. Observability — access logs and latency metrics at each tier

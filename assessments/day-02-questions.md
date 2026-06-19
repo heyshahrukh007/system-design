@@ -1,535 +1,413 @@
-# Day 2 — MCQ Questions (28)
+# Design Disciplines — MCQ Questions (28)
 
-Multi-select format: each question has **two or more** correct answers.
+Multi-select format: each question has **two or more** correct answers. Questions tagged **[Case Study]** include a business context block.
 
----
-
-### Q01 [Easy] — Design Disciplines
-
-**Select all that apply.**
-
-Which are listed as Day 2 design disciplines?
-
-- [ ] A. Capacity design
-- [ ] B. Observability design
-- [ ] C. Compiler design
-- [ ] D. Refactor design
-
-**Answer:** A, B, D
-
-**Explanation:** Capacity, observability, and refactor are among the 11 disciplines. Compiler design is not listed (C).
-
-**Source:** [docs/day-02/01-types-of-system-design.md](../docs/day-02/01-types-of-system-design.md)
+> **Answers and explanations:** see [answer-key/day-02-answers.md](./answer-key/day-02-answers.md)
 
 ---
 
-### Q02 [Easy] — Structural vs Non-Functional Design
+### Q01 [Easy] — Architecture Review Lenses
+
 
 **Select all that apply.**
 
-Which disciplines are classified as **non-functional** design in Day 2?
+You are staffing an architecture review for a new payments platform. Which specialized design disciplines should the review cover?
+
+- [ ] A. Capacity design — sizing infrastructure
+- [ ] B. Observability design — logs, metrics, traces
+- [ ] C. Compiler design — optimizing bytecode
+- [ ] D. Refactor design — evolving existing systems safely
+
+---
+
+### Q02 [Easy] — Classifying Non-Functional Concerns
+
+
+**Select all that apply.**
+
+During a design doc review, which disciplines address **how well** the system behaves rather than its structural shape?
 
 - [ ] A. Scalability design
-- [ ] B. HLD
+- [ ] B. High-level design (HLD)
 - [ ] C. Security design
 - [ ] D. Performance design
 
-**Answer:** A, C, D
-
-**Explanation:** Scalability, security, and performance focus on how well the system behaves. HLD is structural — it defines system shape (B).
-
-**Source:** [docs/day-02/01-types-of-system-design.md](../docs/day-02/01-types-of-system-design.md)
-
 ---
 
-### Q03 [Easy] — HLD Contents
+### Q03 [Easy] — What Belongs in an HLD Doc
+
 
 **Select all that apply.**
 
-What does High-Level Design (HLD) include?
+You are drafting the HLD for a food-delivery platform. Which elements belong in this document?
 
-- [ ] A. Major components and their responsibilities
-- [ ] B. Data flows between components
-- [ ] C. Specific database index definitions
-- [ ] D. External dependencies (third-party systems)
-
-**Answer:** A, B, D
-
-**Explanation:** HLD covers components, communication, data flows, and external deps. Specific indexes are LLD detail (C).
-
-**Source:** [docs/day-02/02-hld.md](../docs/day-02/02-hld.md)
+- [ ] A. Major services and their responsibilities
+- [ ] B. Data flows for key user journeys
+- [ ] C. Exact B-tree index definitions on each table
+- [ ] D. Third-party dependencies (payment gateway, SMS provider)
 
 ---
 
-### Q04 [Easy] — LLD Contents
+### Q04 [Easy] — What Belongs in an LLD Doc
+
 
 **Select all that apply.**
 
-What does Low-Level Design (LLD) include?
+You are detailing the Order Service before implementation. Which artifacts belong in the LLD?
 
-- [ ] A. Class/module structure
+- [ ] A. Class or module structure
 - [ ] B. Database schema with indexes
-- [ ] C. State machines for valid transitions
-- [ ] D. Exact instance counts for production servers
-
-**Answer:** A, B, C
-
-**Explanation:** LLD covers classes, schemas, state machines, sequence diagrams, and concurrency. Exact instance counts belong to capacity design (D).
-
-**Source:** [docs/day-02/03-lld.md](../docs/day-02/03-lld.md)
+- [ ] C. State machine for order status transitions
+- [ ] D. Exact production server instance counts
 
 ---
 
-### Q05 [Easy] — Capacity Design Basics
+### Q05 [Easy] — Sizing a New API
+
 
 **Select all that apply.**
 
-Which are core inputs or outputs of capacity design?
+You estimate capacity for an API with 1M DAU, 50 requests/user/day, and a 3× peak-to-average ratio. Which outputs should your capacity worksheet include?
 
 - [ ] A. Peak QPS (design for peak, not average)
-- [ ] B. Storage estimates with index/replica overhead
-- [ ] C. Choosing bounded context for microservices
-- [ ] D. Bandwidth from peak QPS × response size
-
-**Answer:** A, B, D
-
-**Explanation:** Capacity design estimates traffic, storage, bandwidth, and maps to infrastructure. Bounded contexts are HLD/domain decisions (C).
-
-**Source:** [docs/day-02/04-capacity-design.md](../docs/day-02/04-capacity-design.md)
+- [ ] B. Storage growth with index and replica overhead
+- [ ] C. Choosing microservice boundaries by domain
+- [ ] D. Peak bandwidth from QPS × average response size
 
 ---
 
-### Q06 [Easy] — Vertical vs Horizontal Scaling
+### Q06 [Easy] — Horizontal vs Vertical Scaling
+
 
 **Select all that apply.**
 
-Which are listed as **pros of horizontal scaling**?
+Your database server is at 90% CPU. Which are advantages of **horizontal** scaling (adding more machines)?
 
 - [ ] A. Theoretically unlimited scale-out
-- [ ] B. Fault tolerant — one server dies, others continue
-- [ ] C. No code changes required
-- [ ] D. Cost-effective at scale
-
-**Answer:** A, B, D
-
-**Explanation:** Horizontal scaling adds machines with fault tolerance and scale potential. "No code changes" is a pro of vertical scaling (C).
-
-**Source:** [docs/day-02/05-scalability-design.md](../docs/day-02/05-scalability-design.md)
+- [ ] B. Fault tolerance — one node fails, others continue
+- [ ] C. No application changes ever required
+- [ ] D. Often more cost-effective at very large scale
 
 ---
 
-### Q07 [Easy] — Reliability Metrics
+### Q07 [Easy] — Reliability Metrics in an SLA Discussion
+
 
 **Select all that apply.**
 
-Which reliability metrics are defined in the curriculum?
+Legal asks you to define disaster-recovery targets for a billing system. Which metrics should you be ready to explain?
 
-- [ ] A. RPO — max acceptable data loss window
-- [ ] B. RTO — max acceptable downtime to recover
-- [ ] C. MTTR — mean time to recover
+- [ ] A. RPO — maximum acceptable data loss window
+- [ ] B. RTO — maximum acceptable time to restore service
+- [ ] C. MTTR — mean time to recover from failure
 - [ ] D. QPS — queries per second
 
-**Answer:** A, B, C
-
-**Explanation:** RPO, RTO, and MTTR are reliability metrics. QPS is a capacity/throughput metric (D).
-
-**Source:** [docs/day-02/06-reliability-design.md](../docs/day-02/06-reliability-design.md)
-
 ---
 
-### Q08 [Easy] — Security Pillars
+### Q08 [Easy] — Security Design Basics
+
 
 **Select all that apply.**
 
-Which are core security pillars from Day 2?
+You are threat-modeling a customer-facing REST API. Which security pillars must the design address?
 
-- [ ] A. Authentication — verify identity
-- [ ] B. Authorization — control access after identity is verified
-- [ ] C. Data protection (in transit and at rest)
-- [ ] D. Eliminating all external API calls
-
-**Answer:** A, B, C
-
-**Explanation:** Auth, authorization, and data protection are core pillars. External APIs are managed securely, not eliminated (D).
-
-**Source:** [docs/day-02/07-security-design.md](../docs/day-02/07-security-design.md)
+- [ ] A. Authentication — verifying user identity
+- [ ] B. Authorization — controlling what authenticated users can do
+- [ ] C. Data protection — encryption in transit and at rest
+- [ ] D. Eliminating all third-party integrations
 
 ---
 
-### Q09 [Easy] — SQL vs NoSQL Guidance
+### Q09 [Easy] — Picking a Database Type
+
 
 **Select all that apply.**
 
-When does the curriculum suggest leaning toward SQL (relational)?
+You are designing an inventory system where stock levels must be ACID-accurate and orders join across products and warehouses. Which storage leanings are appropriate?
 
-- [ ] A. ACID transactions required (payments, inventory)
+- [ ] A. Relational SQL with transactions
 - [ ] B. Complex queries with joins
-- [ ] C. Massive write throughput with flexible schema
-- [ ] D. Data integrity is critical
-
-**Answer:** A, B, D
-
-**Explanation:** SQL fits structured data, ACID, joins, and integrity. Massive write throughput with flexible schema leans toward wide-column NoSQL (C).
-
-**Source:** [docs/day-02/08-data-design.md](../docs/day-02/08-data-design.md)
+- [ ] C. Wide-column NoSQL for schema-free documents only
+- [ ] D. Strong data integrity requirements
 
 ---
 
-### Q10 [Medium] — Lifecycle and Disciplines
+### Q10 [Medium] [Case Study] — Greenfield Launch Checklist
+
+
+**Context:** NovaCart is six weeks from public launch. The team has HLD diagrams but no capacity numbers, no on-call runbooks, and auth is "TODO." Expected launch traffic is 50K DAU growing to 500K within a year.
 
 **Select all that apply.**
 
-Which discipline pairings match the "When Each Discipline Matters Most" table?
+Which design disciplines should be **prioritized before launch**?
 
-- [ ] A. Greenfield → HLD, Data, API, Capacity
-- [ ] B. Pre-launch → Security, Performance, Reliability, Observability
-- [ ] C. Growth phase → Scalability, Capacity, Performance
-- [ ] D. Compliance audit → Refactor only
-
-**Answer:** A, B, C
-
-**Explanation:** A, B, and C match the table. Compliance audits focus on Security and Data, not refactor alone (D).
-
-**Source:** [docs/day-02/01-types-of-system-design.md](../docs/day-02/01-types-of-system-design.md)
+- [ ] A. Capacity — back-of-envelope QPS and storage
+- [ ] B. Security — auth, encryption, threat model
+- [ ] C. Observability — metrics, alerts, dashboards
+- [ ] D. Refactor — extract microservices from a monolith not yet in production
 
 ---
 
-### Q11 [Medium] — HLD Communication Patterns
+### Q11 [Medium] — Sync vs Async in an Order Flow
+
 
 **Select all that apply.**
 
-When should you choose asynchronous (queue/event) communication per HLD guidance?
+You are mapping the "Place Order" journey: validate cart, charge card, send confirmation email. Which communication choices are appropriate?
 
-- [ ] A. Caller needs immediate response for every step
-- [ ] B. Work can happen later and caller doesn't need to wait
-- [ ] C. Email notification after order confirmation
-- [ ] D. External system pushes updates via webhook
-
-**Answer:** B, C, D
-
-**Explanation:** Async fits deferred work (notifications) and webhooks. Immediate responses need synchronous REST/gRPC (A).
-
-**Source:** [docs/day-02/02-hld.md](../docs/day-02/02-hld.md)
+- [ ] A. Synchronous REST call to Payment Service — caller needs immediate pass/fail
+- [ ] B. Async queue for confirmation email — delay is acceptable
+- [ ] C. Synchronous email send inside the checkout request — user waits for SMTP
+- [ ] D. Webhook from payment provider when charge settles later
 
 ---
 
-### Q12 [Medium] — LLD Patterns
+### Q12 [Medium] — LLD Review for Order Service
+
 
 **Select all that apply.**
 
-Which LLD patterns or practices are emphasized?
+A junior engineer's Order Service design puts all logic in the controller and skips idempotency on `POST /orders`. Which fixes should the review require?
 
-- [ ] A. Repository pattern — isolate data access
-- [ ] B. Business logic in service layer, not controllers
-- [ ] C. Idempotency keys for retriable operations
-- [ ] D. God class doing everything for simplicity
-
-**Answer:** A, B, C
-
-**Explanation:** Repository, service layer, and idempotency are best practices. God classes are listed as a common mistake (D).
-
-**Source:** [docs/day-02/03-lld.md](../docs/day-02/03-lld.md)
+- [ ] A. Move business rules to a service layer
+- [ ] B. Use repository pattern to isolate data access
+- [ ] C. Add idempotency keys for retriable order creation
+- [ ] D. Add a god class that handles HTTP, SQL, and payments together
 
 ---
 
-### Q13 [Medium] — Scalability Toolkit
+### Q13 [Medium] [Case Study] — ReadStorm API Connection Exhaustion
+
+
+**Context:** CatalogAPI serves 3,000 read QPS with a 15:1 read:write ratio. PostgreSQL logs show "too many connections" during peaks. p95 latency is 900ms. No cache layer exists. The team wants relief without sharding yet.
 
 **Select all that apply.**
 
-A read-heavy API is hitting database connection limits. Which scalability techniques from Day 2 apply?
+Which scalability techniques should the team apply **first**?
 
-- [ ] A. Read replicas
-- [ ] B. Connection pooling (PgBouncer)
-- [ ] C. Caching hot data
-- [ ] D. Immediate sharding before measuring
-
-**Answer:** A, B, C
-
-**Explanation:** Replicas, pooling, and caching address read load and connections. The curriculum warns against sharding before finding the real bottleneck (D).
-
-**Source:** [docs/day-02/05-scalability-design.md](../docs/day-02/05-scalability-design.md)
+- [ ] A. Read replicas for read traffic
+- [ ] B. Connection pooling (e.g., PgBouncer)
+- [ ] C. Redis cache for hot product queries
+- [ ] D. Immediate horizontal sharding of all tables
 
 ---
 
-### Q14 [Medium] — Scalability Roadmap
+### Q14 [Medium] — Growth Roadmap for a Successful MVP
+
 
 **Select all that apply.**
 
-Which stages appear in the scalability roadmap in order?
+Your MVP runs on one app server and one database. Traffic doubles every quarter. Which scaling stages appear in a sensible progression?
 
-- [ ] A. Stage 1: Single server (MVP)
-- [ ] B. Stage 3: Read replicas + CDN
-- [ ] C. Stage 5: Microservices per domain
-- [ ] D. Stage 6: Multi-region deployment
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four stages are explicitly listed in the roadmap progression.
-
-**Source:** [docs/day-02/05-scalability-design.md](../docs/day-02/05-scalability-design.md)
+- [ ] A. Separate DB and add cache before read replicas
+- [ ] B. Read replicas and CDN as read load grows
+- [ ] C. Microservices per domain only after clear domain pain
+- [ ] D. Multi-region deployment as the first scaling step
 
 ---
 
-### Q15 [Medium] — Reliability Patterns
+### Q15 [Medium] [Case Study] — Payment Provider Outage at Checkout
+
+
+**Context:** During peak checkout, Stripe timeouts spike. Order Service retries aggressively; thread pools exhaust; unrelated catalog APIs slow down. Circuit breaker is not implemented. Product wants checkout to degrade gracefully.
 
 **Select all that apply.**
 
-Which are core reliability patterns from Day 2?
+Which reliability patterns should be in the checkout design?
 
-- [ ] A. Circuit breaker — stop calling failing dependencies
+- [ ] A. Circuit breaker on Payment Service calls
 - [ ] B. Exponential backoff with jitter on retries
-- [ ] C. Graceful degradation of non-critical features
-- [ ] D. Removing all timeouts to avoid false failures
-
-**Answer:** A, B, C
-
-**Explanation:** Circuit breakers, backoff retries, and graceful degradation are core patterns. Timeouts should be set on all external calls — never wait forever (D).
-
-**Source:** [docs/day-02/06-reliability-design.md](../docs/day-02/06-reliability-design.md)
+- [ ] C. Graceful degradation — queue orders as PENDING when payment is down
+- [ ] D. Remove all timeouts so calls eventually succeed
 
 ---
 
-### Q16 [Medium] — STRIDE Threat Model
+### Q16 [Medium] [Case Study] — STRIDE Review of a User API
+
+
+**Context:** A security review finds that `GET /api/users/{id}` returns other users' email addresses when the ID is incremented. JWTs are long-lived with no revocation. Passwords were stored in plaintext in a legacy table.
 
 **Select all that apply.**
 
-Which threats are part of the STRIDE framework?
+Which STRIDE categories and mitigations match these findings?
 
-- [ ] A. Spoofing — fake identity
-- [ ] B. Tampering — modify data
-- [ ] C. Repudiation — deny an action took place
-- [ ] D. Scaling — handle more traffic
-
-**Answer:** A, B, C
-
-**Explanation:** Spoofing, tampering, and repudiation are STRIDE categories (along with Information disclosure, Denial of service, Elevation of privilege). Scaling is not a STRIDE threat (D).
-
-**Source:** [docs/day-02/07-security-design.md](../docs/day-02/07-security-design.md)
+- [ ] A. Information disclosure — enforce authorization checks per resource
+- [ ] B. Spoofing — stolen long-lived JWT; shorten expiry and support revocation
+- [ ] C. Tampering — use parameterized queries and input validation
+- [ ] D. Repudiation — users deny actions; add audit logging for sensitive operations
 
 ---
 
-### Q17 [Medium] — Data Consistency and CAP
+### Q17 [Medium] [Case Study] — Feed vs Ledger Consistency
+
+
+**Context:** Your team runs a social feed (stale posts OK for 30s) and a wallet balance service (must never show wrong money). Both are distributed across regions.
 
 **Select all that apply.**
 
-Which pairings match the curriculum's CAP-in-practice examples?
+Which consistency choices fit each system?
 
-- [ ] A. Payment system → CP (consistency over availability)
-- [ ] B. Social media feed → AP (availability over consistency)
-- [ ] C. Most web systems choose AP with eventual consistency
-- [ ] D. Bank balances → eventual consistency is always acceptable
-
-**Answer:** A, B, C
-
-**Explanation:** Payments lean CP; feeds lean AP; most web systems choose AP. Bank balances require strong consistency — eventual consistency is not always acceptable (D).
-
-**Source:** [docs/day-02/08-data-design.md](../docs/day-02/08-data-design.md)
+- [ ] A. Wallet service — favor consistency (CP) over availability during partition
+- [ ] B. Social feed — favor availability (AP) with eventual consistency
+- [ ] C. Wallet — eventual consistency is always acceptable
+- [ ] D. Most consumer web features tolerate brief staleness on non-financial reads
 
 ---
 
-### Q18 [Medium] — API Design
+### Q18 [Medium] — Public REST API Standards
+
 
 **Select all that apply.**
 
-Which are REST API best practices from Day 2?
+You are publishing `/v1/users` for external partners. Which API design practices should you enforce?
 
-- [ ] A. Resource-oriented URLs with nouns (`/users/123`)
-- [ ] B. Paginate list endpoints
-- [ ] C. Use verbs in URLs (`/getUser?id=123`)
-- [ ] D. Idempotency keys on POST operations that create resources
-
-**Answer:** A, B, D
-
-**Explanation:** Nouns, pagination, and idempotency keys are best practices. Verb-based URLs like `/getUser` are listed as bad (C).
-
-**Source:** [docs/day-02/09-api-design.md](../docs/day-02/09-api-design.md)
+- [ ] A. Resource URLs with nouns (`GET /users/123`)
+- [ ] B. Pagination on all list endpoints
+- [ ] C. Verb-based URLs (`POST /getUserById`)
+- [ ] D. Idempotency keys on POST that create resources
 
 ---
 
-### Q19 [Medium] — Performance Optimization Hierarchy
+### Q19 [Medium] — Performance Tuning Priority
+
 
 **Select all that apply.**
 
-Which steps appear in the performance optimization hierarchy (highest impact first)?
+Search p99 latency is 2s. The team wants to optimize. Which approaches follow the highest-impact-first hierarchy?
 
-- [ ] A. Don't do the work — cache, avoid unnecessary calls
-- [ ] B. Do work asynchronously — queues, background jobs
-- [ ] C. Do work faster — better algorithms, faster hardware
-- [ ] D. Skip profiling and jump straight to hardware upgrades
-
-**Answer:** A, B, C
-
-**Explanation:** The hierarchy is: avoid work → less work → async → parallel → faster code/hardware. Skipping profiling is an anti-pattern (D).
-
-**Source:** [docs/day-02/10-performance-design.md](../docs/day-02/10-performance-design.md)
+- [ ] A. Add Redis cache for popular queries before rewriting algorithms
+- [ ] B. Paginate and trim response payloads
+- [ ] C. Move heavy ranking work to async background jobs
+- [ ] D. Buy faster CPUs before measuring where time is spent
 
 ---
 
-### Q20 [Hard] — Cache Patterns
+### Q20 [Hard] — Cache Pattern Selection
+
 
 **Select all that apply.**
 
-Which cache pattern descriptions are accurate?
+Match each business need to an appropriate cache pattern.
 
-- [ ] A. Cache-aside — app checks cache, on miss reads DB and populates
-- [ ] B. Write-through — write to cache and DB simultaneously
-- [ ] C. Write-behind — write to cache, async flush to DB
-- [ ] D. Read-through — app only talks to cache; cache loads from DB on miss
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four pattern descriptions match the performance design lesson.
-
-**Source:** [docs/day-02/10-performance-design.md](../docs/day-02/10-performance-design.md)
+- [ ] A. Product catalog reads — cache-aside with TTL
+- [ ] B. Session store that must stay in sync with DB — write-through
+- [ ] C. Write-heavy analytics counters — write-behind (write-back)
+- [ ] D. App reads only through cache layer — read-through
 
 ---
 
-### Q21 [Hard] — Observability Pillars
+### Q21 [Hard] [Case Study] — On-Call Alert Noise at 3 AM
+
+
+**Context:** On-call gets paged when any single CPU core hits 55%. Logs are plain text with no request IDs. When checkout fails, engineers cannot trace a user request across Order, Payment, and Notification services.
 
 **Select all that apply.**
 
-Which statements about observability are correct?
+Which observability improvements address these gaps?
 
-- [ ] A. Logs are discrete events with context (structured JSON recommended)
-- [ ] B. Metrics include counters, gauges, and histograms
-- [ ] C. Traces follow a single request across multiple services
-- [ ] D. Alert on causes (CPU > 50%) rather than symptoms
-
-**Answer:** A, B, C
-
-**Explanation:** Logs, metrics, and traces are the three pillars. Alert on user-facing symptoms, not overly sensitive causes (D).
-
-**Source:** [docs/day-02/11-observability-design.md](../docs/day-02/11-observability-design.md)
+- [ ] A. Structured JSON logs with request_id on every line
+- [ ] B. RED metrics (rate, errors, duration) per service
+- [ ] C. Distributed tracing across service boundaries
+- [ ] D. Alert on CPU > 55% on any core — keep sensitivity high
 
 ---
 
-### Q22 [Hard] — SLI, SLO, SLA
+### Q22 [Hard] — SLO Error Budget Before a Risky Release
+
 
 **Select all that apply.**
 
-Which definitions are correct?
+Your team defines: SLI = % of API requests completing under 300ms; SLO = 99% monthly. You have 43 minutes of error budget left this month. A risky caching refactor is ready to ship. Which statements about SLIs, SLOs, and error budgets are correct?
 
-- [ ] A. SLI — what you measure (e.g., API latency p99)
-- [ ] B. SLO — internal target (e.g., p99 < 300ms)
-- [ ] C. SLA — contractual guarantee with users (e.g., 99.9% uptime)
-- [ ] D. Error budget — remaining allowed failure within SLO
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four definitions match the SLI/SLO/SLA section including error budgets.
-
-**Source:** [docs/day-02/11-observability-design.md](../docs/day-02/11-observability-design.md)
+- [ ] A. SLI is what you measure; SLO is the internal target
+- [ ] B. SLA is a contractual commitment to customers — stricter than internal SLO
+- [ ] C. Remaining error budget suggests caution before shipping risky changes
+- [ ] D. Error budget means you can ignore reliability until next month
 
 ---
 
-### Q23 [Hard] — Refactor Design
+### Q23 [Hard] [Case Study] — Extracting Payment from a Monolith
+
+
+**Context:** ShopHub's monolith deploy takes 2 hours and breaks billing when unrelated teams merge. Payment code changes weekly; catalog code monthly. Leadership approved incremental extraction — no big-bang rewrite.
 
 **Select all that apply.**
 
-Which refactor approaches does the curriculum recommend?
+Which refactor strategies fit ShopHub's constraints?
 
-- [ ] A. Strangler fig pattern — route traffic gradually to new services
-- [ ] B. Feature flags for controlled rollout and rollback
-- [ ] C. Big-bang rewrite from scratch as first choice
-- [ ] D. Dual-write during database migration
-
-**Answer:** A, B, D
-
-**Explanation:** Strangler fig, feature flags, and dual-write are recommended incremental approaches. Big-bang rewrite is an anti-pattern — refactor is preferred over rewrite (C).
-
-**Source:** [docs/day-02/12-refactor-design.md](../docs/day-02/12-refactor-design.md)
+- [ ] A. Strangler fig — route payment traffic to a new service via API gateway
+- [ ] B. Feature flags to roll back payment flow without redeploy
+- [ ] C. Big-bang rewrite of the entire monolith over one weekend
+- [ ] D. Dual-write to old and new payment stores during migration
 
 ---
 
-### Q24 [Hard] — Reliability: The Nines
+### Q24 [Hard] — SLA Negotiation: The Nines
+
 
 **Select all that apply.**
 
-Which availability/downtime pairings are from the curriculum?
+Your customer contract requires **99.9%** availability. Which downtime budgets align with that commitment?
 
-- [ ] A. 99.9% (three nines) ≈ 8.76 hours downtime/year
-- [ ] B. 99.99% (four nines) ≈ 52.6 minutes downtime/year
-- [ ] C. Each additional nine is roughly 10× harder than the last
-- [ ] D. Always design for five nines regardless of business need
-
-**Answer:** A, B, C
-
-**Explanation:** A, B, and C match the nines table and guidance. Design for the nines your business needs — not the maximum possible (D).
-
-**Source:** [docs/day-02/06-reliability-design.md](../docs/day-02/06-reliability-design.md)
+- [ ] A. About 8.76 hours downtime per year
+- [ ] B. About 43.8 minutes downtime per month
+- [ ] C. Each additional nine is roughly 10× harder to achieve
+- [ ] D. You should always commit to five nines regardless of business need
 
 ---
 
-### Q25 [Hard] — Scalability Anti-Patterns
+### Q25 [Hard] — Scalability Anti-Patterns in Production
+
 
 **Select all that apply.**
 
-Which are listed scalability anti-patterns and their fixes?
+A team scaled from 4 to 40 app servers but latency worsened. Sessions are stored in server memory. They sharded the database before adding any cache. Which anti-patterns explain the outcome?
 
-- [ ] A. Stateful app servers → externalize state
-- [ ] B. Scaling before measuring → benchmark first
-- [ ] C. Synchronous everything → queue async work
-- [ ] D. No cache strategy → shard immediately
-
-**Answer:** A, B, C
-
-**Explanation:** Stateful servers, premature scaling, and sync-everything are anti-patterns with listed fixes. No cache strategy should be fixed with caching at appropriate layers — not immediate sharding (D).
-
-**Source:** [docs/day-02/05-scalability-design.md](../docs/day-02/05-scalability-design.md)
+- [ ] A. Stateful app servers — cannot distribute load evenly
+- [ ] B. Scaling before measuring — wrong bottleneck targeted
+- [ ] C. Sharding before caching — added complexity without fixing hot reads
+- [ ] D. No cache strategy — database still overwhelmed on reads
 
 ---
 
-### Q26 [Hard] — Data Flow Patterns
+### Q26 [Hard] — Data Pipeline Architecture Choices
+
 
 **Select all that apply.**
 
-Which data flow patterns are covered in data design?
+A analytics team needs nightly warehouse loads and real-time search index updates from the operational database. Which data flow patterns apply?
 
-- [ ] A. ETL — batch extract/transform/load to warehouse
-- [ ] B. CDC — stream database changes in real time
-- [ ] C. Event sourcing — store state as event sequence
-- [ ] D. CQRS — separate read and write models
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four patterns are explicitly covered with use cases.
-
-**Source:** [docs/day-02/08-data-design.md](../docs/day-02/08-data-design.md)
+- [ ] A. ETL batch jobs to the data warehouse
+- [ ] B. CDC streaming changes to Kafka for search indexing
+- [ ] C. Event sourcing for audit trails in financial modules
+- [ ] D. CQRS with separate read models for heavy dashboards
 
 ---
 
-### Q27 [Hard] — Capacity vs Scalability
+### Q27 [Hard] — Capacity vs Scalability Planning
+
 
 **Select all that apply.**
 
-Which statements correctly distinguish capacity and scalability design?
+Your platform team is planning next year's infrastructure budget and a three-year growth path. Which division of responsibility is correct?
 
-- [ ] A. Capacity answers "how much do I need now?"
-- [ ] B. Scalability answers "how do I grow later?"
-- [ ] C. Capacity sizes the starting point; scalability plans the growth path
-- [ ] D. They are identical — only one discipline is needed
-
-**Answer:** A, B, C
-
-**Explanation:** Capacity is right-sizing now; scalability is growth planning. They work together (D is false).
-
-**Source:** [docs/day-02/04-capacity-design.md](../docs/day-02/04-capacity-design.md)
+- [ ] A. Capacity design — how much infrastructure is needed **now** for peak load
+- [ ] B. Scalability design — how the architecture **grows** when load increases
+- [ ] C. Capacity sizes the starting point; scalability plans the evolution
+- [ ] D. They are the same discipline — only one plan is needed
 
 ---
 
-### Q28 [Hard] — Input Validation Threats
+### Q28 [Hard] [Case Study] — Input Validation Gaps on a Public Form
+
+
+**Context:** A public contact form was exploited via SQL injection. Another endpoint reflects user input in HTML without encoding, triggering XSS in admin browsers. CSRF protection is missing on state-changing POSTs.
 
 **Select all that apply.**
 
-Which threat-prevention pairings are from security design?
+Which threat-prevention pairings should be implemented?
 
-- [ ] A. SQL injection → parameterized queries, ORMs
-- [ ] B. XSS → output encoding, Content-Security-Policy
-- [ ] C. CSRF → CSRF tokens, SameSite cookies
-- [ ] D. Path traversal → pass user input directly to shell commands
-
-**Answer:** A, B, C
-
-**Explanation:** A, B, and C are correct prevention pairs. Never pass user input to shell commands — that causes command injection (D describes the threat, not prevention).
-
-**Source:** [docs/day-02/07-security-design.md](../docs/day-02/07-security-design.md)
+- [ ] A. SQL injection — parameterized queries or ORM, never string-concat SQL
+- [ ] B. XSS — output encoding and Content-Security-Policy headers
+- [ ] C. CSRF — anti-CSRF tokens and SameSite cookie attributes
+- [ ] D. Path traversal — pass raw user input to shell commands for flexibility

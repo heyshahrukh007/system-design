@@ -1,573 +1,455 @@
-# Day 5 — MCQ Questions (30)
+# Infrastructure Components — MCQ Questions (30)
 
-Multi-select format: each question has **two or more** correct answers.
+Multi-select format: each question has **two or more** correct answers. Questions tagged **[Case Study]** include a business context block.
 
----
-
-### Q01 [Easy] — DNS Purpose
-
-**Select all that apply.**
-
-Why does DNS exist in system design?
-
-- [ ] A. Humans use memorable domain names instead of numeric IPs
-- [ ] B. Update DNS when servers change IPs — users keep the same URL
-- [ ] C. Return multiple IPs for basic load distribution
-- [ ] D. Replace the need for load balancers entirely
-
-**Answer:** A, B, C
-
-**Explanation:** DNS is the phone book, enables IP changes without URL changes, and can return multiple A records. It does not replace dedicated load balancers with health checks (D).
-
-**Source:** [docs/day-05/01-dns.md](../docs/day-05/01-dns.md)
+> **Answers and explanations:** see [answer-key/day-05-answers.md](./answer-key/day-05-answers.md)
 
 ---
 
-### Q02 [Easy] — DNS Record Types
+### Q01 [Easy] [Case Study] — DNS Cutover for a Replatform
+
+
+**Context:** MediaCo is moving `www.mediacorp.com` from an old datacenter IP to AWS. The current DNS TTL is 86400 seconds (24 hours). The cutover is in 48 hours.
 
 **Select all that apply.**
 
-Which DNS record types are covered in Day 5?
+Why does DNS matter for this migration, and what should the team plan for?
 
-- [ ] A. A — domain to IPv4
-- [ ] B. AAAA — domain to IPv6
-- [ ] C. CNAME — alias to another domain
-- [ ] D. MX — mail server routing
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four record types appear in the Common DNS Record Types table (along with TXT, NS, TTL).
-
-**Source:** [docs/day-05/01-dns.md](../docs/day-05/01-dns.md)
+- [ ] A. DNS maps human-readable names to IP addresses shoppers use to connect
+- [ ] B. Updating A records lets users keep the same URL when the origin IP changes
+- [ ] C. Multiple A records can provide basic load distribution at the DNS layer
+- [ ] D. DNS alone replaces dedicated load balancers with health checks
 
 ---
 
-### Q03 [Easy] — Load Balancer Purpose
+### Q02 [Easy] — DNS Record Types for Dual-Stack Hosting
+
 
 **Select all that apply.**
 
-Why use a load balancer?
+You must serve the same hostname over IPv4 and IPv6. Which DNS record types do you configure?
 
-- [ ] A. Spread traffic when one server can't handle all requests
-- [ ] B. Route around unhealthy servers via health checks
-- [ ] C. Drain a server for deployment while others serve traffic
-- [ ] D. Eliminate the need for multiple backend servers
-
-**Answer:** A, B, C
-
-**Explanation:** LB distributes, health-checks, and enables rolling deploys. You still need multiple backends for distribution to matter (D).
-
-**Source:** [docs/day-05/02-load-balancer.md](../docs/day-05/02-load-balancer.md)
+- [ ] A. A — maps hostname to IPv4
+- [ ] B. AAAA — maps hostname to IPv6
+- [ ] C. CNAME — alias to another hostname
+- [ ] D. MX — mail server routing for `@domain.com`
 
 ---
 
-### Q04 [Easy] — L4 vs L7 Load Balancers
+### Q03 [Easy] [Case Study] — Black Friday at RetailHub
+
+
+**Context:** RetailHub runs three identical web servers behind an ALB serving 2,000 req/s normally. Black Friday expects 8,000 req/s. One server must be drained for a security patch during the event.
 
 **Select all that apply.**
 
-Which statements about Layer 4 vs Layer 7 load balancers are correct?
+Why is a load balancer critical for RetailHub?
 
-- [ ] A. L4 routes by IP and port — very fast, no HTTP inspection
-- [ ] B. L7 routes by URL, headers, cookies — smart HTTP routing
-- [ ] C. L7 can do SSL termination
-- [ ] D. L4 can route `/api/*` to a different pool than `/*`
-
-**Answer:** A, B, C
-
-**Explanation:** L4 is transport-level; L7 is application-level with HTTP routing and SSL termination. Path-based routing (`/api/*`) requires L7 (D).
-
-**Source:** [docs/day-05/02-load-balancer.md](../docs/day-05/02-load-balancer.md)
+- [ ] A. Spread traffic so no single server is overwhelmed
+- [ ] B. Stop sending traffic to unhealthy servers via health checks
+- [ ] C. Drain one server for patching while others continue serving
+- [ ] D. Eliminate the need for more than one backend server
 
 ---
 
-### Q05 [Easy] — Reverse Proxy Roles
+### Q04 [Easy] — Choosing L4 vs L7 for an API Gateway
+
 
 **Select all that apply.**
 
-Which jobs does a reverse proxy perform?
+Your platform terminates HTTPS and routes `/api/*` to microservices while `/static/*` goes to object storage. Which statements about load balancer layers are correct?
 
-- [ ] A. Hide backend topology from clients
+- [ ] A. L4 routes by IP and port — fast, no HTTP inspection
+- [ ] B. L7 routes by URL path, headers, and cookies
+- [ ] C. L7 can terminate SSL/TLS at the edge
+- [ ] D. L4 alone can route `/api/*` differently from `/static/*`
+
+---
+
+### Q05 [Easy] [Case Study] — Nginx as the Public Face of ShopCore
+
+
+**Context:** ShopCore runs Nginx as the only public IP. It terminates TLS, serves `/static/` directly from disk, and `proxy_pass`es `/api/` to internal Node servers on a private subnet. Backend servers have no public addresses.
+
+**Select all that apply.**
+
+Which reverse-proxy responsibilities is Nginx fulfilling?
+
+- [ ] A. Hide internal topology — clients see one address
 - [ ] B. SSL termination at the edge
-- [ ] C. Serve static files directly (e.g., CSS/JS)
-- [ ] D. Replace all backend application logic
-
-**Answer:** A, B, C
-
-**Explanation:** Reverse proxy represents backends, terminates SSL, routes, serves static files, compresses, and rate-limits. Business logic stays in backend apps (D).
-
-**Source:** [docs/day-05/03-reverse-proxy.md](../docs/day-05/03-reverse-proxy.md)
+- [ ] C. Serve static CSS/JS without hitting application servers
+- [ ] D. Replace all business logic in backend applications
 
 ---
 
-### Q06 [Easy] — CDN Benefits
+### Q06 [Easy] [Case Study] — Global Shoppers for StaticHub
+
+
+**Context:** StaticHub hosts images and JS in US-East. European users report 800ms+ load times for assets. Origin bandwidth bills are climbing. Assets change infrequently and are the same for all users.
 
 **Select all that apply.**
 
-What problems does a CDN solve?
+Which CDN benefits address StaticHub's problems?
 
-- [ ] A. High latency for users far from origin
-- [ ] B. Origin overwhelmed by static traffic
-- [ ] C. DDoS absorption at the edge
-- [ ] D. Strong consistency for bank balances on every read
-
-**Answer:** A, B, C
-
-**Explanation:** CDNs reduce latency, offload origin, and provide edge protection. Bank balances need strong consistency in the app/DB — not CDN caching (D).
-
-**Source:** [docs/day-05/04-cdn.md](../docs/day-05/04-cdn.md)
+- [ ] A. Serve content from edge nodes near users — lower latency
+- [ ] B. Absorb static traffic so origin is not hit on every request
+- [ ] C. Distribute bandwidth across many edge locations
+- [ ] D. Guarantee strong consistency for personalized bank balances at the edge
 
 ---
 
-### Q07 [Easy] — Cache Layers
+### Q07 [Easy] — Cache Layers in a Typical Web Stack
+
 
 **Select all that apply.**
 
-Which cache layers are listed top-to-bottom in Day 5?
+From the user's browser down to the database, which cache layers appear in a common production stack?
 
-- [ ] A. Browser cache
-- [ ] B. CDN / edge cache
-- [ ] C. Application cache (Redis, Memcached)
-- [ ] D. Source of truth (database, API)
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four appear in the cache layers diagram (with reverse proxy and DB cache between app cache and source).
-
-**Source:** [docs/day-05/05-caching.md](../docs/day-05/05-caching.md)
+- [ ] A. Browser cache on the user's device
+- [ ] B. CDN / edge cache near the user
+- [ ] C. Application cache (Redis or Memcached) near app servers
+- [ ] D. Source of truth in the database or origin API
 
 ---
 
-### Q08 [Easy] — DB Scaling Order
+### Q08 [Easy] — Database Showing Early Strain
+
 
 **Select all that apply.**
 
-Which scaling strategies should be applied progressively (before sharding)?
+Your PostgreSQL primary shows slow queries and connection errors under growth. Which scaling steps should be applied **before** jumping to sharding?
 
 - [ ] A. Optimize queries and add indexes
-- [ ] B. Add Redis caching to offload reads
-- [ ] C. Read replicas for read-heavy workloads
-- [ ] D. Shard immediately on day one
-
-**Answer:** A, B, C
-
-**Explanation:** The curriculum lists optimize → cache → replicas → vertical scale → pooling → sharding. Don't shard on day one (D).
-
-**Source:** [docs/day-05/06-db-scaling.md](../docs/day-05/06-db-scaling.md)
+- [ ] B. Add Redis to offload hot reads
+- [ ] C. Add read replicas for read-heavy workloads
+- [ ] D. Shard all tables immediately on day one
 
 ---
 
-### Q09 [Easy] — Queue Concepts
+### Q09 [Easy] — When a Queue Beats a Synchronous Call
+
 
 **Select all that apply.**
 
-Which are core queue concepts from Day 5?
+Which are core properties of a message queue in a web application?
 
-- [ ] A. Producer sends messages; consumer/worker processes them
-- [ ] B. Dead Letter Queue (DLQ) for repeatedly failed messages
-- [ ] C. Broker persists messages (survives crash)
-- [ ] D. Caller always waits synchronously for consumer to finish
-
-**Answer:** A, B, C
-
-**Explanation:** Producer, consumer, broker, DLQ are core concepts. Queues decouple — caller does not wait (D).
-
-**Source:** [docs/day-05/07-queue.md](../docs/day-05/07-queue.md)
+- [ ] A. Producer sends work; consumer processes asynchronously
+- [ ] B. Broker can persist messages through server restarts
+- [ ] C. Dead Letter Queue holds messages that fail repeatedly
+- [ ] D. Caller always blocks until the consumer finishes
 
 ---
 
-### Q10 [Easy] — Microservices Benefits
+### Q10 [Easy] — Microservices for a 200-Engineer Org
+
 
 **Select all that apply.**
 
-Which are listed benefits of microservices?
+A large product org splits checkout, catalog, and search into separate deployable services with separate databases. Which benefits are they seeking?
 
-- [ ] A. Independent scaling per service
-- [ ] B. Team ownership of a service end-to-end
-- [ ] C. Fault isolation — one service down ≠ entire site down
-- [ ] D. Lower operational complexity than a monolith
-
-**Answer:** A, B, C
-
-**Explanation:** Independent scaling, ownership, and fault isolation are benefits. Microservices increase operational complexity (D).
-
-**Source:** [docs/day-05/08-microservices-and-workers.md](../docs/day-05/08-microservices-and-workers.md)
+- [ ] A. Scale search independently of billing
+- [ ] B. Teams own services end-to-end
+- [ ] C. Fault isolation — payment outage does not necessarily take down browse
+- [ ] D. Lower operational complexity than a single monolith
 
 ---
 
-### Q11 [Medium] — DNS TTL Trade-offs
+### Q11 [Medium] [Case Study] — TTL Trap During Failover
+
+
+**Context:** FailoverCo points `app.failoverco.com` to a hot standby during primary datacenter failure. TTL was 3600s. Many users still hit the dead primary for 45 minutes after DNS was updated.
 
 **Select all that apply.**
 
-Which statements about DNS TTL are correct?
+Which TTL trade-offs explain the pain?
 
-- [ ] A. Low TTL (60s) → faster failover, more DNS queries
-- [ ] B. High TTL (3600s) → slower failover, fewer queries
-- [ ] C. DNS caching means failover is never instant
-- [ ] D. High TTL is best during infrastructure migration
-
-**Answer:** A, B, C
-
-**Explanation:** TTL trade-offs and caching delay are documented. Lower TTL *before* migration helps — high TTL during migration leaves users on old IPs longer (D).
-
-**Source:** [docs/day-05/01-dns.md](../docs/day-05/01-dns.md)
+- [ ] A. High TTL — fewer DNS queries but slower failover propagation
+- [ ] B. Low TTL — faster failover but more DNS query load
+- [ ] C. Cached DNS answers mean failover is never instant worldwide
+- [ ] D. High TTL is ideal during an emergency cutover
 
 ---
 
-### Q12 [Medium] — LB Algorithms
+### Q12 [Medium] — Picking a Load Balancing Algorithm
+
 
 **Select all that apply.**
 
-Which load balancing algorithms and use cases are correctly paired?
+Which algorithm pairings fit these production situations?
 
-- [ ] A. Round robin — equal-capacity servers
-- [ ] B. Least connections — long-lived connections
-- [ ] C. IP hash — session stickiness (same client → same server)
-- [ ] D. Weighted round robin — mixed server sizes
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four algorithm pairings match the load balancer lesson.
-
-**Source:** [docs/day-05/02-load-balancer.md](../docs/day-05/02-load-balancer.md)
+- [ ] A. Equal-capacity servers → round robin
+- [ ] B. Long-lived WebSocket connections → least connections
+- [ ] C. Session stickiness by client IP → IP hash
+- [ ] D. Mixed server sizes → weighted round robin
 
 ---
 
-### Q13 [Medium] — Reverse Proxy vs Load Balancer
+### Q13 [Medium] — Nginx as Reverse Proxy and Load Balancer
+
 
 **Select all that apply.**
 
-Which statements reflect the curriculum's comparison?
+Your team runs Nginx in front of four identical API servers with path-based routing and SSL termination. Which statements are accurate?
 
-- [ ] A. They overlap — Nginx and HAProxy often do both
-- [ ] B. Reverse proxy focus: represent backends, route, protect
-- [ ] C. Load balancer focus: distribute traffic evenly
-- [ ] D. They are completely unrelated technologies
-
-**Answer:** A, B, C
-
-**Explanation:** The lesson states they overlap heavily; reverse proxy emphasizes routing/protection, LB emphasizes distribution. They are related, not unrelated (D).
-
-**Source:** [docs/day-05/03-reverse-proxy.md](../docs/day-05/03-reverse-proxy.md)
+- [ ] A. Reverse proxy and load balancer roles often overlap in one tool
+- [ ] B. Reverse proxy focus — represent backends, route, protect
+- [ ] C. Load balancer focus — spread connections across healthy backends
+- [ ] D. They are completely unrelated — never combined
 
 ---
 
-### Q14 [Medium] — CDN vs Redis Cache
+### Q14 [Medium] — CDN vs Redis for Product Pages
+
 
 **Select all that apply.**
 
-Which distinctions between CDN and application cache (Redis) are correct?
+ShopExample caches product JSON in Redis and static JS on CloudFront. Which distinctions are correct?
 
-- [ ] A. CDN caches HTTP responses at edge, close to users geographically
-- [ ] B. Redis caches data in app memory, close to app servers
-- [ ] C. CDN best for static files; Redis for DB query results and sessions
-- [ ] D. Use only one — they are redundant
-
-**Answer:** A, B, C
-
-**Explanation:** CDN and Redis serve different layers and content types. The curriculum recommends using both (D).
-
-**Source:** [docs/day-05/04-cdn.md](../docs/day-05/04-cdn.md)
+- [ ] A. CDN caches HTTP responses at geographic edge nodes
+- [ ] B. Redis caches application data near app servers
+- [ ] C. CDN suits public static assets; Redis suits DB query results and sessions
+- [ ] D. Using both is redundant — pick only one
 
 ---
 
-### Q15 [Medium] — Cache Patterns
+### Q15 [Medium] — Cache Pattern for Write-Heavy Counters
+
 
 **Select all that apply.**
 
-Which cache pattern descriptions are accurate?
+Which cache pattern descriptions match real production use cases?
 
-- [ ] A. Cache-aside — app checks cache, on miss reads DB and populates
-- [ ] B. Write-through — write to cache and DB simultaneously
-- [ ] C. Write-behind — write to cache, async flush to DB (fast writes, some loss risk)
-- [ ] D. Read-through — app only talks to cache; cache loads on miss
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four patterns match the caching lesson.
-
-**Source:** [docs/day-05/05-caching.md](../docs/day-05/05-caching.md)
+- [ ] A. Cache-aside — app checks cache, on miss loads from DB
+- [ ] B. Write-through — write updates cache and DB together
+- [ ] C. Write-behind — write to cache, async flush to DB
+- [ ] D. Read-through — app talks only to cache; cache loads on miss
 
 ---
 
-### Q16 [Medium] — Read Replicas
+### Q16 [Medium] [Case Study] — Stale Prices on Read Replicas
+
+
+**Context:** DealMart serves product pages from PostgreSQL read replicas. After a flash sale price update on the primary, 8% of users still see the old price for up to 2 seconds. Finance accepts brief staleness on browse but not after a user completes checkout.
 
 **Select all that apply.**
 
-Which statements about read replicas are correct?
+Which read-replica behaviors and mitigations apply?
 
-- [ ] A. Primary handles writes; replicas handle reads
+- [ ] A. Primary handles writes; replicas serve most reads
 - [ ] B. Replication lag can cause briefly stale reads on replicas
-- [ ] C. Best when read:write ratio is 10:1 or higher
-- [ ] D. Replicas eliminate the single primary write bottleneck
-
-**Answer:** A, B, C
-
-**Explanation:** Primary/replica split, lag, and high read ratios are documented. Writes still go to one primary — replicas don't remove write bottleneck (D).
-
-**Source:** [docs/day-05/06-db-scaling.md](../docs/day-05/06-db-scaling.md)
+- [ ] C. Read-your-writes — route a user's reads to primary after their write
+- [ ] D. Replicas remove the single-primary write bottleneck entirely
 
 ---
 
-### Q17 [Medium] — Queue Types
+### Q17 [Medium] — Queue vs Pub/Sub vs Stream
+
 
 **Select all that apply.**
 
-Which message system models are described?
+Which message system models match these needs?
 
-- [ ] A. Point-to-point queue — one consumer per message (SQS, RabbitMQ queue mode)
-- [ ] B. Pub/sub — one message copied to many subscribers (Kafka topic, Google Pub/Sub)
-- [ ] C. Stream/log — ordered log, consumers read at own pace, replay possible (Kafka)
-- [ ] D. All three are identical with no practical differences
-
-**Answer:** A, B, C
-
-**Explanation:** Point-to-point, pub/sub, and stream models are distinct with different use cases. They are not identical (D).
-
-**Source:** [docs/day-05/07-queue.md](../docs/day-05/07-queue.md)
+- [ ] A. Background image resize jobs — point-to-point queue (SQS-style)
+- [ ] B. Order placed → email, inventory, analytics all react — pub/sub topic
+- [ ] C. Audit log replay and analytics — Kafka-style ordered stream
+- [ ] D. All three models are identical with no practical differences
 
 ---
 
-### Q18 [Medium] — When to Use a Queue
+### Q18 [Medium] — Should This Work Go on a Queue?
+
 
 **Select all that apply.**
 
-For which scenarios does the curriculum recommend using a queue?
+Your API team is deciding sync vs async processing. Which workloads should use a queue?
 
-- [ ] A. Send email after signup
-- [ ] B. Resize uploaded image in background
-- [ ] C. Read product list synchronously
-- [ ] D. Nightly report generation
-
-**Answer:** A, B, D
-
-**Explanation:** Email, image processing, and reports are async queue use cases. Product list reads should be synchronous with caching (C).
-
-**Source:** [docs/day-05/07-queue.md](../docs/day-05/07-queue.md)
+- [ ] A. Send welcome email after signup
+- [ ] B. Resize uploaded profile photo in background
+- [ ] C. Fetch product list for a product grid page
+- [ ] D. Generate nightly sales PDF report
 
 ---
 
-### Q19 [Medium] — Worker Types
+### Q19 [Medium] — Worker Types in a Production Stack
+
 
 **Select all that apply.**
 
-Which worker types are listed?
+Which background worker types appear in mature systems?
 
-- [ ] A. Queue worker — processes messages from queue
-- [ ] B. Cron / scheduled — time-based jobs (nightly backup)
+- [ ] A. Queue worker — processes messages as they arrive
+- [ ] B. Cron job — scheduled tasks like nightly backups
 - [ ] C. Event consumer — reacts to pub/sub events
-- [ ] D. Stream processor — Kafka consumer for real-time aggregation
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four worker types appear in the worker types table.
-
-**Source:** [docs/day-05/08-microservices-and-workers.md](../docs/day-05/08-microservices-and-workers.md)
+- [ ] D. Stream processor — aggregates Kafka events in real time
 
 ---
 
-### Q20 [Medium] — DNS vs Load Balancer
+### Q20 [Medium] [Case Study] — DNS Round-Robin vs ALB
+
+
+**Context:** StartupX returns three A records for `api.startupx.com` from DNS. During a server failure, clients still connect to the dead IP until TTL expires. The SRE team proposes a single A record pointing to an AWS ALB instead.
 
 **Select all that apply.**
 
-How does DNS round-robin compare to a dedicated load balancer?
+Which comparisons justify the change?
 
-- [ ] A. DNS round-robin — client picks IP from DNS; no health checks
-- [ ] B. Load balancer — actively distributes with health checks
-- [ ] C. DNS caching slows failover; LB fails over faster
-- [ ] D. Best practice: DNS points to LB IP; LB distributes to backends
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four points match the DNS round-robin vs load balancer comparison.
-
-**Source:** [docs/day-05/02-load-balancer.md](../docs/day-05/02-load-balancer.md)
+- [ ] A. DNS round-robin — client picks an IP; no active health checks
+- [ ] B. ALB — actively distributes only to healthy targets
+- [ ] C. DNS caching slows failover; ALB removes dead targets quickly
+- [ ] D. Best practice — DNS points to LB; LB distributes to backends
 
 ---
 
-### Q21 [Hard] — Sticky Sessions
+### Q21 [Hard] [Case Study] — Sticky Sessions During Server Loss
+
+
+**Context:** LegacyApp stores sessions in Tomcat memory and uses IP-hash stickiness on the load balancer. When one of four servers dies, users on that server lose sessions and checkout fails mid-flow.
 
 **Select all that apply.**
 
-When should you use or avoid sticky sessions (session affinity)?
+When should stickiness be used or avoided?
 
-- [ ] A. Use when server stores session in memory (legacy apps)
-- [ ] B. Avoid when stateless apps use JWT
-- [ ] C. Prefer stateless servers + shared session store (Redis) when possible
-- [ ] D. Always use sticky sessions for every production app
-
-**Answer:** A, B, C
-
-**Explanation:** Sticky sessions help legacy in-memory sessions; JWT/stateless apps don't need them. Shared session store is preferred over sticky when possible. Not always required (D).
-
-**Source:** [docs/day-05/02-load-balancer.md](../docs/day-05/02-load-balancer.md)
+- [ ] A. Use stickiness when legacy app stores session only in server memory
+- [ ] B. Avoid stickiness when apps are stateless with JWT or shared Redis sessions
+- [ ] C. Prefer externalized session store over stickiness when possible
+- [ ] D. Always enable stickiness for every production deployment
 
 ---
 
-### Q22 [Hard] — CDN Cache Control
+### Q22 [Hard] [Case Study] — Stale JavaScript After Deploy
+
+
+**Context:** DevTeam ships a new React bundle but users report broken checkout for hours. CloudFront serves `app.js` with a 1-year TTL. Filenames did not change between deploys.
 
 **Select all that apply.**
 
-Which CDN caching practices are recommended?
+Which CDN caching practices prevent this class of incident?
 
-- [ ] A. Version assets in filename (`app.v2.4.1.js`) to avoid stale JS after deploy
-- [ ] B. `Cache-Control: public, max-age=31536000` for versioned static assets
-- [ ] C. `Cache-Control: no-store` on personalized user dashboards
-- [ ] D. Purge cache or version filenames after deploy if TTL is long
-
-**Answer:** A, B, C, D
-
-**Explanation:** Versioned assets, long TTL for static versioned files, no-store for personalized data, and purge/version on deploy are all covered.
-
-**Source:** [docs/day-05/04-cdn.md](../docs/day-05/04-cdn.md)
+- [ ] A. Version assets in filenames (`app.v2.4.1.js` or content hash)
+- [ ] B. Long `Cache-Control` on versioned immutable assets
+- [ ] C. `Cache-Control: no-store` on personalized authenticated API responses
+- [ ] D. Purge CDN cache or change filenames after deploys with long TTL
 
 ---
 
-### Q23 [Hard] — Cache Problems
+### Q23 [Hard] [Case Study] — Cache Stampede on Viral Product
+
+
+**Context:** A celebrity tweet drives 50,000 req/s to one product page. Redis key `product:99999` expires. All requests miss cache simultaneously; PostgreSQL CPU hits 100% and the site returns 503s.
 
 **Select all that apply.**
 
-Which cache problems and fixes are listed?
+Which cache failure modes and fixes apply?
 
 - [ ] A. Cache stampede — lock so one request rebuilds; others wait
-- [ ] B. Cache penetration — cache empty/null results with short TTL
-- [ ] C. Stale data — invalidate on write or use short TTL
-- [ ] D. Cache avalanche — circuit breaker, fallback, Redis cluster
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four problems and fixes appear in the cache problems section.
-
-**Source:** [docs/day-05/05-caching.md](../docs/day-05/05-caching.md)
+- [ ] B. Cache penetration — cache null results for invalid IDs with short TTL
+- [ ] C. Stale data — invalidate or shorten TTL on price changes
+- [ ] D. Cache avalanche — Redis cluster, circuit breakers, and fallback paths
 
 ---
 
-### Q24 [Hard] — Sharding
+### Q24 [Hard] [Case Study] — Premature Sharding Proposal
+
+
+**Context:** DataTeam proposes sharding `users` by `country` on day one. US accounts are 85% of rows. PostgreSQL CPU is only at 55%; p95 query time is 40ms with proper indexes and Redis caching at 92% hit rate.
 
 **Select all that apply.**
 
-Which statements about database sharding are accurate?
+Which sharding statements and team responses are correct?
 
-- [ ] A. Splits data across multiple DBs by shard key (e.g., `user_id % 4`)
-- [ ] B. Good shard key: `user_id` (evenly distributed)
-- [ ] C. Bad shard key: `country` if one country has 80% of data
-- [ ] D. Avoid sharding until vertical scaling + replicas + caching aren't enough
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four reflect sharding guidance from DB scaling.
-
-**Source:** [docs/day-05/06-db-scaling.md](../docs/day-05/06-db-scaling.md)
+- [ ] A. Sharding splits data across DBs by a shard key (e.g., hash of `user_id`)
+- [ ] B. Bad shard key — `country` when one country dominates row count
+- [ ] C. Good shard key — evenly distributed identifier like `user_id`
+- [ ] D. Reject sharding now — indexes and caching have not been exhausted
 
 ---
 
-### Q25 [Hard] — Queue Idempotency and DLQ
+### Q25 [Hard] [Case Study] — Poison Messages in Order Email Queue
+
+
+**Context:** OrderConfirm queue depth grows. Logs show the same malformed message retrying forever — invalid email address blows up the worker. No DLQ exists. Valid orders stop getting confirmation emails.
 
 **Select all that apply.**
 
-Which queue design practices are emphasized?
+Which queue design practices prevent this outage class?
 
-- [ ] A. Include unique message ID for idempotency
-- [ ] B. Consumers may process same message twice — design idempotent handlers
-- [ ] C. After max retries, move poison messages to DLQ and alert
-- [ ] D. Never use DLQ — always retry forever
-
-**Answer:** A, B, C
-
-**Explanation:** Message IDs, idempotent consumers, and DLQ routing are best practices. Infinite retry without DLQ traps poison messages (D).
-
-**Source:** [docs/day-05/07-queue.md](../docs/day-05/07-queue.md)
+- [ ] A. Include unique message ID for idempotent processing
+- [ ] B. Design consumers to handle duplicate deliveries safely
+- [ ] C. After max retries, move poison messages to DLQ and alert on-call
+- [ ] D. Retry forever without DLQ to avoid losing any message
 
 ---
 
-### Q26 [Hard] — Microservices Boundaries
+### Q26 [Hard] [Case Study] — Splitting Payment from ShopMonolith
+
+
+**Context:** ShopMonolith has 30 engineers. Payment changes require full regression. The payment module needs weekly releases and different scaling from catalog. Leadership forbids a big-bang rewrite.
 
 **Select all that apply.**
 
-Which service boundary principles are correct?
+Which service boundary principles apply?
 
-- [ ] A. Split by business domain (User, Order, Payment) — not technical layer
-- [ ] B. Bad boundaries: Controller Service, Database Service
-- [ ] C. Start monolith; extract when you feel real pain
-- [ ] D. Extract 20 microservices overnight for any growing app
-
-**Answer:** A, B, C
-
-**Explanation:** Domain boundaries, anti-patterns, and "start monolith" are explicit. Don't split into many services overnight (D).
-
-**Source:** [docs/day-05/08-microservices-and-workers.md](../docs/day-05/08-microservices-and-workers.md)
+- [ ] A. Split by business domain — Payment, Order, Catalog — not by technical layer
+- [ ] B. Avoid boundaries like "Controller Service" or "Database Service"
+- [ ] C. Start monolith; extract when independent scale or deploy pain is real
+- [ ] D. Extract 20 microservices in one release to finish faster
 
 ---
 
-### Q27 [Hard] — Saga Pattern
+### Q27 [Hard] [Case Study] — Place Order Saga Failure
+
+
+**Context:** Order Service creates PENDING orders. Payment Service charges cards via external API. On payment timeout, orders must not stay charged without confirmation; on success, orders become CONFIRMED.
 
 **Select all that apply.**
 
-Which saga steps match the Place Order example?
+Which saga steps handle this distributed flow?
 
-- [ ] A. Order Service creates order (PENDING)
-- [ ] B. Payment Service charges card
+- [ ] A. Order Service creates order in PENDING state
+- [ ] B. Payment Service attempts charge
 - [ ] C. Payment success → Order marked CONFIRMED
-- [ ] D. Payment failure → Order marked CANCELLED; compensate if needed
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four steps appear in the saga pattern example for distributed transactions.
-
-**Source:** [docs/day-05/08-microservices-and-workers.md](../docs/day-05/08-microservices-and-workers.md)
+- [ ] D. Payment failure → Order CANCELLED; compensate (refund if needed)
 
 ---
 
-### Q28 [Hard] — Architecture Flow
+### Q28 [Hard] — Production Stack Data Flow
+
 
 **Select all that apply.**
 
-Which components appear in the Day 5 full-stack architecture flow?
+Which components appear in a fully scaled production web stack handling dynamic pages and static assets?
 
-- [ ] A. User → DNS → Load Balancer / Reverse Proxy
-- [ ] B. Web/API → Cache / Queue → Workers / DB
-- [ ] C. CDN serves static assets in parallel path
-- [ ] D. Browser connects directly to PostgreSQL without any proxy
-
-**Answer:** A, B, C
-
-**Explanation:** The Day 5 diagram shows DNS → LB/proxy → app → cache/queue/workers/DB, with CDN for static. DB is not browser-facing (D).
-
-**Source:** [docs/day-05/README.md](../docs/day-05/README.md)
+- [ ] A. DNS → load balancer / reverse proxy → web or API tier
+- [ ] B. App tier → Redis cache and message queue → background workers
+- [ ] C. CDN serves static assets in parallel to dynamic origin traffic
+- [ ] D. Browsers connect directly to PostgreSQL for product queries
 
 ---
 
-### Q29 [Hard] — Redis vs Memcached
+### Q29 [Hard] — Redis vs Memcached for Session Store
+
 
 **Select all that apply.**
 
-Which Redis vs Memcached comparisons are from the curriculum?
+Your platform team picks a cache engine for sessions and hot keys. Which comparisons are accurate?
 
-- [ ] A. Redis supports strings, lists, sets, hashes; Memcached strings only
-- [ ] B. Redis has optional persistence; Memcached is pure memory
-- [ ] C. Redis is the default choice for most new projects
-- [ ] D. Memcached supports pub/sub and clustering natively like Redis
-
-**Answer:** A, B, C
-
-**Explanation:** Redis data structures, persistence, and default recommendation are listed. Memcached lacks pub/sub; Redis has clustering (D is wrong).
-
-**Source:** [docs/day-05/05-caching.md](../docs/day-05/05-caching.md)
+- [ ] A. Redis supports strings, lists, sets, and hashes; Memcached is strings only
+- [ ] B. Redis offers optional persistence; Memcached is pure memory
+- [ ] C. Redis is the common default for new projects needing rich data structures
+- [ ] D. Memcached provides native pub/sub and persistence like Redis
 
 ---
 
-### Q30 [Hard] — Adoption Stages
+### Q30 [Hard] [Case Study] — Architecture Evolution at GrowthCo
+
+
+**Context:** GrowthCo is an MVP monolith with Redis and one PostgreSQL instance. Traffic 10× in a year. Read load dominates. Email and image processing lag the API. Leadership asks for a staged plan — not a day-one microservices rewrite.
 
 **Select all that apply.**
 
-Which architecture stages match the "When to Adopt What" table?
+Which adoption stages match a sensible evolution path?
 
-- [ ] A. MVP/startup → monolith + Redis + single DB
-- [ ] B. Growing → monolith + cache + read replicas + queue + workers
-- [ ] C. Scale → extract hot services + CDN + DB sharding
-- [ ] D. Large org → full microservices + event bus + worker fleets
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four stages appear in the adoption progression table.
-
-**Source:** [docs/day-05/08-microservices-and-workers.md](../docs/day-05/08-microservices-and-workers.md)
+- [ ] A. MVP — monolith + Redis + single database
+- [ ] B. Growth — add read replicas, CDN, queue, and workers
+- [ ] C. Scale — extract hot services, CDN tuning, DB sharding if needed
+- [ ] D. Large org — full microservices, event bus, worker fleets

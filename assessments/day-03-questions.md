@@ -1,193 +1,155 @@
-# Day 3 — MCQ Questions (10)
+# Parking Lot System (LLD) — MCQ Questions (10)
 
-Multi-select format: each question has **two or more** correct answers.
+Multi-select format: each question has **two or more** correct answers. Questions tagged **[Case Study]** include a business context block.
+
+> **Answers and explanations:** see [answer-key/day-03-answers.md](./answer-key/day-03-answers.md)
 
 ---
 
-### Q01 [Easy] — Parking Lot Entities
+### Q01 [Easy] — Modeling a Downtown Garage
+
 
 **Select all that apply.**
 
-Which entities and responsibilities are correct for the parking lot design?
+You are designing an object model for a single-floor parking garage where cars are identified by license plate and receive a ticket on entry. Which entity responsibilities are correct?
 
-- [ ] A. `ParkingLot` — owns spots; handles enter, exit, availability
-- [ ] B. `ParkingSpot` — tracks occupied or free state for one slot
+- [ ] A. `ParkingLot` — owns spots; orchestrates enter, exit, and availability
+- [ ] B. `ParkingSpot` — tracks whether one physical slot is free or occupied
 - [ ] C. `Car` — identified by license plate
-- [ ] D. `ParkingTicket` — frees the spot on exit (primary responsibility)
-
-**Answer:** A, B, C
-
-**Explanation:** Lot orchestrates; spot owns its state; car holds identity. The ticket records entry — the lot frees the spot on exit, not the ticket itself (D).
-
-**Source:** [docs/day-03/01-parking-lot-design.md](../docs/day-03/01-parking-lot-design.md)
+- [ ] D. `ParkingTicket` — responsible for freeing the spot when the car exits
 
 ---
 
-### Q02 [Easy] — Spot State Machine
+### Q02 [Easy] — Spot State Transitions
+
 
 **Select all that apply.**
 
-Which statements about the parking spot state machine are correct?
+Which state transitions are valid for a `ParkingSpot`?
 
-- [ ] A. Valid transition: FREE → OCCUPIED via `park()`
-- [ ] B. Valid transition: OCCUPIED → FREE via `vacate()`
-- [ ] C. Valid transition: OCCUPIED → FREE via `park()`
-- [ ] D. Invalid: `park()` when already occupied
-
-**Answer:** A, B, D
-
-**Explanation:** `park()` moves FREE to OCCUPIED; `vacate()` moves OCCUPIED to FREE. Calling `park()` when occupied is invalid (C is wrong, D is correct).
-
-**Source:** [docs/day-03/01-parking-lot-design.md](../docs/day-03/01-parking-lot-design.md)
+- [ ] A. FREE → OCCUPIED when `park(car)` is called on an empty spot
+- [ ] B. OCCUPIED → FREE when `vacate()` is called
+- [ ] C. OCCUPIED → FREE when `park()` is called again
+- [ ] D. Reject `park()` when the spot is already occupied
 
 ---
 
-### Q03 [Easy] — Out of Scope (v1)
+### Q03 [Easy] [Case Study] — MVP Scope for MetroGarage
+
+
+**Context:** MetroGarage wants a software system for one downtown lot: cars enter, get a ticket, exit, and operators see how many spots are free. Phase 2 might add trucks, payments, and multiple floors — but not in the first release.
 
 **Select all that apply.**
 
-Which items are explicitly **out of scope** for parking lot v1?
+Which capabilities should **not** be built in the MVP?
 
-- [ ] A. Payment and hourly billing
-- [ ] B. Cars entering and exiting with tickets
-- [ ] C. Motorcycles, trucks, handicapped spots
-- [ ] D. Multi-lot management
-
-**Answer:** A, C, D
-
-**Explanation:** Payment, multiple vehicle types, and multi-lot management are out of scope. Enter/exit with tickets is a core functional requirement (B).
-
-**Source:** [docs/day-03/01-parking-lot-design.md](../docs/day-03/01-parking-lot-design.md)
+- [ ] A. Hourly payment and billing on exit
+- [ ] B. Assigning a free spot and issuing a ticket on entry
+- [ ] C. Separate spot types for motorcycles and trucks
+- [ ] D. Managing multiple unrelated parking lots from one admin panel
 
 ---
 
-### Q04 [Medium] — Enter Operation Flow
+### Q04 [Medium] — Entry Flow Design
+
 
 **Select all that apply.**
 
-Which steps belong to the `enter(car)` flow?
+A driver arrives at the gate. The system must assign a spot and issue a ticket. Which steps belong in `enter(car)`?
 
-- [ ] A. Reject if car already has an active ticket
-- [ ] B. Find first available spot; reject if none (lot full)
-- [ ] C. Call `spot.park(car)` and create a `ParkingTicket`
-- [ ] D. Charge payment before issuing ticket
-
-**Answer:** A, B, C
-
-**Explanation:** Enter checks duplicate entry, finds a spot, parks the car, and issues a ticket. Payment is out of scope for v1 (D).
-
-**Source:** [docs/day-03/01-parking-lot-design.md](../docs/day-03/01-parking-lot-design.md)
+- [ ] A. Reject if the same license plate already has an active ticket
+- [ ] B. Find an available spot; reject with "lot full" if none exist
+- [ ] C. Call `spot.park(car)`, create a ticket, register it as active
+- [ ] D. Charge a flat fee before opening the gate
 
 ---
 
-### Q05 [Medium] — REST API Responses
+### Q05 [Medium] — REST API Contract for Gate Kiosks
+
 
 **Select all that apply.**
 
-Which HTTP status codes and error codes match the parking lot API design?
+Gate kiosks call your parking API. Which HTTP status and error code pairings are correct?
 
-- [ ] A. `POST /enter` → 201 Created on success
-- [ ] B. Lot full → 409 Conflict with `PARKING_FULL`
-- [ ] C. Duplicate entry → 409 Conflict with `ALREADY_PARKED`
-- [ ] D. Invalid ticket on exit → 404 Not Found with `INVALID_TICKET`
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four pairings match the API specification in the lesson.
-
-**Source:** [docs/day-03/01-parking-lot-design.md](../docs/day-03/01-parking-lot-design.md)
+- [ ] A. Successful entry → `201 Created` with ticket details
+- [ ] B. Lot full → `409 Conflict` with error `PARKING_FULL`
+- [ ] C. Same car enters twice → `409 Conflict` with error `ALREADY_PARKED`
+- [ ] D. Invalid ticket at exit → `404 Not Found` with error `INVALID_TICKET`
 
 ---
 
-### Q06 [Medium] — Responsibility Split
+### Q06 [Medium] — Single Responsibility in the Object Model
+
 
 **Select all that apply.**
 
-Which responsibility assignments follow the design's single-responsibility split?
+Which responsibility assignments follow good LLD separation?
 
-- [ ] A. `ParkingSpot` manages its own occupied/free state
-- [ ] B. `ParkingSpot` searches all spots for a free slot
-- [ ] C. `ParkingLot` orchestrates enter/exit and ticket registry
-- [ ] D. `ParkingLot` stores payment logic
-
-**Answer:** A, C
-
-**Explanation:** Spots manage their own state; the lot orchestrates and searches. Spot does not search (B); payment is out of scope for lot (D).
-
-**Source:** [docs/day-03/01-parking-lot-design.md](../docs/day-03/01-parking-lot-design.md)
+- [ ] A. `ParkingSpot` updates its own occupied/free flag
+- [ ] B. `ParkingSpot` searches all spots to find the next free one
+- [ ] C. `ParkingLot` finds a free spot and coordinates enter/exit
+- [ ] D. `ParkingLot` calculates hourly payment on exit
 
 ---
 
-### Q07 [Medium] — Edge Cases
+### Q07 [Medium] [Case Study] — Production Bug: Double Booking
+
+
+**Context:** After a busy Saturday, operators report two cars assigned to spot #14. Logs show two `enter()` calls 200ms apart for different plates when only one spot was free. The MVP runs single-process in memory with no locking.
 
 **Select all that apply.**
 
-Which edge-case behaviors are specified in the design?
+Which edge cases and fixes address this class of bug?
 
-- [ ] A. Same car tries to enter twice → `ALREADY_PARKED`
-- [ ] B. Exit twice with same ticket → second exit fails (ticket already removed)
-- [ ] C. Invalid ticket on exit → `INVALID_TICKET`
-- [ ] D. Zero spots configured → enter always succeeds
-
-**Answer:** A, B, C
-
-**Explanation:** Duplicate entry, double exit, and invalid ticket are documented edge cases. Zero spots means enter always fails (D).
-
-**Source:** [docs/day-03/01-parking-lot-design.md](../docs/day-03/01-parking-lot-design.md)
+- [ ] A. Same car entering twice → reject with `ALREADY_PARKED`
+- [ ] B. Two concurrent enters racing for the last spot → need per-spot lock or DB transaction in production
+- [ ] C. Exit twice with the same ticket → second exit fails; ticket already removed
+- [ ] D. Zero spots configured → enter should always succeed
 
 ---
 
-### Q08 [Hard] — NFR and Correctness
+### Q08 [Hard] [Case Study] — INVALID_TICKET Spike at Exit Lanes
+
+
+**Context:** Exit kiosks report a spike in `INVALID_TICKET` errors. Investigation shows drivers scanning paper tickets faded by sun, while the database still has active sessions. Some drivers try to exit twice after a successful first exit.
 
 **Select all that apply.**
 
-Which non-functional requirements apply to the parking lot v1 design?
+Which behaviors should the exit flow enforce?
 
-- [ ] A. Never assign two cars to the same spot
-- [ ] B. Instant response for in-memory single lot
-- [ ] C. Easy to extend for floors, vehicle types, payment
-- [ ] D. Must support 10,000 concurrent entry races in v1
-
-**Answer:** A, B, C
-
-**Explanation:** Correctness (no double assignment), instant in-memory response, and extensibility are stated NFRs. Concurrency/races are explicitly deferred — single-process for v1 (D).
-
-**Source:** [docs/day-03/01-parking-lot-design.md](../docs/day-03/01-parking-lot-design.md)
+- [ ] A. Reject unknown ticket IDs with `INVALID_TICKET`
+- [ ] B. On successful exit, remove ticket from active registry so a second scan fails
+- [ ] C. Never assign two cars to the same spot (correctness NFR)
+- [ ] D. Support 10,000 concurrent entry races in the in-memory MVP without any locking
 
 ---
 
-### Q09 [Hard] — Design Extensions
+### Q09 [Hard] [Case Study] — Phase 2: Trucks and Paid Exits
+
+
+**Context:** MetroGarage phase 2 adds large spots for trucks, compact spots for motorcycles, and payment on exit based on `entry_time`. The garage remains single-floor but must match vehicle type to compatible spots.
 
 **Select all that apply.**
 
-Which extension approaches are suggested in the curriculum?
+Which design extensions are appropriate?
 
-- [ ] A. Multiple vehicle types → `SpotType` enum; match car to compatible spot
-- [ ] B. Concurrency → DB transaction or lock per spot; optimistic locking on `is_occupied`
-- [ ] C. Multiple floors → `ParkingFloor` contains spots; search floor by floor
-- [ ] D. Payment → compute duration × rate from `entry_time` on exit
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four extensions appear in the extensions table with design changes.
-
-**Source:** [docs/day-03/01-parking-lot-design.md](../docs/day-03/01-parking-lot-design.md)
+- [ ] A. `SpotType` enum (compact, regular, large) matched to vehicle type
+- [ ] B. On exit, compute fee from duration × rate using ticket `entry_time`
+- [ ] C. `ParkingFloor` entity for multi-floor search — required immediately
+- [ ] D. Optimistic locking on `is_occupied` when moving to a persisted database
 
 ---
 
-### Q10 [Hard] — Requirements Clarification
+### Q10 [Hard] [Case Study] — Clarifying a Vague Product Brief
+
+
+**Context:** The product owner says: "Build a parking lot system." Before coding, you run a requirements workshop. You agree on: one lot, one floor, cars only, license plate identification, ticket on entry, in-memory storage for v1.
 
 **Select all that apply.**
 
-Which assumptions were made when clarifying the minimal requirements?
+Which assumptions correctly bound the v1 design?
 
 - [ ] A. One parking lot, single floor, cars only
-- [ ] B. Ticket issued on entry with spot and entry time
-- [ ] C. License plate identifies the car
-- [ ] D. Multi-lot registry with payment integration in v1
-
-**Answer:** A, B, C
-
-**Explanation:** Single lot, single floor, cars only, ticket on entry, and license plate ID are v1 assumptions. Multi-lot and payment are out of scope (D).
-
-**Source:** [docs/day-03/01-parking-lot-design.md](../docs/day-03/01-parking-lot-design.md)
+- [ ] B. Ticket issued on entry linking car, spot, and entry time
+- [ ] C. License plate identifies the vehicle
+- [ ] D. Multi-lot registry with payment gateway integration in v1
