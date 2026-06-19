@@ -1,34 +1,131 @@
-# Validation Report — Days 1–5 MCQ Bank
+# Validation Report — Days 1–9 MCQ Bank
 
-**Last revalidation:** 2026-06-18  
-**Questions reviewed:** 100  
-**Answer keys reviewed:** 100  
+**Last validation:** 2026-06-18  
+**Questions reviewed:** 220  
+**Answer keys reviewed:** 220  
 **Location:** [assessments/](./) — questions in root; answers in [answer-key/](./answer-key/)
 
 ---
 
-## Revalidation Summary
+## Summary
 
 | Check | Result | Details |
 |-------|--------|---------|
-| Question count | **PASS** | 18 + 28 + 10 + 14 + 30 = 100 |
-| Answer key count | **PASS** | 100 entries — 1:1 with questions |
-| Q ↔ A ID/title match | **PASS** | All Q01–Qxx titles and difficulty tags align |
-| Answer letters valid | **PASS** | Every letter in each answer exists in that question's options |
-| Multi-select rule (≥2 correct) | **PASS** | 100/100 have 2–4 correct options |
-| Explanations present | **PASS** | 100/100 answer-key entries include **Explanation** |
+| Question count | **PASS** | 100 (Days 1–5) + 120 (Days 6–9) = **220** |
+| Answer key count | **PASS** | 220 entries — 1:1 with questions |
+| Q ↔ A ID/title/difficulty match | **PASS** | All Q01–Qxx align across 9 files |
+| Answer letters valid | **PASS** | Every letter exists in that question's options |
+| Multi-select rule (≥2 correct) | **PASS** | 220/220 have 2–4 correct options |
+| Explanations present | **PASS** | 220/220 answer-key entries include **Explanation** |
 | Answers separated from questions | **PASS** | 0 `**Answer:**` / `**Explanation:**` in question files |
-| Answer-key links in question files | **PASS** | All 5 question files link to matching answer-key file |
+| Answer-key links in question files | **PASS** | All 9 question files link to matching answer-key file |
 | Banned meta phrases | **PASS** | 0 matches (curriculum, Day N, Source:, listed in, etc.) |
-| Case studies (≥40) | **PASS** | 40 tagged `[Case Study]` with **Context** blocks |
-| Difficulty split | **PASS** | Easy 33 / Medium 35 / Hard 32 |
-| Per-file question counts | **PASS** | 18 / 28 / 10 / 14 / 30 |
+| Case studies | **PASS** | 96 tagged `[Case Study]` with **Context** blocks (≥48 in Days 6–9 batch) |
+| Days 6–9 per-file count | **PASS** | 30 / 30 / 30 / 30 |
+| Duplicate stems | **PASS** | 0 duplicate `**Select all that apply.**` in new files |
 
 **Overall status: PASS — ready for exam practice**
 
 ---
 
-## Fixes Applied During Revalidation
+## Per-File Breakdown
+
+| Questions | Answer key | Count | Case studies | Easy | Medium | Hard |
+|-----------|------------|-------|--------------|------|--------|------|
+| [day-01-questions.md](./day-01-questions.md) | [answer-key/day-01-answers.md](./answer-key/day-01-answers.md) | 18 | 7 | 6 | 6 | 6 |
+| [day-02-questions.md](./day-02-questions.md) | [answer-key/day-02-answers.md](./answer-key/day-02-answers.md) | 28 | 8 | 9 | 10 | 9 |
+| [day-03-questions.md](./day-03-questions.md) | [answer-key/day-03-answers.md](./answer-key/day-03-answers.md) | 10 | 5 | 3 | 4 | 3 |
+| [day-04-questions.md](./day-04-questions.md) | [answer-key/day-04-answers.md](./answer-key/day-04-answers.md) | 14 | 5 | 5 | 5 | 4 |
+| [day-05-questions.md](./day-05-questions.md) | [answer-key/day-05-answers.md](./answer-key/day-05-answers.md) | 30 | 15 | 10 | 10 | 10 |
+| [day-06-questions.md](./day-06-questions.md) | [answer-key/day-06-answers.md](./answer-key/day-06-answers.md) | 30 | 13 | 9 | 12 | 9 |
+| [day-07-questions.md](./day-07-questions.md) | [answer-key/day-07-answers.md](./answer-key/day-07-answers.md) | 30 | 14 | 9 | 13 | 8 |
+| [day-08-questions.md](./day-08-questions.md) | [answer-key/day-08-answers.md](./answer-key/day-08-answers.md) | 30 | 14 | 9 | 13 | 8 |
+| [day-09-questions.md](./day-09-questions.md) | [answer-key/day-09-answers.md](./answer-key/day-09-answers.md) | 30 | 15 | 9 | 13 | 8 |
+| **Total** | | **220** | **96** | **69** | **86** | **65** |
+
+---
+
+## Days 6–9 Generation Notes
+
+| File | Arc company | Themes covered |
+|------|-------------|----------------|
+| day-06 | **LedgerFlow** | Pages/buffer pool, indexes, ACID, N+1, pooling, replication lag, sharding |
+| day-07 | **RetailHub** | Cache-aside, write-through/back, invalidation, stampede, avalanche, Redis HA |
+| day-08 | **EventPipe** | Async upload, pub/sub fan-out, at-least-once, partitions, DLQ, outbox, saga |
+| day-09 | **UptimeCorp** | Cascading failure, timeouts, retries, circuit breaker, bulkhead, SLO, DR |
+
+Days 6–9 difficulty targets ~10/10/10 per file; actual ~9/13/8 — acceptable spread with emphasis on medium scenario questions.
+
+---
+
+## Topic Coverage Matrix (Days 6–9)
+
+### Database Internals (day-06)
+
+| Topic | Question IDs |
+|-------|--------------|
+| Storage / WAL / pages | Q01, Q21, Q25 |
+| Keys / normalization | Q02, Q03, Q26, Q29 |
+| Indexes / planner | Q04, Q07, Q23, Q24 |
+| Joins | Q05, Q06 |
+| Transactions / isolation | Q09, Q10, Q19 |
+| ORM / N+1 | Q11, Q12, Q27 |
+| Connection pooling | Q13, Q14 |
+| Replication | Q15, Q16 |
+| Sharding | Q17, Q18, Q28, Q30 |
+| Sagas / distributed tx | Q20 |
+| Analytics / OLTP split | Q22 |
+
+### Caching Deep Dive (day-07)
+
+| Topic | Question IDs |
+|-------|--------------|
+| Why / what / where | Q01, Q02, Q19 |
+| Static / session / keys | Q03, Q05, Q06 |
+| Cache-aside | Q07, Q08 |
+| Write-through / write-back | Q09, Q10, Q21 |
+| Invalidation / TTL | Q11, Q12, Q29 |
+| Stampede / penetration / avalanche | Q13, Q14, Q15 |
+| Distributed Redis / hot keys | Q16, Q17, Q28 |
+| Read-through / refresh-ahead / warming | Q18, Q24, Q25 |
+| HTTP cache headers | Q23 |
+| Monitoring / circuit breaker | Q27, Q30 |
+
+### Message Queues Deep Dive (day-08)
+
+| Topic | Question IDs |
+|-------|--------------|
+| Why queues / components | Q01, Q02, Q20, Q27 |
+| Sync vs async / hybrid | Q03, Q19 |
+| Queue vs pub/sub vs stream | Q04, Q05, Q29 |
+| Broker / partitions | Q06, Q11, Q12, Q13 |
+| Message design | Q07, Q08 |
+| Delivery guarantees / idempotency | Q09, Q10, Q25, Q26 |
+| Retry / DLQ / backoff | Q14, Q15, Q16 |
+| Outbox / saga / CDC | Q17, Q18, Q28 |
+| SQS / Kafka / fan-out | Q21, Q22, Q23, Q24 |
+| Delay queues | Q30 |
+
+### Reliability & Fault Tolerance (day-09)
+
+| Topic | Question IDs |
+|-------|--------------|
+| Why reliability / metrics | Q01, Q02, Q03, Q04, Q27 |
+| SPOF / serial dependencies | Q05, Q06 |
+| HA / redundancy | Q07, Q08 |
+| Timeouts | Q09, Q10 |
+| Retries / idempotency | Q11, Q12 |
+| Circuit breaker | Q13, Q14 |
+| Bulkhead | Q15, Q16 |
+| Graceful degradation / load shed | Q17, Q18, Q28 |
+| DR / failover / split-brain | Q19, Q20 |
+| SLI / SLO / error budget | Q21, Q22 |
+| Safe deploy / chaos / game day | Q23, Q25, Q30 |
+| Defense in depth | Q24, Q26, Q29 |
+
+---
+
+## Prior Fixes (Days 1–5)
 
 | Item | Action |
 |------|--------|
@@ -37,132 +134,31 @@
 
 ---
 
-## Structural Validation
-
-### Question files (`day-XX-questions.md`)
-
-Each file contains:
-
-- Topic header and link to matching answer key
-- Question stems, optional **Context** for case studies
-- Four options (A–D) per question
-- No answers or explanations
-
-### Answer key files (`answer-key/day-XX-answers.md`)
-
-Each file contains:
-
-- Matching question ID and title
-- **Answer:** with comma-separated letters
-- **Explanation:** with rationale for correct options and distractors
-
-### Cross-file pairing
-
-| Questions | Answer key | Count | Case studies |
-|-----------|------------|-------|--------------|
-| [day-01-questions.md](./day-01-questions.md) | [answer-key/day-01-answers.md](./answer-key/day-01-answers.md) | 18 | 8 |
-| [day-02-questions.md](./day-02-questions.md) | [answer-key/day-02-answers.md](./answer-key/day-02-answers.md) | 28 | 9 |
-| [day-03-questions.md](./day-03-questions.md) | [answer-key/day-03-answers.md](./answer-key/day-03-answers.md) | 10 | 6 |
-| [day-04-questions.md](./day-04-questions.md) | [answer-key/day-04-answers.md](./answer-key/day-04-answers.md) | 14 | 6 |
-| [day-05-questions.md](./day-05-questions.md) | [answer-key/day-05-answers.md](./answer-key/day-05-answers.md) | 30 | 16 |
-| **Total** | | **100** | **40** |
-
----
-
-## Difficulty Distribution
-
-| File | Easy | Medium | Hard | Total |
-|------|------|--------|------|-------|
-| day-01 | 6 | 6 | 6 | 18 |
-| day-02 | 9 | 10 | 9 | 28 |
-| day-03 | 3 | 4 | 3 | 10 |
-| day-04 | 5 | 5 | 4 | 14 |
-| day-05 | 10 | 10 | 10 | 30 |
-| **Total** | **33** | **35** | **32** | **100** |
-
----
-
-## Content Quality Notes
-
-| Note | Severity | Status |
-|------|----------|--------|
-| Real-world / case-study framing (no course meta) | Info | Verified |
-| day-02 has 9 case studies (original target was 10 per file plan) | Advisory | Acceptable — total 40 meets bank target |
-| Answer letter distribution balanced across A–D | Info | No single-letter answers |
-| Spot-check: LinkShare arc (day-01 Q12–16), ShopExample (day-04), infra cases (day-05) | Info | Answers consistent with topic facts |
-
----
-
-## Topic Coverage Matrix
-
-### Foundations & URL Shortener (day-01)
-
-| Topic | Question IDs |
-|-------|--------------|
-| Why design / scaling symptoms | Q01, Q02 |
-| NFRs, building blocks, process | Q03, Q04, Q05 |
-| Architecture styles | Q06, Q07, Q08 |
-| When to design / skip / decision gate | Q09, Q10, Q11 |
-| LinkShare URL shortener arc | Q12, Q13, Q14, Q15, Q16 |
-| HLD/LLD/detailed + data patterns | Q17, Q18 |
-
-### Design Disciplines (day-02)
-
-| Topic | Question IDs |
-|-------|--------------|
-| Disciplines overview | Q01, Q02, Q10 |
-| HLD / LLD | Q03, Q04, Q11, Q12 |
-| Capacity / scalability | Q05, Q06, Q13, Q14, Q25 |
-| Reliability | Q07, Q15, Q24 |
-| Security / STRIDE | Q08, Q16, Q28 |
-| Data / CAP | Q09, Q17, Q26 |
-| API / performance / cache | Q18, Q19, Q20 |
-| Observability / SLO | Q21, Q22 |
-| Refactor | Q23, Q27 |
-
-### Parking Lot LLD (day-03)
-
-| Topic | Question IDs |
-|-------|--------------|
-| Entities / state machine | Q01, Q02, Q06 |
-| MVP scope | Q03, Q10 |
-| Enter/exit / API | Q04, Q05 |
-| Edge cases / concurrency | Q07, Q08 |
-| Extensions | Q09 |
-
-### Website Request Lifecycle (day-04)
-
-| Topic | Question IDs |
-|-------|--------------|
-| Request path order | Q01, Q11 |
-| Browser cache / DNS / TCP / TLS | Q02, Q03, Q04, Q05 |
-| LB / backend cache-aside | Q06, Q07 |
-| Response / rendering | Q08, Q09, Q10 |
-| Failures / timings / full stack | Q12, Q13, Q14 |
-
-### Infrastructure Components (day-05)
-
-| Topic | Question IDs |
-|-------|--------------|
-| DNS | Q01, Q02, Q11, Q20 |
-| Load balancer | Q03, Q04, Q12, Q21 |
-| Reverse proxy | Q05, Q13 |
-| CDN | Q06, Q14, Q22 |
-| Caching | Q07, Q15, Q23, Q29 |
-| DB scaling | Q08, Q16, Q24 |
-| Queue | Q09, Q17, Q18, Q25 |
-| Microservices / workers / saga | Q10, Q19, Q26, Q27, Q30 |
-| Full stack flow | Q28 |
-
----
-
 ## How to Re-run Validation
 
 From `assessments/`:
 
-1. Confirm 100 questions and 100 answer entries (grep `^### Q` in each file).
+```bash
+node -e "
+const fs=require('fs');
+const days=['01','02','03','04','05','06','07','08','09'];
+let n=0, issues=[];
+for(const d of days){
+  const q=fs.readFileSync('day-'+d+'-questions.md','utf8');
+  const a=fs.readFileSync('answer-key/day-'+d+'-answers.md','utf8');
+  const qc=(q.match(/^### Q\\d+/gm)||[]).length;
+  const ac=(a.match(/^### Q\\d+/gm)||[]).length;
+  n+=qc;
+  if(qc!==ac) issues.push('count '+d);
+  if(/\\*\\*Answer:\\*\\*/.test(q)) issues.push('leak '+d);
+}
+console.log('Total:',n, issues.length?issues:'PASS');
+"
+```
+
+1. Confirm 220 questions and 220 answer entries.
 2. Confirm no `**Answer:**` in `day-*-questions.md`.
-3. Confirm 100 `**Explanation:**` in `answer-key/day-*-answers.md`.
-4. Spot-check a sample of Q/A pairs for logical consistency.
+3. Confirm 220 `**Explanation:**` in answer-key files.
+4. Spot-check Q/A pairs against `docs/day-XX/` lesson content.
 
 **Status: Validated and ready for study.**

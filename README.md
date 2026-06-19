@@ -6,6 +6,8 @@ A day-by-day guide to understanding and practicing system design — from fundam
 
 Each day is published under `docs/day-XX/`. Every day folder contains focused topics you can read in order or jump to individually.
 
+**Practice questions:** 220 multi-select MCQs with separate answer keys in [assessments/](./assessments/) (Days 1–9 topics).
+
 ## Index
 
 | Day | Topics | Folder |
