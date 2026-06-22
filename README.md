@@ -21,6 +21,7 @@ Each day is published under `docs/day-XX/`. Every day folder contains focused to
 | 7 | Caching Deep Dive (Patterns, Invalidation, TTL, Redis, Cache Problems) | [docs/day-07](./docs/day-07/) |
 | 8 | Message Queues Deep Dive (Models, Guarantees, Patterns, Kafka, SQS) | [docs/day-08](./docs/day-08/) |
 | 9 | Reliability & Fault Tolerance (Circuit Breaker, HA, SLO, DR) | [docs/day-09](./docs/day-09/) |
+| 10 | API Gateway & Service Discovery (Routing, Auth, Mesh) | [docs/day-10](./docs/day-10/) |
 
 ## Structure
 
@@ -121,4 +122,18 @@ system-design/
         ├── 10-failover-and-disaster-recovery.md
         ├── 11-sli-slo-and-sla.md
         └── 12-designing-for-failure.md
+    └── day-10/
+        ├── README.md
+        ├── 01-monolith-vs-microservices.md
+        ├── 02-service-to-service-communication.md
+        ├── 03-why-api-gateway.md
+        ├── 04-api-gateway-responsibilities.md
+        ├── 05-routing-and-load-balancing.md
+        ├── 06-authentication-and-authorization.md
+        ├── 07-rate-limiting-at-gateway.md
+        ├── 08-service-discovery.md
+        ├── 09-client-side-vs-server-side-discovery.md
+        ├── 10-health-checks.md
+        ├── 11-service-mesh-introduction.md
+        └── 12-real-world-flow.md
 ```
