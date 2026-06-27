@@ -4,12 +4,9 @@ Multi-select format: each question has **two or more** correct answers. Question
 
 > **Answers and explanations:** see [answer-key/day-09-answers.md](./answer-key/day-09-answers.md)
 
-
 ---
 
 ### Q01 [Easy] [Case Study] — UptimeCorp Checkout Outage
-
-
 
 **Context:** UptimeCorp's payment API slows to 30 seconds. Order service threads block waiting. The entire site returns 503 even though product catalog and cart APIs are healthy.
 
@@ -24,9 +21,9 @@ What reliability principle was violated?
 
 ---
 
+
+
 ### Q02 [Easy] — Reliability vs Performance vs Scalability
-
-
 
 **Select all that apply.**
 
@@ -39,9 +36,9 @@ Which distinctions are correct?
 
 ---
 
+
+
 ### Q03 [Easy] [Case Study] — UptimeCorp SLA Math
-
-
 
 **Context:** UptimeCorp promises customers 99.9% availability in the SLA. Engineering targets 99.95% internally.
 
@@ -56,9 +53,9 @@ Which metric relationships are correct?
 
 ---
 
+
+
 ### Q04 [Easy] — RPO vs RTO
-
-
 
 **Select all that apply.**
 
@@ -71,9 +68,9 @@ UptimeCorp defines disaster recovery targets after regional failure.
 
 ---
 
+
+
 ### Q05 [Easy] [Case Study] — UptimeCorp SPOF Audit
-
-
 
 **Context:** UptimeCorp runs one load balancer, one PostgreSQL primary (no replica), one Redis node, and DNS with no secondary provider.
 
@@ -88,9 +85,9 @@ Which are single points of failure (SPOF)?
 
 ---
 
+
+
 ### Q06 [Easy] — Serial Dependency Availability
-
-
 
 **Select all that apply.**
 
@@ -103,9 +100,9 @@ Checkout calls Auth (99.9%) → Inventory (99.9%) → Payment (99.9%) synchronou
 
 ---
 
+
+
 ### Q07 [Medium] [Case Study] — UptimeCorp Multi-AZ Deploy
-
-
 
 **Context:** UptimeCorp runs three API instances across two availability zones behind an ALB with deep health checks (DB + Redis reachable).
 
@@ -120,24 +117,24 @@ Which HA practices apply?
 
 ---
 
+
+
 ### Q08 [Medium] — Active-Active vs Active-Passive
-
-
 
 **Select all that apply.**
 
 Which statements compare redundancy models?
 
-- [ ] A. Active-active — all nodes serve traffic simultaneously
+- [ ] A. Active-active — all nodes serve traffic simultaneouslyA
 - [ ] B. Active-passive — standby idle until failover promotion
 - [ ] C. Active-passive failover is always instant with zero promotion delay
 - [ ] D. N+1 redundancy — one extra instance covers failure during rolling deploy
 
 ---
 
+
+
 ### Q09 [Medium] [Case Study] — UptimeCorp Hung Payment Call
-
-
 
 **Context:** UptimeCorp order service calls payment API with no timeout. Payment hangs indefinitely. 200 threads block; new checkout requests queue until timeout at the gateway.
 
@@ -152,9 +149,9 @@ What should UptimeCorp implement first?
 
 ---
 
+
+
 ### Q10 [Medium] — Timeout Budget
-
-
 
 **Select all that apply.**
 
@@ -167,9 +164,9 @@ User-facing checkout SLA is 5 seconds total. Order service calls three dependenc
 
 ---
 
+
+
 ### Q11 [Medium] [Case Study] — UptimeCorp Retry Storm
-
-
 
 **Context:** Payment API returns 503 for 30 seconds. 5,000 clients retry simultaneously every second with no backoff. Payment receives 5× normal load and stays down longer.
 
@@ -184,9 +181,9 @@ What fixes apply?
 
 ---
 
+
+
 ### Q12 [Medium] — Idempotent Retries
-
-
 
 **Select all that apply.**
 
@@ -199,9 +196,9 @@ UptimeCorp retries `POST /transfer` on timeout.
 
 ---
 
+
+
 ### Q13 [Medium] [Case Study] — UptimeCorp Circuit Opens
-
-
 
 **Context:** Payment API fails 8 times in 10 seconds. UptimeCorp's circuit breaker opens — checkout returns immediate fallback error instead of waiting 30 s per request.
 
@@ -216,9 +213,9 @@ Which circuit breaker facts are correct?
 
 ---
 
+
+
 ### Q14 [Medium] — Circuit Breaker vs Retries
-
-
 
 **Select all that apply.**
 
@@ -231,9 +228,9 @@ How do retries and circuit breakers work together?
 
 ---
 
+
+
 ### Q15 [Hard] [Case Study] — UptimeCorp Bulkhead Saves Browse
-
-
 
 **Context:** Payment processing uses a dedicated thread pool (20 threads). Recommendations use a separate pool (30 threads). Payment slows but product browse and cart remain responsive.
 
@@ -248,9 +245,9 @@ What pattern is this?
 
 ---
 
+
+
 ### Q16 [Hard] — Bulkhead Types
-
-
 
 **Select all that apply.**
 
@@ -263,9 +260,9 @@ Which are bulkhead implementations?
 
 ---
 
+
+
 ### Q17 [Hard] [Case Study] — UptimeCorp Graceful Degradation
-
-
 
 **Context:** Recommendations service is down. UptimeCorp product pages load without "You may also like" section. Checkout and cart work normally.
 
@@ -280,9 +277,9 @@ Which degradation principles apply?
 
 ---
 
+
+
 ### Q18 [Hard] — Load Shedding Priority
-
-
 
 **Select all that apply.**
 
@@ -295,9 +292,9 @@ UptimeCorp must drop traffic under extreme overload.
 
 ---
 
+
+
 ### Q19 [Easy] [Case Study] — UptimeCorp Regional Failover Drill
-
-
 
 **Context:** Primary region fails. Route 53 shifts traffic to secondary region. RTO target is 15 minutes; last quarter drill measured 22 minutes due to untested runbook steps.
 
@@ -312,9 +309,9 @@ What DR practices improve outcomes?
 
 ---
 
+
+
 ### Q20 [Easy] — Split-Brain Prevention
-
-
 
 **Select all that apply.**
 
@@ -327,9 +324,9 @@ During DB failover, two nodes briefly believe they are primary and accept writes
 
 ---
 
+
+
 ### Q21 [Medium] [Case Study] — UptimeCorp Error Budget Burn
-
-
 
 **Context:** UptimeCorp SLO is 99.95% availability (0.05% error budget ≈ 22 min/month). A bad deploy burns 12% of the monthly budget in one hour. Pager fires on fast burn rate.
 
@@ -344,9 +341,9 @@ Which SLO/error budget practices apply?
 
 ---
 
+
+
 ### Q22 [Medium] — SLI Selection
-
-
 
 **Select all that apply.**
 
@@ -359,9 +356,9 @@ Which are valid SLIs for UptimeCorp checkout?
 
 ---
 
+
+
 ### Q23 [Medium] [Case Study] — UptimeCorp Canary Deploy
-
-
 
 **Context:** UptimeCorp deploys new order service to 5% of traffic, monitors checkout SLI for 10 minutes, then rolls to 100%. SLI drops 0.3% during canary — pipeline auto-rolls back.
 
@@ -376,9 +373,9 @@ Which safe deploy practices apply?
 
 ---
 
+
+
 ### Q24 [Medium] — Defense in Depth Stack
-
-
 
 **Select all that apply.**
 
@@ -391,9 +388,9 @@ UptimeCorp layers reliability patterns on the payment path.
 
 ---
 
+
+
 ### Q25 [Hard] [Case Study] — UptimeCorp Chaos Experiment
-
-
 
 **Context:** SRE kills one AZ instance during business hours. Hypothesis: "Checkout SLI stays above 99.9%." SLI drops to 98% — sessions were in pod memory.
 
@@ -408,9 +405,9 @@ What chaos engineering practices apply?
 
 ---
 
+
+
 ### Q26 [Hard] — Partial vs Total Failure
-
-
 
 **Select all that apply.**
 
@@ -423,9 +420,9 @@ Which statements about failure modes are correct?
 
 ---
 
+
+
 ### Q27 [Easy] — MTBF and MTTR
-
-
 
 **Select all that apply.**
 
@@ -438,9 +435,9 @@ Availability relates to MTBF and MTTR.
 
 ---
 
+
+
 ### Q28 [Medium] [Case Study] — UptimeCorp Read-Only Mode
-
-
 
 **Context:** Primary DB fails over to replica with 45-second lag. UptimeCorp enables read-only mode: browse works, checkout disabled with clear banner.
 
@@ -455,9 +452,9 @@ What degradation strategy is this?
 
 ---
 
+
+
 ### Q29 [Hard] — Designing for Failure Checklist
-
-
 
 **Select all that apply.**
 
@@ -470,9 +467,9 @@ Which belong on UptimeCorp's reliability checklist?
 
 ---
 
+
+
 ### Q30 [Hard] [Case Study] — UptimeCorp Game Day
-
-
 
 **Context:** UptimeCorp simulates payment provider 503 for one hour. On-call follows runbook, enables cached fallback for order status, communicates via status page. MTTR improves 40% vs last real incident.
 
@@ -487,9 +484,9 @@ What practices does this exercise?
 
 ---
 
+
+
 ### Q31 [Easy] [Case Study] — UptimeCorp DNS Outage
-
-
 
 **Context:** UptimeCorp's DNS provider fails for 20 minutes. All application servers are healthy but users cannot resolve `shop.uptimecorp.com`.
 
@@ -504,9 +501,9 @@ What reliability lesson applies?
 
 ---
 
+
+
 ### Q32 [Easy] — Kubernetes Probe Types
-
-
 
 **Select all that apply.**
 
@@ -519,9 +516,9 @@ Which probe purposes are correct?
 
 ---
 
+
+
 ### Q33 [Easy] [Case Study] — UptimeCorp Post-Outage Login Surge
-
-
 
 **Context:** After a 30-minute outage, 500,000 users refresh simultaneously. Auth service is overwhelmed despite capacity for normal peak of 50,000 logins per minute.
 
@@ -536,9 +533,9 @@ What describes this failure mode and valid responses?
 
 ---
 
+
+
 ### Q34 [Easy] — Classifying Dependency Failures
-
-
 
 **Select all that apply.**
 
@@ -551,9 +548,9 @@ How should UptimeCorp classify dependency failures for handling policy?
 
 ---
 
+
+
 ### Q35 [Easy] [Case Study] — UptimeCorp Health Check Flapping
-
-
 
 **Context:** UptimeCorp's ALB uses deep health checks including Redis reachability. A 2-second Redis blip marks all 6 instances unhealthy simultaneously — the site goes fully down.
 
@@ -568,9 +565,9 @@ What went wrong and what should change?
 
 ---
 
+
+
 ### Q36 [Easy] — N+1 Redundant Capacity
-
-
 
 **Select all that apply.**
 
@@ -583,9 +580,9 @@ Which capacity planning statements are correct?
 
 ---
 
+
+
 ### Q37 [Medium] [Case Study] — UptimeCorp Hedged Requests
-
-
 
 **Context:** UptimeCorp's search service calls two read replicas; the first response wins and the slower call is cancelled. P99 latency drops 40%.
 
@@ -600,9 +597,9 @@ What pattern is this and when is it appropriate?
 
 ---
 
+
+
 ### Q38 [Medium] — Fallback vs Fail Fast
-
-
 
 **Select all that apply.**
 
@@ -615,9 +612,9 @@ Which compare fallback and fail-fast strategies?
 
 ---
 
+
+
 ### Q39 [Medium] [Case Study] — UptimeCorp API Rate Limiting
-
-
 
 **Context:** Under a traffic spike resembling a DDoS, UptimeCorp enables per-API-key rate limits returning `429` with `Retry-After`. Core paying customers remain stable.
 
@@ -632,9 +629,9 @@ What reliability pattern applies?
 
 ---
 
+
+
 ### Q40 [Medium] — Blue-Green vs Rolling Deploy
-
-
 
 **Select all that apply.**
 
@@ -647,9 +644,9 @@ Which statements compare deploy strategies?
 
 ---
 
+
+
 ### Q41 [Medium] [Case Study] — UptimeCorp Hidden Dependency Chain
-
-
 
 **Context:** Post-incident review reveals Payment synchronously calls a legacy Fraud service nobody documented. Checkout failed when Fraud slowed.
 
@@ -664,9 +661,9 @@ What practices prevent surprise cascades?
 
 ---
 
+
+
 ### Q42 [Medium] — Synthetic Monitoring
-
-
 
 **Select all that apply.**
 
@@ -679,9 +676,9 @@ Which statements about synthetic monitoring are correct?
 
 ---
 
+
+
 ### Q43 [Medium] [Case Study] — UptimeCorp Status Page Trust
-
-
 
 **Context:** During a partial checkout outage, UptimeCorp's status page shows "All systems operational." Support tickets spike and customer trust erodes.
 
@@ -696,9 +693,9 @@ What should incident communication include?
 
 ---
 
+
+
 ### Q44 [Medium] — Blast Radius Reduction
-
-
 
 **Select all that apply.**
 
@@ -711,9 +708,9 @@ Which techniques limit blast radius?
 
 ---
 
+
+
 ### Q45 [Hard] [Case Study] — UptimeCorp Compounded Retries
-
-
 
 **Context:** API gateway retries 3×, order service retries 3×, and mobile client retries 3×. During a payment blip, Payment receives up to 27× effective load.
 
@@ -728,9 +725,9 @@ What fixes apply?
 
 ---
 
+
+
 ### Q46 [Hard] — Cold, Warm, and Hot Standby
-
-
 
 **Select all that apply.**
 
@@ -743,9 +740,9 @@ Which compare disaster recovery standby models?
 
 ---
 
+
+
 ### Q47 [Hard] [Case Study] — UptimeCorp Latency SLO Miss
-
-
 
 **Context:** Error rate is 0.1% but checkout P99 latency SLO is breached for 2 hours. No pages fire because alerts only watch 5xx rate.
 
@@ -760,9 +757,9 @@ What monitoring gap exists?
 
 ---
 
+
+
 ### Q48 [Hard] — Poison Input on Sync Path
-
-
 
 **Select all that apply.**
 
@@ -775,9 +772,9 @@ A webhook handler crashes on one malformed payload in a loop. Which responses ap
 
 ---
 
+
+
 ### Q49 [Hard] [Case Study] — UptimeCorp Active-Active Write Conflict
-
-
 
 **Context:** Two regions accept writes during a network partition. The same user updates their profile in both regions — conflicting versions on merge.
 
@@ -792,9 +789,9 @@ What does active-active require?
 
 ---
 
+
+
 ### Q50 [Hard] — Reliability Culture and Operations
-
-
 
 **Select all that apply.**
 
