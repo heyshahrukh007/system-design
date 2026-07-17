@@ -1,41 +1,42 @@
-# Day 10 — API Gateway & Service Discovery
+# Day 10 — Classic System Design Problems
 
-How traffic enters a distributed system, routes to the right service, and finds healthy instances — gateway responsibilities, discovery patterns, and the path from monolith to mesh.
+You have the building blocks — DNS, load balancers, databases, caches, queues, reliability patterns, gateways, and observability. Today you apply them to real systems people build in production: URL shorteners, feeds, chat, storage, streaming, and more.
 
-See also: [Day 5: Reverse Proxy](../day-05/03-reverse-proxy.md), [Day 5: Load Balancer](../day-05/02-load-balancer.md), [Day 5: Microservices](../day-05/08-microservices-and-workers.md).
+See also: [Day 1: Starter Example](../day-01/05-starter-example.md) for an introductory URL shortener walkthrough.
 
 ## Topics
 
 | # | Topic | File |
 |---|-------|------|
-| 1 | [Monolith vs Microservices](./01-monolith-vs-microservices.md) | When to split, trade-offs |
-| 2 | [Service-to-Service Communication](./02-service-to-service-communication.md) | REST, gRPC, GraphQL, sync vs async |
-| 3 | [Why API Gateway](./03-why-api-gateway.md) | Single entry point |
-| 4 | [API Gateway Responsibilities](./04-api-gateway-responsibilities.md) | SSL, routing, transform, aggregate |
-| 5 | [Routing and Load Balancing](./05-routing-and-load-balancing.md) | Path-based, host-based, LB at gateway |
-| 6 | [Authentication and Authorization](./06-authentication-and-authorization.md) | JWT, API keys, OAuth at edge |
-| 7 | [Rate Limiting at Gateway](./07-rate-limiting-at-gateway.md) | Throttling, quotas |
-| 8 | [Service Discovery](./08-service-discovery.md) | How services find each other |
-| 9 | [Client-Side vs Server-Side Discovery](./09-client-side-vs-server-side-discovery.md) | Eureka, Consul, K8s DNS |
-| 10 | [Health Checks](./10-health-checks.md) | Liveness, readiness, gateway integration |
-| 11 | [Service Mesh Introduction](./11-service-mesh-introduction.md) | Istio, Envoy, sidecars |
-| 12 | [Real-World Flow](./12-real-world-flow.md) | End-to-end request walkthrough |
+| 1 | [The Design Process](./01-the-design-process.md) | Requirements, estimates, architecture, trade-offs |
+| 2 | [URL Shortener](./02-url-shortener.md) | Redirect path, encoding, global scale |
+| 3 | [Rate Limiter](./03-rate-limiter.md) | Token bucket, sliding window, distributed limits |
+| 4 | [Notification System](./04-notification-system.md) | Push, email, SMS, fan-out, delivery guarantees |
+| 5 | [News Feed / Timeline](./05-news-feed.md) | Fan-out on write vs read, ranking |
+| 6 | [Chat / Messaging](./06-chat-messaging.md) | Real-time delivery, presence, history |
+| 7 | [Search Autocomplete](./07-search-autocomplete.md) | Trie, fuzzy search, Bloom filter, ranking |
+| 8 | [Distributed Object Storage](./08-distributed-object-storage.md) | Blobs, replication, erasure coding |
+| 9 | [Video Streaming](./09-video-streaming.md) | Upload, transcoding, adaptive bitrate |
+| 10 | [E-Commerce Checkout](./10-ecommerce-checkout.md) | Inventory, payment, idempotency, sagas |
+| 11 | [Analytics / Metrics Pipeline](./11-analytics-metrics-pipeline.md) | Ingestion, aggregation, OLAP |
 
 ## Reading Order
 
-Read 1 → 12 in sequence. Topics 1–2 set context; 3–7 cover the gateway; 8–11 cover discovery and mesh; 12 ties everything together.
+Read 1 first — it defines the workflow used in every problem. Then read 2 → 11 in any order, or follow the table sequence.
 
 ## Key Takeaways
 
-- **API Gateway** is the public front door — routing, auth, rate limits in one place.
-- **Service discovery** lets services find instances without hardcoded IPs.
-- **Server-side discovery** (load balancer + registry) is common in cloud/Kubernetes.
-- Gateway handles **north-south** traffic; **service mesh** often handles **east-west**.
-- Start simple (gateway + K8s DNS) before adopting a full mesh.
+- Every design starts with **requirements and scale** — they drive every component choice.
+- **Read-heavy** systems lean on cache and CDN; **write-heavy** systems lean on queues and partitioning.
+- **Async** decouples producers from slow consumers (notifications, analytics, transcoding).
+- **Idempotency** and **delivery guarantees** matter whenever money, inventory, or messages are involved.
+- Patterns from Days 3–9 recur: you are combining them, not learning new magic.
 
 ## Related
 
-- [Day 4: Website Visit Scenario](../day-04/01-visit-website-scenario.md)
-- [Day 8: Sync vs Async](../day-08/03-sync-vs-async-communication.md)
-- [Day 9: Reliability](../day-09/README.md)
-- [Day 2: API Design](../day-02/09-api-design.md)
+- [Day 3: Core Infrastructure](../day-03/README.md)
+- [Day 5: Caching](../day-05/README.md)
+- [Day 6: Message Queues](../day-06/README.md)
+- [Day 7: Reliability](../day-07/README.md)
+- [Day 8: API Gateway](../day-08/README.md)
+- [Day 9: Observability](../day-09/README.md)

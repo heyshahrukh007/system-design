@@ -1,41 +1,42 @@
-# Day 8 — Message Queues (Deep Dive)
+# Day 8 — API Gateway & Service Discovery
 
-Message queues decouple services, absorb traffic spikes, and move slow work off the request path. This day covers everything a system designer needs: models, guarantees, patterns, tools, and failure modes.
+How traffic enters a distributed system, routes to the right service, and finds healthy instances — gateway responsibilities, discovery patterns, and the path from monolith to mesh.
 
-See also: [Day 5: Queue](../day-05/07-queue.md) for a shorter overview.
+See also: [Day 3: Reverse Proxy](../day-03/04-reverse-proxy.md), [Day 3: Load Balancer](../day-03/03-load-balancer.md), [Day 3: Microservices](../day-03/09-microservices-and-workers.md).
 
 ## Topics
 
 | # | Topic | File |
 |---|-------|------|
-| 1 | [Why Queues?](./01-why-queues.md) | Decoupling, async, scale |
-| 2 | [What Is a Message Queue?](./02-what-is-a-message-queue.md) | Producer, consumer, broker |
-| 3 | [Sync vs Async Communication](./03-sync-vs-async-communication.md) | Direct call vs queue |
-| 4 | [Queue, Pub/Sub, and Streams](./04-queue-pubsub-and-streams.md) | Three messaging models |
-| 5 | [Core Components](./05-core-components.md) | Broker, topic, partition, offset |
-| 6 | [Message Design](./06-message-design.md) | Payload, schema, versioning |
-| 7 | [Delivery Guarantees](./07-delivery-guarantees.md) | At-most-once, at-least-once, exactly-once |
-| 8 | [Ordering and Partitioning](./08-ordering-and-partitioning.md) | FIFO, partition keys |
-| 9 | [Consumers and Scaling](./09-consumers-and-scaling.md) | Worker pools, backpressure |
-| 10 | [Retry, DLQ, and Idempotency](./10-retry-dlq-and-idempotency.md) | Failure handling |
-| 11 | [Queue Patterns](./11-queue-patterns.md) | Task queue, outbox, saga, fan-out |
-| 12 | [Tools, Operations, and Trade-offs](./12-tools-operations-and-tradeoffs.md) | SQS, Kafka, RabbitMQ, monitoring |
+| 1 | [Monolith vs Microservices](./01-monolith-vs-microservices.md) | When to split, trade-offs |
+| 2 | [Service-to-Service Communication](./02-service-to-service-communication.md) | REST, gRPC, GraphQL, sync vs async |
+| 3 | [Why API Gateway](./03-why-api-gateway.md) | Single entry point |
+| 4 | [API Gateway Responsibilities](./04-api-gateway-responsibilities.md) | SSL, routing, transform, aggregate |
+| 5 | [Routing and Load Balancing](./05-routing-and-load-balancing.md) | Path-based, host-based, LB at gateway |
+| 6 | [Authentication and Authorization](./06-authentication-and-authorization.md) | JWT, API keys, OAuth at edge |
+| 7 | [Rate Limiting at Gateway](./07-rate-limiting-at-gateway.md) | Throttling, quotas |
+| 8 | [Service Discovery](./08-service-discovery.md) | How services find each other |
+| 9 | [Client-Side vs Server-Side Discovery](./09-client-side-vs-server-side-discovery.md) | Eureka, Consul, K8s DNS |
+| 10 | [Health Checks](./10-health-checks.md) | Liveness, readiness, gateway integration |
+| 11 | [Service Mesh Introduction](./11-service-mesh-introduction.md) | Istio, Envoy, sidecars |
+| 12 | [Real-World Flow](./12-real-world-flow.md) | End-to-end request walkthrough |
 
 ## Reading Order
 
-Read 1 → 12 in sequence. Topics 4–7 define the model; 8–10 cover production behavior; 11–12 apply it in real systems.
+Read 1 → 12 in sequence. Topics 1–2 set context; 3–7 cover the gateway; 8–11 cover discovery and mesh; 12 ties everything together.
 
 ## Key Takeaways
 
-- Queues **decouple** producers from consumers in time and availability.
-- Choose **queue vs pub/sub vs stream** based on one consumer, many subscribers, or replay needs.
-- Most systems use **at-least-once delivery** — design **idempotent** consumers.
-- **Ordering** costs throughput — partition only where order truly matters.
-- **DLQ + retry + monitoring** are mandatory for production queues.
+- **API Gateway** is the public front door — routing, auth, rate limits in one place.
+- **Service discovery** lets services find instances without hardcoded IPs.
+- **Server-side discovery** (load balancer + registry) is common in cloud/Kubernetes.
+- Gateway handles **north-south** traffic; **service mesh** often handles **east-west**.
+- Start simple (gateway + K8s DNS) before adopting a full mesh.
 
 ## Related
 
-- [Day 5: Queue](../day-05/07-queue.md)
-- [Day 5: Microservices & Workers](../day-05/08-microservices-and-workers.md)
-- [Day 2: Reliability Design](../day-02/06-reliability-design.md)
-- [Day 7: Cache Problems](../day-07/11-cache-problems.md) (similar failure thinking)
+- [Day 3: Request Journey](../day-03/01-request-journey.md)
+- [Day 6: Sync vs Async](../day-06/03-sync-vs-async-communication.md)
+- [Day 7: Reliability](../day-07/README.md)
+- [Day 9: Observability](../day-09/README.md)
+- [Day 2: API Design](../day-02/09-api-design.md)

@@ -1,47 +1,42 @@
-# Day 3 — Design Task: Parking Lot
+# Day 3 — Core Infrastructure Components
 
-Day 3 is a hands-on **low-level design** exercise. We take a small, real-world problem and walk through requirements, class design, operations, and APIs step by step.
+Start with the full request journey, then go deep on each building block — what it is, why it exists, how it works, and when to use it.
 
-## Task
+These pieces show up in almost every production web system.
 
-> **Design a Parking Lot**
+## Topics
 
-### Requirements
+| # | Component | File |
+|---|-----------|------|
+| 1 | [Request Journey](./01-request-journey.md) | What happens when you visit a website |
+| 2 | [DNS](./02-dns.md) | Domain names → IP addresses |
+| 3 | [Load Balancer](./03-load-balancer.md) | Distribute traffic across servers |
+| 4 | [Reverse Proxy](./04-reverse-proxy.md) | Front door for backend servers |
+| 5 | [CDN](./05-cdn.md) | Serve content from the edge |
+| 6 | [Caching](./06-caching.md) | Store hot data for fast reads |
+| 7 | [DB Scaling](./07-db-scaling.md) | Grow databases under load |
+| 8 | [Queue](./08-queue.md) | Async work and decoupling |
+| 9 | [Microservices & Workers](./09-microservices-and-workers.md) | Split services, background jobs |
 
-1. Cars enter the parking lot
-2. Cars exit the parking lot
-3. Show available parking spots
+## How They Connect
 
-## What You'll Practice
-
-| Skill | Where |
-|-------|-------|
-| Requirement clarification | Expanding vague requirements into concrete specs |
-| Entity identification | ParkingLot, Spot, Car, Ticket |
-| LLD / OOP design | Classes, relationships, responsibilities |
-| State management | Spot availability, active sessions |
-| API design | Enter, exit, availability endpoints |
-| Edge cases | Full lot, invalid exit, duplicate entry |
-
-## Document
-
-| # | Topic | File |
-|---|-------|------|
-| 1 | [Parking Lot — Full Design](./01-parking-lot-design.md) | Complete walkthrough |
+```
+User
+  │
+  ▼
+DNS ──▶ Load Balancer / Reverse Proxy ──▶ Web / API Servers
+              │                                    │
+              ▼                                    ├──▶ Cache
+            CDN (static assets)                    ├──▶ Queue ──▶ Workers
+                                                   └──▶ DB (scaled)
+```
 
 ## Reading Order
 
-One document, read top to bottom. Takes ~15–20 minutes.
-
-## Key Takeaways
-
-- Small design problems still need **clarifying questions** before you draw classes.
-- Assign each class **one clear responsibility** — ParkingLot orchestrates, Spot tracks occupancy.
-- Model **enter** and **exit** as state changes on a spot, linked by a ticket or session.
-- Start simple (single floor, cars only), then list **extensions** for follow-up discussion.
+Read 1 → 9 in sequence. Topic 1 is the story; 2–9 are the deep dives along that path.
 
 ## Related
 
-- [Day 1: Starter Example (URL Shortener)](../day-01/05-starter-example.md)
-- [Day 2: LLD](../day-02/03-lld.md)
-- [Day 2: API Design](../day-02/09-api-design.md)
+- [Day 2: Scalability Design](../day-02/05-scalability-design.md)
+- [Day 2: Performance Design](../day-02/10-performance-design.md)
+- [Day 4: Database Internals](../day-04/README.md)

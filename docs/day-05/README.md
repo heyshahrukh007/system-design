@@ -1,48 +1,41 @@
-# Day 5 — Core Infrastructure Components
+# Day 5 — Caching (Deep Dive)
 
-Day 4 showed these pieces in a single user journey. Day 5 goes **deep on each one** — what it is, why it exists, how it works, and when to use it.
+Covers caching in depth — why it works, where to put it, core patterns, invalidation, distributed systems, and failure modes.
 
-These are the building blocks behind almost every production web system.
+See also: [Day 3: Caching](../day-03/06-caching.md) for a shorter overview.
 
 ## Topics
 
-| # | Component | File |
-|---|-----------|------|
-| 1 | [DNS](./01-dns.md) | Domain names → IP addresses |
-| 2 | [Load Balancer](./02-load-balancer.md) | Distribute traffic across servers |
-| 3 | [Reverse Proxy](./03-reverse-proxy.md) | Front door for backend servers |
-| 4 | [CDN](./04-cdn.md) | Serve content from the edge |
-| 5 | [Caching](./05-caching.md) | Store hot data for fast reads |
-| 6 | [DB Scaling](./06-db-scaling.md) | Grow databases under load |
-| 7 | [Queue](./07-queue.md) | Async work and decoupling |
-| 8 | [Microservices & Workers](./08-microservices-and-workers.md) | Split services, background jobs |
-
-## How They Connect
-
-```
-User
-  │
-  ▼
-DNS ──▶ Load Balancer / Reverse Proxy ──▶ Web / API Servers
-              │                                    │
-              ▼                                    ├──▶ Cache
-            CDN (static assets)                    ├──▶ Queue ──▶ Workers
-                                                   └──▶ DB (scaled)
-```
+| # | Topic | File |
+|---|-------|------|
+| 1 | [Why Caching?](./01-why-caching.md) | Latency, DB load, scale |
+| 2 | [What Is a Cache?](./02-what-is-a-cache.md) | Definition, memory, vs database |
+| 3 | [Where to Place Cache](./03-where-to-place-cache.md) | Every layer in the stack |
+| 4 | [What to Cache](./04-what-to-cache.md) | Decision rules, examples |
+| 5 | [Cache-Aside Pattern](./05-cache-aside-pattern.md) | Hit, miss, default strategy |
+| 6 | [Write-Through Cache](./06-write-through-cache.md) | Sync cache + DB on write |
+| 7 | [Write-Back Cache](./07-write-back-cache.md) | Async flush, speed vs risk |
+| 8 | [Cache Invalidation](./08-cache-invalidation.md) | Stale data, hard problem |
+| 9 | [TTL](./09-ttl.md) | Time to live, when short vs long |
+| 10 | [Distributed Cache](./10-distributed-cache.md) | Redis, sharing, replication |
+| 11 | [Cache Problems](./11-cache-problems.md) | Stampede, penetration, avalanche |
+| 12 | [Other Patterns & Best Practices](./12-other-patterns-and-best-practices.md) | Read-through, warming, monitoring |
 
 ## Reading Order
 
-Read 1 → 8 in sequence. Each file stands alone, but the order follows the request path from outside in.
+Read 1 → 12 in sequence. Parts 5–7 are the core patterns; 8–11 are production essentials.
 
 ## Key Takeaways
 
-- **DNS** is the internet's phone book — everything starts here.
-- **Load balancers** and **reverse proxies** often overlap; know when you need each.
-- **CDN** and **caching** both speed up reads — different layers, same goal.
-- **DB scaling**, **queues**, and **workers** handle growth and async work behind the API.
+- Cache exists because **RAM is orders of magnitude faster** than disk and DB queries add up at scale.
+- Place cache at **every layer** that can answer without hitting the origin.
+- **Cache-aside** is the default; choose write-through/write-back when consistency or write speed demands it.
+- **Invalidation + TTL** together keep data fresh — neither alone is enough.
+- Watch for **stampede, penetration, and avalanche** before they take down your database.
 
 ## Related
 
-- [Day 4: Website Visit Scenario](../day-04/01-visit-website-scenario.md)
-- [Day 2: Scalability Design](../day-02/05-scalability-design.md)
+- [Day 3: Caching](../day-03/06-caching.md)
+- [Day 3: CDN](../day-03/05-cdn.md)
+- [Day 4: Storage Basics](../day-04/01-storage-basics.md) (buffer pool)
 - [Day 2: Performance Design](../day-02/10-performance-design.md)

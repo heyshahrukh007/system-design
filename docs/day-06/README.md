@@ -1,46 +1,41 @@
-# Day 6 — Database Internals
+# Day 6 — Message Queues (Deep Dive)
 
-Day 5 showed how to **scale** databases from the outside. Day 6 goes **inside** — how data is stored, queried, and managed at the engine level.
+Message queues decouple services, absorb traffic spikes, and move slow work off the request path. This day covers everything a system designer needs: models, guarantees, patterns, tools, and failure modes.
 
-Understanding these internals helps you write faster queries, design better schemas, and debug production issues.
+See also: [Day 3: Queue](../day-03/08-queue.md) for a shorter overview.
 
 ## Topics
 
 | # | Topic | File |
 |---|-------|------|
-| 1 | [Storage Basics](./01-storage-basics.md) | Pages, rows, disk vs memory |
-| 2 | [Keys](./02-keys.md) | Primary, foreign, composite, natural vs surrogate |
-| 3 | [Normalization](./03-normalization.md) | 1NF–3NF, when to denormalize |
-| 4 | [Indexes](./04-indexes.md) | B-tree, how indexes speed up reads |
-| 5 | [Joins / Lookups](./05-joins-and-lookups.md) | JOIN types, lookup patterns |
-| 6 | [Query Execution](./06-query-execution.md) | Parser, planner, optimizer |
-| 7 | [Transactions](./07-transactions.md) | ACID, isolation levels, locks |
-| 8 | [ORM](./08-orm.md) | Object-relational mapping, trade-offs |
-| 9 | [N+1 Query Problems](./09-n-plus-one-query-problems.md) | Cause, detection, fixes |
-| 10 | [Connection Pooling](./10-connection-pooling.md) | Why pools exist, sizing |
-| 11 | [Replication](./11-replication.md) | How replicas sync, lag |
-| 12 | [Sharding](./12-sharding.md) | Splitting data across nodes |
+| 1 | [Why Queues?](./01-why-queues.md) | Decoupling, async, scale |
+| 2 | [What Is a Message Queue?](./02-what-is-a-message-queue.md) | Producer, consumer, broker |
+| 3 | [Sync vs Async Communication](./03-sync-vs-async-communication.md) | Direct call vs queue |
+| 4 | [Queue, Pub/Sub, and Streams](./04-queue-pubsub-and-streams.md) | Three messaging models |
+| 5 | [Core Components](./05-core-components.md) | Broker, topic, partition, offset |
+| 6 | [Message Design](./06-message-design.md) | Payload, schema, versioning |
+| 7 | [Delivery Guarantees](./07-delivery-guarantees.md) | At-most-once, at-least-once, exactly-once |
+| 8 | [Ordering and Partitioning](./08-ordering-and-partitioning.md) | FIFO, partition keys |
+| 9 | [Consumers and Scaling](./09-consumers-and-scaling.md) | Worker pools, backpressure |
+| 10 | [Retry, DLQ, and Idempotency](./10-retry-dlq-and-idempotency.md) | Failure handling |
+| 11 | [Queue Patterns](./11-queue-patterns.md) | Task queue, outbox, saga, fan-out |
+| 12 | [Tools, Operations, and Trade-offs](./12-tools-operations-and-tradeoffs.md) | SQS, Kafka, RabbitMQ, monitoring |
 
 ## Reading Order
 
-Read 1 → 12 in sequence. Topics build from physical storage up to distributed architecture.
-
-```
-Storage → Keys → Normalization → Indexes → Joins
-    → Query Execution → Transactions → ORM → N+1
-        → Connection Pooling → Replication → Sharding
-```
+Read 1 → 12 in sequence. Topics 4–7 define the model; 8–10 cover production behavior; 11–12 apply it in real systems.
 
 ## Key Takeaways
 
-- Data lives on **disk in pages** — indexes and caching exist to avoid reading everything.
-- **Schema design** (keys, normalization) directly affects query performance.
-- The **query planner** decides how your SQL runs — indexes change its decisions.
-- **ORMs** speed development but can hide expensive queries (N+1).
-- **Replication** scales reads; **sharding** scales writes — different problems.
+- Queues **decouple** producers from consumers in time and availability.
+- Choose **queue vs pub/sub vs stream** based on one consumer, many subscribers, or replay needs.
+- Most systems use **at-least-once delivery** — design **idempotent** consumers.
+- **Ordering** costs throughput — partition only where order truly matters.
+- **DLQ + retry + monitoring** are mandatory for production queues.
 
 ## Related
 
-- [Day 2: Data Design](../day-02/08-data-design.md)
-- [Day 5: DB Scaling](../day-05/06-db-scaling.md)
-- [Day 5: Caching](../day-05/05-caching.md)
+- [Day 3: Queue](../day-03/08-queue.md)
+- [Day 3: Microservices & Workers](../day-03/09-microservices-and-workers.md)
+- [Day 2: Reliability Design](../day-02/06-reliability-design.md)
+- [Day 5: Cache Problems](../day-05/11-cache-problems.md) (similar failure thinking)

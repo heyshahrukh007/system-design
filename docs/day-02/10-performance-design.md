@@ -201,14 +201,26 @@ Test scenarios:
 
 ## Performance Anti-Patterns
 
-| Anti-Pattern | Fix |
-|--------------|-----|
-| Premature optimization | Profile first, optimize bottlenecks |
-| No caching | Add cache at appropriate layer |
-| N+1 queries | Batch or join queries |
-| Synchronous external calls | Parallelize or async |
-| Returning full objects | Field selection, pagination |
-| No connection pooling | Use a pool manager |
+Named failure modes that show up repeatedly in production (and on roadmaps):
+
+| Anti-Pattern | Symptom | Fix |
+|--------------|---------|-----|
+| **Busy Database** | DB CPU/IO pegged; everything slow | Cache, replicas, fix N+1, move analytics off OLTP |
+| **Busy Frontend** | Browser/app does too much work | Paginate, CDN, reduce JS, move work server-side |
+| **Chatty I/O** | Many tiny remote calls per request | Batch, aggregate API/BFF, pipeline |
+| **Extraneous Fetching** | Over-fetch columns/payloads | Select needed fields; GraphQL/DTO shaping |
+| **No Caching** | Repeat identical expensive work | Cache-aside / CDN / HTTP cache |
+| **Noisy Neighbor** | One tenant starves others | Bulkheads, quotas, isolation |
+| **Retry Storm** | Failures amplify load | Backoff + jitter, circuit breaker, idempotency |
+| **Synchronous I/O on critical path** | User waits on email/search index | Async queue for side effects |
+| **Monolithic Persistence** | One DB for every access pattern | Split read models / polyglot where justified |
+| **Improper Instantiation** | New connection/client per request | Pooling, reuse clients |
+| Premature optimization | Complexity without proof | Profile first, optimize bottlenecks |
+| N+1 queries | Latency explosion | Join/batch/dataloader |
+
+Measure before “fixing” — many of these are visible in [Day 9](../day-09/README.md) metrics and traces.
+
+---
 
 ## Summary
 

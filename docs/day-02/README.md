@@ -36,3 +36,4 @@ Read 1 → 12 in sequence. Topics 2–3 (HLD/LLD) set the structural frame; topi
 
 - [Day 1: Introduction](../day-01/README.md)
 - [Day 1: Architectural Styles](../day-01/03-types-of-system-design.md)
+- [Day 3: Core Infrastructure](../day-03/README.md)

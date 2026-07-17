@@ -252,4 +252,6 @@ Load Balancer / Reverse Proxy                  │
 
 ---
 
-[← Queue](./07-queue.md) | [Day 5 Index](./README.md)
+**Day 5 complete.** Paste Day 6 when ready.
+
+[← Back to Day 5 Index](./README.md) | [Day 4: Website Scenario](../day-04/01-visit-website-scenario.md)

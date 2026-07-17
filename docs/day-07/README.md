@@ -1,41 +1,41 @@
-# Day 7 — Caching (Deep Dive)
+# Day 7 — Reliability & Fault Tolerance (Deep Dive)
 
-Covers caching in depth — why it works, where to put it, core patterns, invalidation, distributed systems, and failure modes.
+Systems fail — hardware, networks, dependencies, deploys. This day covers how to design systems that stay available, recover fast, and limit blast radius when something breaks.
 
-See also: [Day 5: Caching](../day-05/05-caching.md) for a shorter overview.
+See also: [Day 2: Reliability Design](../day-02/06-reliability-design.md) for a shorter overview.
 
 ## Topics
 
 | # | Topic | File |
 |---|-------|------|
-| 1 | [Why Caching?](./01-why-caching.md) | Latency, DB load, scale |
-| 2 | [What Is a Cache?](./02-what-is-a-cache.md) | Definition, memory, vs database |
-| 3 | [Where to Place Cache](./03-where-to-place-cache.md) | Every layer in the stack |
-| 4 | [What to Cache](./04-what-to-cache.md) | Decision rules, examples |
-| 5 | [Cache-Aside Pattern](./05-cache-aside-pattern.md) | Hit, miss, default strategy |
-| 6 | [Write-Through Cache](./06-write-through-cache.md) | Sync cache + DB on write |
-| 7 | [Write-Back Cache](./07-write-back-cache.md) | Async flush, speed vs risk |
-| 8 | [Cache Invalidation](./08-cache-invalidation.md) | Stale data, hard problem |
-| 9 | [TTL](./09-ttl.md) | Time to live, when short vs long |
-| 10 | [Distributed Cache](./10-distributed-cache.md) | Redis, sharing, replication |
-| 11 | [Cache Problems](./11-cache-problems.md) | Stampede, penetration, avalanche |
-| 12 | [Other Patterns & Best Practices](./12-other-patterns-and-best-practices.md) | Read-through, warming, monitoring |
+| 1 | [Why Reliability?](./01-why-reliability.md) | Cost of downtime, design mindset |
+| 2 | [Reliability Metrics](./02-reliability-metrics.md) | Nines, MTBF, MTTR, RPO, RTO |
+| 3 | [Failure Modes and SPOF](./03-failure-modes-and-spof.md) | What breaks, single points of failure |
+| 4 | [Redundancy and High Availability](./04-redundancy-and-high-availability.md) | Multi-instance, multi-AZ, health checks |
+| 5 | [Timeouts](./05-timeouts.md) | Prevent hanging requests |
+| 6 | [Retries and Backoff](./06-retries-and-backoff.md) | Transient failure handling |
+| 7 | [Circuit Breaker](./07-circuit-breaker.md) | Stop cascading failures |
+| 8 | [Bulkhead Pattern](./08-bulkhead-pattern.md) | Isolate resource pools |
+| 9 | [Graceful Degradation](./09-graceful-degradation.md) | Partial function over total outage |
+| 10 | [Failover and Disaster Recovery](./10-failover-and-disaster-recovery.md) | Backup, restore, regional failover |
+| 11 | [SLI, SLO, and SLA](./11-sli-slo-and-sla.md) | Measure and commit to reliability |
+| 12 | [Designing for Failure](./12-designing-for-failure.md) | Chaos engineering, checklist |
 
 ## Reading Order
 
-Read 1 → 12 in sequence. Parts 5–7 are the core patterns; 8–11 are production essentials.
+Read 1 → 12 in sequence. Topics 2–4 define goals and structure; 5–9 are runtime patterns; 10–12 cover operations and measurement.
 
 ## Key Takeaways
 
-- Cache exists because **RAM is orders of magnitude faster** than disk and DB queries add up at scale.
-- Place cache at **every layer** that can answer without hitting the origin.
-- **Cache-aside** is the default; choose write-through/write-back when consistency or write speed demands it.
-- **Invalidation + TTL** together keep data fresh — neither alone is enough.
-- Watch for **stampede, penetration, and avalanche** before they take down your database.
+- Design for **failure** — assume components will break.
+- Eliminate **single points of failure** with redundancy across zones and instances.
+- **Timeouts, retries, circuit breakers, and bulkheads** work together — not in isolation.
+- **Graceful degradation** keeps core paths alive when non-critical parts fail.
+- Define **SLOs** and error budgets — reliability is a measurable product decision.
 
 ## Related
 
-- [Day 5: Caching](../day-05/05-caching.md)
-- [Day 5: CDN](../day-05/04-cdn.md)
-- [Day 6: Storage Basics](../day-06/01-storage-basics.md) (buffer pool)
-- [Day 2: Performance Design](../day-02/10-performance-design.md)
+- [Day 2: Reliability Design](../day-02/06-reliability-design.md)
+- [Day 3: Load Balancer](../day-03/03-load-balancer.md)
+- [Day 4: Replication](../day-04/11-replication.md)
+- [Day 6: Retry and DLQ](../day-06/10-retry-dlq-and-idempotency.md)

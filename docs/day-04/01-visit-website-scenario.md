@@ -627,4 +627,6 @@ Every layer has a job. System design is understanding each layer, where bottlene
 
 ---
 
-[← Day 4 Index](./README.md)
+**Day 4 complete.** Paste Day 5 when ready.
+
+[← Back to Day 4 Index](./README.md)

@@ -1,41 +1,41 @@
-# Day 9 — Reliability & Fault Tolerance (Deep Dive)
+# Day 9 — Observability (Deep Dive)
 
-Systems fail — hardware, networks, dependencies, deploys. This day covers how to design systems that stay available, recover fast, and limit blast radius when something breaks.
+You built a distributed system — gateway, services, queues, databases. When checkout slows at 2 AM, observability answers: *what broke, where, and why?*
 
-See also: [Day 2: Reliability Design](../day-02/06-reliability-design.md) for a shorter overview.
+See also: [Day 2: Observability Design](../day-02/11-observability-design.md) for a shorter overview.
 
 ## Topics
 
 | # | Topic | File |
 |---|-------|------|
-| 1 | [Why Reliability?](./01-why-reliability.md) | Cost of downtime, design mindset |
-| 2 | [Reliability Metrics](./02-reliability-metrics.md) | Nines, MTBF, MTTR, RPO, RTO |
-| 3 | [Failure Modes and SPOF](./03-failure-modes-and-spof.md) | What breaks, single points of failure |
-| 4 | [Redundancy and High Availability](./04-redundancy-and-high-availability.md) | Multi-instance, multi-AZ, health checks |
-| 5 | [Timeouts](./05-timeouts.md) | Prevent hanging requests |
-| 6 | [Retries and Backoff](./06-retries-and-backoff.md) | Transient failure handling |
-| 7 | [Circuit Breaker](./07-circuit-breaker.md) | Stop cascading failures |
-| 8 | [Bulkhead Pattern](./08-bulkhead-pattern.md) | Isolate resource pools |
-| 9 | [Graceful Degradation](./09-graceful-degradation.md) | Partial function over total outage |
-| 10 | [Failover and Disaster Recovery](./10-failover-and-disaster-recovery.md) | Backup, restore, regional failover |
-| 11 | [SLI, SLO, and SLA](./11-sli-slo-and-sla.md) | Measure and commit to reliability |
-| 12 | [Designing for Failure](./12-designing-for-failure.md) | Chaos engineering, checklist |
+| 1 | [Why Observability?](./01-why-observability.md) | Cost of flying blind, ops mindset |
+| 2 | [Monitoring vs Observability](./02-monitoring-vs-observability.md) | Known vs unknown unknowns |
+| 3 | [The Three Pillars](./03-three-pillars.md) | Logs, metrics, traces |
+| 4 | [Structured Logging](./04-structured-logging.md) | JSON logs, correlation IDs |
+| 5 | [Metrics — RED and USE](./05-metrics-red-and-use.md) | Counters, gauges, histograms |
+| 6 | [Distributed Tracing](./06-distributed-tracing.md) | Spans, trace context, latency |
+| 7 | [Instrumentation](./07-instrumentation.md) | What to instrument, where |
+| 8 | [Dashboards and Alerting](./08-dashboards-and-alerting.md) | Symptoms, severity, runbooks |
+| 9 | [SLO Alerting and Error Budgets](./09-slo-alerting-and-error-budgets.md) | Burn rate, paging policy |
+| 10 | [Log Aggregation](./10-log-aggregation.md) | Central logs, retention, search |
+| 11 | [Observability in Microservices](./11-observability-in-microservices.md) | Propagation, gateway, mesh |
 
 ## Reading Order
 
-Read 1 → 12 in sequence. Topics 2–4 define goals and structure; 5–9 are runtime patterns; 10–12 cover operations and measurement.
+Read 1 → 11 in sequence. Topics 1–3 set context; 4–7 cover instrumentation; 8–11 cover operations.
 
 ## Key Takeaways
 
-- Design for **failure** — assume components will break.
-- Eliminate **single points of failure** with redundancy across zones and instances.
-- **Timeouts, retries, circuit breakers, and bulkheads** work together — not in isolation.
-- **Graceful degradation** keeps core paths alive when non-critical parts fail.
-- Define **SLOs** and error budgets — reliability is a measurable product decision.
+- **Observability** explains system behavior from external outputs — logs, metrics, traces.
+- **Monitoring** catches known failures; **observability** debugs novel problems.
+- Use **correlation IDs** and **distributed tracing** across gateway and services.
+- Alert on **user-facing symptoms** and **SLO burn rate** — not raw CPU alone.
+- Instrument from day one — retrofitting visibility after launch is painful.
 
 ## Related
 
-- [Day 2: Reliability Design](../day-02/06-reliability-design.md)
-- [Day 5: Load Balancer](../day-05/02-load-balancer.md)
-- [Day 6: Replication](../day-06/11-replication.md)
-- [Day 8: Retry and DLQ](../day-08/10-retry-dlq-and-idempotency.md)
+- [Day 2: Observability Design](../day-02/11-observability-design.md)
+- [Day 7: SLI, SLO, and SLA](../day-07/11-sli-slo-and-sla.md)
+- [Day 8: API Gateway](../day-08/README.md)
+- [Day 6: Message correlation](../day-06/06-message-design.md)
+- [Day 10: Classic System Design Problems](../day-10/README.md)
