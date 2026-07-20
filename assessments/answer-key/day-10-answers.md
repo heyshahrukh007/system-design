@@ -1,403 +1,406 @@
-# API Gateway & Service Discovery — Answer Key & Explanations (50)
+# Classic System Design Problems — Answer Key & Explanations (50)
 
 Answer key for [day-10-questions.md](../day-10-questions.md)
 
----
 
-### Q01 [Easy] [Case Study] — CloudMart Deploy Bottleneck
 
-**Answer:** B, C, D
-
-**Explanation:** Deploy pain and scale mismatch are split signals. Early MVP small team should often stay modular monolith (A).
 
 ---
 
-### Q02 [Easy] — Monolith Advantages
+### Q01 [Easy] [Case Study] — GreenCart Checkout Scope
 
 **Answer:** A, C, D
 
-**Explanation:** Monoliths excel at simplicity and cross-module transactions. Per-service deploy is microservices (B).
+**Explanation:** Requirements cover behavior, quality attributes, and constraints first. Vendor and shard counts come after estimates (B).
 
 ---
 
-### Q03 [Easy] [Case Study] — CloudMart MVP Team Size
+### Q02 [Easy] — Design Workflow Order
 
 **Answer:** A, B, C
 
-**Explanation:** Early stage favors monolith/modular monolith. Separate repos day one is premature (D).
+**Explanation:** Understand problem and scale before detailed diagrams. TTL tuning without access patterns is premature (D).
 
 ---
 
-### Q04 [Easy] — Microservices Trade-offs
-
-**Answer:** B, C, D
-
-**Explanation:** Microservices need gateway, discovery, observability — not eliminate them (A).
-
----
-
-### Q05 [Easy] — Modular Monolith
-
-**Answer:** B, C, D
-
-**Explanation:** Modular monolith is one deployable with boundaries — not separate clusters (A).
-
----
-
-### Q06 [Easy] [Case Study] — CloudMart Internal RPC Choice
+### Q03 [Easy] [Case Study] — PulseSocial Peak Traffic
 
 **Answer:** A, B, D
 
-**Explanation:** Typical stack: REST public, gRPC internal, queues async. GraphQL everywhere internal is overkill (C).
+**Explanation:** Order-of-magnitude math and peak multipliers guide architecture. Production traces help later but should not block initial sizing (C).
 
 ---
 
-### Q07 [Easy] — Sync vs Async Between Services
+### Q04 [Medium] — Hard Parts and Patterns
 
 **Answer:** A, B, C
 
-**Explanation:** User-visible payment decision needs sync path. Async for reactions (C wrong for async-only).
+**Explanation:** Hot paths, async reliability, and dependency protection are core deep-dive themes. Blanket 2PC everywhere is impractical (D).
 
 ---
 
-### Q08 [Easy] [Case Study] — CloudMart Mobile Data Needs
-
-**Answer:** B, C, D
-
-**Explanation:** GraphQL/BFF at edge for clients. N+1 still needs server design (A).
-
----
-
-### Q09 [Medium] [Case Study] — CloudMart Internal Service Trust
-
-**Answer:** B, C, D
-
-**Explanation:** Authenticate every hop. VPC is not sufficient (A).
-
----
-
-### Q10 [Medium] — gRPC Production Considerations
-
-**Answer:** A, B, D
-
-**Explanation:** gRPC is not browser-native (C). Needs HTTP/2-aware LB and Day 9 reliability patterns.
-
----
-
-### Q11 [Easy] [Case Study] — CloudMart Client URL Sprawl
+### Q05 [Easy] [Case Study] — LinkShare Redirect SLO
 
 **Answer:** A, B, C
 
-**Explanation:** Gateway is single front door. Direct port exposure worsens client sprawl (D).
+**Explanation:** Read-optimized redirect path uses 301, CDN, and split services. Sync analytics on redirect hurts latency (D).
 
 ---
 
-### Q12 [Easy] — API Gateway vs Load Balancer
-
-**Answer:** A, C, D
-
-**Explanation:** Auth/rate limits are gateway strengths, not typical LB (C reversed).
-
----
-
-### Q13 [Easy] — Gateway Cross-Cutting Concerns
+### Q06 [Easy] — URL Shortener Read Path
 
 **Answer:** A, B, D
 
-**Explanation:** Fine-grained resource auth stays in services (C). Gateway does coarse edge auth.
+**Explanation:** CDN, Redis cache-aside, and sharded DB back redirects. Click OLAP belongs off the hot path (C).
 
 ---
 
-### Q14 [Medium] [Case Study] — CloudMart Mobile vs Web APIs
+### Q07 [Medium] [Case Study] — LinkShare Click Analytics
 
-**Answer:** B, C, D
+**Answer:** A, C, D
 
-**Explanation:** Gateway still front door; BFF tailors per UI. BFF alone without gateway loses central edge policy (A).
+**Explanation:** Async pipeline to analytics store preserves redirect speed; dedupe handles at-least-once. Sync Postgres increments block redirects (B).
 
 ---
 
-### Q15 [Medium] [Case Study] — CloudMart Gateway Routing Table
+### Q08 [Medium] — Short Code Generation at Scale
+
+**Answer:** A, B, D
+
+**Explanation:** Distributed IDs avoid hotspot and support encoding length; collision checks remain cheap (C overstates — negligible but not zero logic).
+
+---
+
+### Q09 [Hard] [Case Study] — LinkShare Viral Link Cache Stampede
 
 **Answer:** A, B, C
 
-**Explanation:** Gateway routes and versions — not business logic or DB (D).
+**Explanation:** Single-flight, early refresh, and DB fallthrough mitigate stampedes. Disabling CDN worsens origin load (D).
 
 ---
 
-### Q16 [Medium] — TLS at the Gateway
+### Q10 [Medium] — ThrottleAPI Placement
 
 **Answer:** A, B, D
 
-**Explanation:** Internal HTTP on private VPC is common; mTLS optional upgrade (C overstates).
+**Explanation:** Edge plus app/gateway tiers are standard. Per-service-only limits without shared state multiply budgets (C).
 
 ---
 
-### Q17 [Medium] — Request Transformation
+### Q11 [Medium] — Rate Limiting Algorithms
 
-**Answer:** A, C, D
+**Answer:** A, B, C, D
 
-**Explanation:** Gateway should not hold session state (B) — use Redis/JWT.
-
----
-
-### Q18 [Medium] [Case Study] — CloudMart Dashboard Aggregation
-
-**Answer:** A, C, D
-
-**Explanation:** Aggregation at gateway/BFF is standard. Forcing three public calls defeats gateway purpose (B).
+**Explanation:** All four descriptions match the doc’s algorithm trade-offs — token bucket bursts, fixed-window edge spikes, log accuracy cost, sliding counter balance.
 
 ---
 
-### Q19 [Medium] — Gateway Anti-Patterns
+### Q12 [Medium] [Case Study] — ThrottleAPI Redis Outage
 
 **Answer:** A, B, C
 
-**Explanation:** Routing/auth/rate limits are core gateway jobs (C is wrong as anti-pattern).
+**Explanation:** Fail-open vs fail-closed is a product choice; circuit breakers protect gateways. Uncoordinated per-instance full limits break quotas (D).
 
 ---
 
-### Q20 [Medium] [Case Study] — CloudMart Path Routing Incident
+### Q13 [Medium] — Distributed Rate Limiter Implementation
+
+**Answer:** B, C, D
+
+**Explanation:** Redis Lua/TTL keys and server time are production patterns. Non-atomic read/write races limits (A).
+
+---
+
+### Q14 [Hard] [Case Study] — ThrottleAPI Hybrid Budget
 
 **Answer:** A, B, D
 
-**Explanation:** Deliberate path→service mapping required. Random routing is wrong (C).
+**Explanation:** Local budget plus Redis global truth cuts RTT; standard rate-limit headers aid clients. Independent full limits per instance overshoot (C).
 
 ---
 
-### Q21 [Medium] — Header-Based Routing
-
-**Answer:** A, C, D
-
-**Explanation:** Header routing for canary/tenant/version — not auth replacement (B).
-
----
-
-### Q22 [Medium] [Case Study] — CloudMart Canary Release
-
-**Answer:** A, C, D
-
-**Explanation:** Canary/blue-green hide version routing from clients (C false).
-
----
-
-### Q23 [Hard] — gRPC Load Balancing
+### Q15 [Easy] [Case Study] — PingCast Producer Latency
 
 **Answer:** A, B, C
 
-**Explanation:** gRPC uses HTTP/2 on TCP (C wrong). Connection pinning causes hot spots.
+**Explanation:** Fast enqueue, preference filter, and status tracking match async notification design. Sync provider calls block producers (D).
 
 ---
 
-### Q24 [Medium] — Sticky Sessions at Gateway
-
-**Answer:** B, C, D
-
-**Explanation:** Prefer external session store or JWT. Sticky is required for legacy in-memory sessions (A), not a reason to avoid stickiness.
-
----
-
-### Q25 [Medium] [Case Study] — CloudMart JWT at Edge
-
-**Answer:** B, C, D
-
-**Explanation:** Never trust client identity headers or IP alone (A).
-
----
-
-### Q26 [Medium] — API Keys for Partners
+### Q16 [Easy] — Notification Pipeline Structure
 
 **Answer:** A, B, D
 
-**Explanation:** Secrets belong in Vault/Secrets Manager (C).
+**Explanation:** Channel-separated workers, template rendering offline, and user partitioning scale. One synchronous chain per user does not (C).
 
 ---
 
-### Q27 [Medium] [Case Study] — CloudMart Admin Route Exposure
+### Q17 [Medium] [Case Study] — PingCast Marketing Spike
+
+**Answer:** A, C, D
+
+**Explanation:** Priority, provider throttles, and scaled consumers protect SLAs. Mixing unprioritized campaign traffic with resets risks provider limits (B).
+
+---
+
+### Q18 [Medium] — PingCast Reliability
+
+**Answer:** A, C, D
+
+**Explanation:** Retry, DLQ, and circuit breakers are core patterns. Exactly-once through external SMS/email is not realistic (B).
+
+---
+
+### Q19 [Hard] [Case Study] — PingCast Order Shipped Event
+
+**Answer:** B, C, D
+
+**Explanation:** Outbox ties DB commit to events; idempotency and at-least-once dedupe handle retries. Notify before commit risks ghost messages (A).
+
+---
+
+### Q20 [Easy] — FeedlyX Home Timeline
+
+**Answer:** A, B, D
+
+**Explanation:** Fan-out on write precomputes feeds for modest follow counts. Celebrity-scale fan-out is the failure mode (C).
+
+---
+
+### Q21 [Easy] — News Feed Read API
+
+**Answer:** B, C, D
+
+**Explanation:** Cursors, hybrid merge, and CDN/object URLs fit feeds. Deep offset pagination is costly (A).
+
+---
+
+### Q22 [Medium] [Case Study] — FeedlyX Celebrity Post
 
 **Answer:** A, B, C
 
-**Explanation:** Resource ownership checks belong in services (C wrong at gateway only).
+**Explanation:** Hybrid/read fan-out for celebrities avoids millions of writes per post. Always write fan-out breaks at 50M followers (D).
 
 ---
 
-### Q28 [Hard] — OAuth and Token Lifecycle
-
-**Answer:** A, C, D
-
-**Explanation:** Long-lived access tokens are risky (B). Short + refresh is standard.
-
----
-
-### Q29 [Medium] — mTLS Gateway to Service
-
-**Answer:** A, B, D
-
-**Explanation:** mTLS is service identity; user auth still at gateway (C).
-
----
-
-### Q30 [Medium] [Case Study] — CloudMart Scraping Attack
-
-**Answer:** A, B, D
-
-**Explanation:** Edge rate limit protects whole platform. Backend-only limit is too late (C).
-
----
-
-### Q31 [Easy] [Case Study] — CloudMart Login Brute Force
+### Q23 [Medium] — FeedlyX Data Layout
 
 **Answer:** A, B, C
 
-**Explanation:** Fixed window allows 2× burst at boundary (C false).
+**Explanation:** Sharded posts, follow graph, and Redis feed cache are standard. Unsharded everything does not scale (D).
 
 ---
 
-### Q32 [Medium] — Rate Limit Response Headers
-
-**Answer:** A, C, D
-
-**Explanation:** Silent 200 hides limit state (B). Standard is 429 + headers.
-
----
-
-### Q33 [Hard] — Distributed Rate Limiting
-
-**Answer:** B, C, D
-
-**Explanation:** Without shared store, limits multiply by replica count (B describes the bug).
-
----
-
-### Q34 [Easy] [Case Study] — CloudMart Hardcoded Upstream IPs
-
-**Answer:** B, C, D
-
-**Explanation:** Containers change IPs — discovery required (C is fragile fiction).
-
----
-
-### Q35 [Easy] — Service Registry Concepts
-
-**Answer:** B, C, D
-
-**Explanation:** Autoscaled environments need dynamic registry (D wrong).
-
----
-
-### Q36 [Medium] [Case Study] — CloudMart Kubernetes Service DNS
+### Q24 [Hard] [Case Study] — FeedlyX Redis Cluster Loss
 
 **Answer:** A, B, D
 
-**Explanation:** K8s endpoints update on pod changes — not stale forever (C).
+**Explanation:** Rebuild path and eventual fan-out consistency are realistic; global 1 ms consistency is not (C). Queue monitoring scales workers (D).
 
 ---
 
-### Q37 [Medium] — DNS-Based Discovery Trade-offs
+### Q25 [Easy] — ChatNest Real-Time Delivery
 
 **Answer:** A, B, D
 
-**Explanation:** DNS has TTL/propagation trade-offs (D false).
+**Explanation:** Stateful gateways, stateless persistence, pub/sub routing match chat architecture. Same-gateway-only fails at scale (C).
 
 ---
 
-### Q38 [Medium] — Health-Aware Registry
+### Q26 [Easy] — Chat Message Ordering
+
+**Answer:** A, B, D
+
+**Explanation:** Per-conversation sequence and backward pagination are standard. Global time-only ordering breaks chat semantics (C).
+
+---
+
+### Q27 [Medium] [Case Study] — ChatNest Cross-Gateway Route
 
 **Answer:** A, C, D
 
-**Explanation:** Routing to dead instances causes errors (C wrong).
+**Explanation:** Persist-then-deliver and cross-gateway pub/sub prevent loss. Deliver-before-persist risks dropped messages (B).
 
 ---
 
-### Q39 [Medium] [Case Study] — CloudMart Polyglot Services
+### Q28 [Medium] — ChatNest Presence and Offline
 
 **Answer:** A, B, C
 
-**Explanation:** Server-side K8s DNS suits polyglot clients. Client-side adds per-language coupling (C overstates hop elimination).
+**Explanation:** TTL presence, push when offline, history sync on reopen. Dropping offline messages is unacceptable (D).
 
 ---
 
-### Q40 [Medium] — Client-Side Discovery
-
-**Answer:** B, C, D
-
-**Explanation:** Client-side embeds discovery in caller (C false).
-
----
-
-### Q41 [Medium] [Case Study] — CloudMart Internal Call Pattern
-
-**Answer:** A, C, D
-
-**Explanation:** Server-side = simple client, platform LB. Eureka client is client-side (B).
-
----
-
-### Q42 [Hard] — Mesh Data Plane Discovery
-
-**Answer:** A, C, D
-
-**Explanation:** Mesh removes SDK need from app (C false).
-
----
-
-### Q43 [Medium] [Case Study] — CloudMart Pod Restart Loop
-
-**Answer:** A, B, C
-
-**Explanation:** Heavy liveness on deps causes cascading kills (C wrong).
-
----
-
-### Q44 [Medium] — Shallow vs Deep Health
-
-**Answer:** B, C, D
-
-**Explanation:** Shallow misses DB failure (C false).
-
----
-
-### Q45 [Medium] [Case Study] — CloudMart Deploy Connection Drops
-
-**Answer:** B, C, D
-
-**Explanation:** Drain before exit prevents mid-request kill (C wrong).
-
----
-
-### Q46 [Hard] — Health Check Cascading Failure
+### Q29 [Hard] [Case Study] — ChatNest 500-Member Group
 
 **Answer:** A, B, D
 
-**Explanation:** Blind deep readiness amplifies outages (C wrong).
+**Explanation:** Single persist with fan-out delivery and aggregated receipts scale groups. Per-member DB rows per send do not (C).
 
 ---
 
-### Q47 [Medium] [Case Study] — CloudMart Mesh Adoption Debate
+### Q30 [Medium] — Autocomplete Serving Stack
 
 **Answer:** A, B, C
 
-**Explanation:** Don't adopt mesh day one (C false). Grow into it.
+**Explanation:** Bloom → Redis → trie/FST is the layered hot path. Fuzzy-first on every keystroke is too slow (D).
 
 ---
 
-### Q48 [Medium] [Case Study] — CloudMart Traffic Directions
-
-**Answer:** A, C, D
-
-**Explanation:** Mesh does not replace public gateway (B).
-
----
-
-### Q49 [Hard] — Gateway vs Mesh Capabilities
-
-**Answer:** A, B, D
-
-**Explanation:** Partner/external auth at gateway, not mesh edge (C).
-
----
-
-### Q50 [Hard] [Case Study] — CloudMart Order Placement Flow
+### Q31 [Medium] [Case Study] — TypeAhead Co Keystroke Storm
 
 **Answer:** B, C, D
 
-**Explanation:** Payment async after 201; sync path stays fast (C wrong).
+**Explanation:** Min length, rate limits, and bloom rejection protect hot paths. Online trie mutation on requests is anti-pattern (A).
+
+---
+
+### Q32 [Hard] — Fuzzy and Prefix Interaction
+
+**Answer:** A, B, D
+
+**Explanation:** Fuzzy is fallback when prefix under-delivers or typos miss trie terminals; cap edit distance. Running fuzzy before bloom wastes work (C).
+
+---
+
+### Q33 [Hard] — TypeAhead Index Pipeline
+
+**Answer:** B, C, D
+
+**Explanation:** Log aggregation, offline rebuilds, and incremental trending keep serving read-only. Per-keystroke production trie writes do not (A).
+
+---
+
+### Q34 [Easy] — BlobVault Avatar Upload
+
+**Answer:** A, B, C
+
+**Explanation:** Presigned direct upload and multipart scale; objects are immutable blobs (D).
+
+---
+
+### Q35 [Medium] — BlobVault Metadata vs Bytes
+
+**Answer:** A, C, D
+
+**Explanation:** Metadata/b bytes split and immutable object model are foundational. Inline gigabyte blobs in SQL does not scale (B).
+
+---
+
+### Q36 [Medium] — BlobVault Durability Mechanics
+
+**Answer:** A, B, C
+
+**Explanation:** Replication, erasure coding tiers, and scrubbing support durability. Single copy violates 11-nines intent (D).
+
+---
+
+### Q37 [Hard] [Case Study] — BlobVault Read After Write
+
+**Answer:** A, C, D
+
+**Explanation:** Quorum before visibility, verified reads, CDN for public assets fit the model. Listing before replication completes breaks RYW (B).
+
+---
+
+### Q38 [Easy] [Case Study] — StreamFlix Creator Upload
+
+**Answer:** A, B, C
+
+**Explanation:** Presigned multipart to object storage with events keeps APIs thin. Proxying 10 GB through API pods does not scale (D).
+
+---
+
+### Q39 [Hard] — StreamFlix Transcoding Pipeline
+
+**Answer:** A, B, C
+
+**Explanation:** Async queued workers produce segmented renditions with state tracking. Inline transcode on upload request blocks and does not scale (D).
+
+---
+
+### Q40 [Medium] [Case Study] — StreamFlix Global Playback
+
+**Answer:** A, B, C
+
+**Explanation:** CDN plus ABR manifests/segment switching is mandatory at petabit scale. Single origin file per viewer fails latency and egress (D).
+
+---
+
+### Q41 [Hard] — StreamFlix Reliability and Ops
+
+**Answer:** A, C, D
+
+**Explanation:** Transcode retries, CDN metrics, and playback beacons are standard ops. Disabling multipart hurts large upload recovery (B).
+
+---
+
+### Q42 [Easy] [Case Study] — CartPay Mobile Checkout Retry
+
+**Answer:** A, C, D
+
+**Explanation:** Stable Idempotency-Key through gateway, service, and PSP prevents double charge. New key per retry defeats idempotency (B).
+
+---
+
+### Q43 [Hard] — CartPay Inventory and Payment Order
+
+**Answer:** A, B, D
+
+**Explanation:** Reserve-before-charge avoids paid orders without stock; SQL guards enforce counts. Charge-first without stock is a common anti-pattern (C).
+
+---
+
+### Q44 [Medium] [Case Study] — CartPay PSP Timeout
+
+**Answer:** A, B, C
+
+**Explanation:** Status query, release on failure, and hold sweepers handle unknown timeouts safely. Blind retries without idempotency risk double charge (D).
+
+---
+
+### Q45 [Hard] [Case Study] — CartPay Flash Sale Oversell
+
+**Answer:** A, B, D
+
+**Explanation:** Conditional updates and conflict responses prevent oversell. Negative inventory breaks consistency (C).
+
+---
+
+### Q46 [Hard] — CartPay Downstream Events
+
+**Answer:** A, B, D
+
+**Explanation:** Saga compensation, outbox, and async side effects with degradation on notify failure fit checkout. Sync email before 201 slows revenue path (C).
+
+---
+
+### Q47 [Medium] [Case Study] — MetricRiver Ingest Flood
+
+**Answer:** A, C, D
+
+**Explanation:** Async Kafka ingest with batching decouples product latency. Sync OLTP insert per click does not scale (B).
+
+---
+
+### Q48 [Medium] — MetricRiver Stream vs Batch
+
+**Answer:** A, B, C
+
+**Explanation:** Flink windows, nightly Spark dedupe, and batch for late data are the tiered model. OLTP scans for MAU overload Postgres (D).
+
+---
+
+### Q49 [Medium] [Case Study] — MetricRiver Duplicate Beacons
+
+**Answer:** A, B, D
+
+**Explanation:** event_id dedupe and tolerant schemas handle at-least-once. Expecting magic exactly-once everywhere without app dedupe is unrealistic (C).
+
+---
+
+### Q50 [Hard] — MetricRiver Query Store
+
+**Answer:** A, B, C
+
+**Explanation:** OLAP for aggregates; OLTP for point lookups — roles differ. Billion-row event scans belong in OLAP, not Postgres (D).

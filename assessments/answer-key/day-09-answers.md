@@ -1,404 +1,406 @@
-# Reliability & Fault Tolerance — Answer Key & Explanations (50)
+# Observability Deep Dive — Answer Key & Explanations (50)
 
 Answer key for [day-09-questions.md](../day-09-questions.md)
 
 
+
+
 ---
 
-### Q01 [Easy] [Case Study] — UptimeCorp Checkout Outage
+### Q01 [Easy] [Case Study] — SignalOps Checkout Error Spike
 
 **Answer:** B, C, D
 
-**Explanation:** Cascading thread exhaustion and blast radius. Speed ≠ reliability (A).
+**Explanation:** Traces, logs with trace_id, and metric timestamps pinpoint root cause. Restart-everything guessing prolongs MTTR (A).
 
 ---
 
-### Q02 [Easy] — Reliability vs Performance vs Scalability
-
-**Answer:** A, C, D
-
-**Explanation:** Three distinct concerns. Scale does not imply fault tolerance (B).
-
----
-
-### Q03 [Easy] [Case Study] — UptimeCorp SLA Math
-
-**Answer:** A, B, D
-
-**Explanation:** SLO stricter than SLA; nines math. SLI/SLO/SLA are distinct (C).
-
----
-
-### Q04 [Easy] — RPO vs RTO
-
-**Answer:** A, B, D
-
-**Explanation:** RPO = data loss window; RTO = downtime window. Different metrics (C).
-
----
-
-### Q05 [Easy] [Case Study] — UptimeCorp SPOF Audit
-
-**Answer:** A, C, D
-
-**Explanation:** Single DB/Redis are SPOF. Redundant stateless app instances reduce app-tier SPOF. Multi-AZ does not remove all SPOF such as regional disaster (B).
-
----
-
-### Q06 [Easy] — Serial Dependency Availability
+### Q02 [Easy] — Defining Observability
 
 **Answer:** A, B, C
 
-**Explanation:** Serial availability multiplies down. More dependencies matter (C false).
+**Explanation:** Observability is external signals and cross-service visibility, not binary uptime alone (D).
 
 ---
 
-### Q07 [Medium] [Case Study] — UptimeCorp Multi-AZ Deploy
-
-**Answer:** A, B, D
-
-**Explanation:** Multi-AZ + deep checks + stateless sessions. Shallow checks insufficient (C).
-
----
-
-### Q08 [Medium] — Active-Active vs Active-Passive
-
-**Answer:** A, B, D
-
-**Explanation:** Redundancy models and N+1. Passive promotion has delay (C).
-
----
-
-### Q09 [Medium] [Case Study] — UptimeCorp Hung Payment Call
+### Q03 [Easy] [Case Study] — SignalOps Silent Latency Creep
 
 **Answer:** A, B, C
 
-**Explanation:** Timeouts fail fast and prevent cascade. Infinite timeout unacceptable (D).
+**Explanation:** Blind spots cause silent degradation, longer MTTR, and churn. Observability does not guarantee zero timeouts (D).
 
 ---
 
-### Q10 [Medium] — Timeout Budget
-
-**Answer:** A, B, C
-
-**Explanation:** Budget inner calls to user SLA; client timeout should cover server processing time. One global timeout for all dependencies is poor practice (D).
-
----
-
-### Q11 [Medium] [Case Study] — UptimeCorp Retry Storm
-
-**Answer:** A, C, D
-
-**Explanation:** Backoff+jitter, transient-only, layer coordination. Retry forever on 503 worsens outage (B).
-
----
-
-### Q12 [Medium] — Idempotent Retries
+### Q04 [Easy] — Observability vs Reliability
 
 **Answer:** A, B, D
 
-**Explanation:** POST transfer needs idempotency key. Blind POST retry is unsafe (C).
+**Explanation:** Reliability survives failures; observability detects/diagnoses and validates breaker behavior. Metrics do not replace breakers (C).
 
 ---
 
-### Q13 [Medium] [Case Study] — UptimeCorp Circuit Opens
-
-**Answer:** A, B, D
-
-**Explanation:** CB states and per-dependency isolation. Open ≠ fixed (C).
-
----
-
-### Q14 [Medium] — Circuit Breaker vs Retries
-
-**Answer:** A, C, D
-
-**Explanation:** Complementary patterns. Not either/or (B).
-
----
-
-### Q15 [Hard] [Case Study] — UptimeCorp Bulkhead Saves Browse
+### Q05 [Easy] [Case Study] — SignalOps Architecture Growth
 
 **Answer:** B, C, D
 
-**Explanation:** Bulkhead vs breaker distinction. Different problems (A).
+**Explanation:** Distributed, async, and on-call production need correlation. Single-server local logs only does not scale (A).
 
 ---
 
-### Q16 [Hard] — Bulkhead Types
-
-**Answer:** A, B, C
-
-**Explanation:** Pools, connection separation, queue as bulkhead. Too-large bulkhead loses isolation (D).
-
----
-
-### Q17 [Hard] [Case Study] — UptimeCorp Graceful Degradation
-
-**Answer:** A, B, D
-
-**Explanation:** Tiered features and fallbacks. Don't 500 whole page for optional block (C).
-
----
-
-### Q18 [Hard] — Load Shedding Priority
-
-**Answer:** A, B, D
-
-**Explanation:** Priority shedding with Retry-After. Not equal treatment under overload (C).
-
----
-
-### Q19 [Easy] [Case Study] — UptimeCorp Regional Failover Drill
-
-**Answer:** B, C, D
-
-**Explanation:** Drills and tested restores. Multi-region is costly, not universal default (A).
-
----
-
-### Q20 [Easy] — Split-Brain Prevention
-
-**Answer:** A, B, D
-
-**Explanation:** Quorum/fencing; manual failover tradeoff. Split-brain is dangerous (C).
-
----
-
-### Q21 [Medium] [Case Study] — UptimeCorp Error Budget Burn
+### Q06 [Easy] — Design Mindset
 
 **Answer:** A, C, D
 
-**Explanation:** Burn-rate alerts and budget policy; exclude client 4xx from SLI typically. Single error paging is noisy (B).
+**Explanation:** Instrument early, symptom alerts, debuggable logs. Deferring all instrumentation flies blind at launch (B).
 
 ---
 
-### Q22 [Medium] — SLI Selection
+### Q07 [Easy] — Monitoring vs Observability
 
 **Answer:** A, B, D
 
-**Explanation:** User-journey SLIs. Process-up ping insufficient alone (C).
+**Explanation:** Monitoring thresholds vs exploratory diagnosis of novel failures. You still need monitoring to notify (C).
 
 ---
 
-### Q23 [Medium] [Case Study] — UptimeCorp Canary Deploy
+### Q08 [Easy] [Case Study] — SignalOps Alert With No Data
 
-**Answer:** A, B, D
+**Answer:** A, C
 
-**Explanation:** Canary + rollback + flags. Big-bang is high risk (C).
-
----
-
-### Q24 [Medium] — Defense in Depth Stack
-
-**Answer:** A, C, D
-
-**Explanation:** Layered patterns together. One pattern insufficient (B).
+**Explanation:** Page without drill-down data is monitoring-only gap; production needs both detection and observability (B, D wrong).
 
 ---
 
-### Q25 [Hard] [Case Study] — UptimeCorp Chaos Experiment
+### Q09 [Easy] [Case Study] — SignalOps Post-Deploy Latency
 
 **Answer:** A, B, C
 
-**Explanation:** Hypothesis-driven chaos with fixes. Not uncontrolled prod chaos day one (D).
+**Explanation:** Unknown-unknown debugging — dependency, client slice, shard. Disk >90% is a known monitored threshold (D).
 
 ---
 
-### Q26 [Hard] — Partial vs Total Failure
+### Q10 [Easy] — Health Checks vs Deep Visibility
 
 **Answer:** A, B, D
 
-**Explanation:** Slow partial failures cascade; need timeouts/breakers. Partial failures matter (C false).
+**Explanation:** Health is binary; slow DB/GC/retry can hide behind 200. Health alone is insufficient (C).
 
 ---
 
-### Q27 [Easy] — MTBF and MTTR
+### Q11 [Easy] [Case Study] — SignalOps Incident Workflow
 
-**Answer:** A, C, D
+**Answer:** B, D
 
-**Explanation:** MTTR reduction helps availability. MTBF alone insufficient with long MTTR (B).
+**Explanation:** Metrics → logs → traces workflow uses pillars together. Logs-only or traces-only are anti-patterns (B, D).
 
 ---
 
-### Q28 [Medium] [Case Study] — UptimeCorp Read-Only Mode
+### Q12 [Easy] — Logs Pillar
 
 **Answer:** A, B, D
 
-**Explanation:** Partial degradation during DB lag. Don't checkout on stale inventory (C).
+**Explanation:** Logs are event-level with context and cost. Fleet-wide per-request alerting belongs on metrics (C).
 
 ---
 
-### Q29 [Hard] — Designing for Failure Checklist
-
-**Answer:** A, B, D
-
-**Explanation:** Redundancy, idempotency, blameless postmortems. Many outages are self-inflicted deploys (D false).
-
----
-
-### Q30 [Hard] [Case Study] — UptimeCorp Game Day
-
-**Answer:** A, B, D
-
-**Explanation:** Game days improve MTTR; complement metrics/SLOs (C false).
-
----
-
-### Q31 [Easy] [Case Study] — UptimeCorp DNS Outage
+### Q13 [Easy] — Metrics Pillar
 
 **Answer:** B, C, D
 
-**Explanation:** DNS is critical path. Secondary DNS helps. Low TTL has propagation/ops trade-offs (A).
+**Explanation:** Counter, gauge, histogram behaviors as documented. Counters are monotonic until process restart, not minutely reset (A).
 
 ---
 
-### Q32 [Easy] — Kubernetes Probe Types
-
-**Answer:** A, B, C
-
-**Explanation:** Liveness, readiness, startup roles differ. Liveness should not kill on every DB blip (D).
-
----
-
-### Q33 [Easy] [Case Study] — UptimeCorp Post-Outage Login Surge
+### Q14 [Easy] — Traces Pillar
 
 **Answer:** A, B, D
 
-**Explanation:** Recovery herd exceeds steady peak. Rate limit and jitter help (C).
+**Explanation:** Traces show path, timing, dependencies. Full unsampled 100K RPS ignores sampling cost (C).
 
 ---
 
-### Q34 [Easy] — Classifying Dependency Failures
-
-**Answer:** A, B, C
-
-**Explanation:** Transient vs permanent vs slow need different policies. Not one retry policy for all (D).
-
----
-
-### Q35 [Easy] [Case Study] — UptimeCorp Health Check Flapping
+### Q15 [Medium] [Case Study] — SignalOps Metrics-Only Stack
 
 **Answer:** A, C, D
 
-**Explanation:** Tune thresholds; all backends out = outage; hysteresis on shared deps. Aggressive checks can worsen flapping (B).
+**Explanation:** Single-pillar gaps: metrics lack context, logs-only can't alert efficiently, traces-only miss aggregates. All three together is the fix (B).
 
 ---
 
-### Q36 [Easy] — N+1 Redundant Capacity
+### Q16 [Medium] [Case Study] — SignalOps Telemetry Pipeline
 
 **Answer:** A, B, D
 
-**Explanation:** N+1 and headroom differ. 100% utilization leaves no failure margin (C).
+**Explanation:** OTel collector pattern and multi-backend stacks are standard. SSH grep per pod does not scale (C).
 
 ---
 
-### Q37 [Medium] [Case Study] — UptimeCorp Hedged Requests
+### Q17 [Medium] — Structured Logging
+
+**Answer:** A, B, D
+
+**Explanation:** JSON fields enable platform queries. Plain text grep at scale is slow (C).
+
+---
+
+### Q18 [Medium] [Case Study] — SignalOps Alert Fatigue
+
+**Answer:** A, B, C
+
+**Explanation:** Level discipline and sampling reduce noise. Secrets in logs are unsafe (D).
+
+---
+
+### Q19 [Medium] — Correlation IDs
 
 **Answer:** B, C, D
 
-**Explanation:** Hedging cuts tail latency selectively. Can cap hedging — not blind 2× always (A).
+**Explanation:** Single ID from gateway with trace alignment. Regenerating per service breaks correlation (A).
 
 ---
 
-### Q38 [Medium] — Fallback vs Fail Fast
+### Q20 [Medium] — Safe Logging Content
 
 **Answer:** A, B, D
 
-**Explanation:** Different strategies for different tiers. Not identical UX (C).
+**Explanation:** Log outcomes and IDs, not secrets or huge bodies. PAN/keys must not appear (C).
 
 ---
 
-### Q39 [Medium] [Case Study] — UptimeCorp API Rate Limiting
-
-**Answer:** B, C, D
-
-**Explanation:** Rate limits shed overload. Unlimited traffic is not HA (A).
-
----
-
-### Q40 [Medium] — Blue-Green vs Rolling Deploy
-
-**Answer:** A, B, C
-
-**Explanation:** Blue-green fast rollback; rolling smaller waves; duplicate infra cost. Rolling still needs checks (D).
-
----
-
-### Q41 [Medium] [Case Study] — UptimeCorp Hidden Dependency Chain
-
-**Answer:** B, C, D
-
-**Explanation:** Maps and tracing reveal hidden sync chains. Docs complement — not replace — timeouts (A).
-
----
-
-### Q42 [Medium] — Synthetic Monitoring
-
-**Answer:** A, B, C
-
-**Explanation:** Synthetic improves MTTD. Complements — not replaces — real-user SLIs (D).
-
----
-
-### Q43 [Medium] [Case Study] — UptimeCorp Status Page Trust
-
-**Answer:** A, B, D
-
-**Explanation:** Honest status is incident response. Hiding outages erodes trust (C).
-
----
-
-### Q44 [Medium] — Blast Radius Reduction
-
-**Answer:** A, B, D
-
-**Explanation:** Cells, flags, isolation. Monolith blast radius varies — not always smaller (C).
-
----
-
-### Q45 [Hard] [Case Study] — UptimeCorp Compounded Retries
-
-**Answer:** A, B, C
-
-**Explanation:** Retry budgets cap amplification. Multi-layer retry has cost (D).
-
----
-
-### Q46 [Hard] — Cold, Warm, and Hot Standby
-
-**Answer:** A, B, C
-
-**Explanation:** Standby tiers trade cost vs RTO. RPO depends on replication/backups — not automatic (D).
-
----
-
-### Q47 [Hard] [Case Study] — UptimeCorp Latency SLO Miss
+### Q21 [Medium] [Case Study] — SignalOps Order Service SLOs
 
 **Answer:** A, C, D
 
-**Explanation:** Latency SLIs catch slow degradation. Zero errors ≠ good UX (B).
+**Explanation:** RED is rate, errors, duration for request services. CPU utilization alone is USE-style (B).
 
 ---
 
-### Q48 [Hard] — Poison Input on Sync Path
+### Q22 [Medium] [Case Study] — SignalOps Payment Latency
 
-**Answer:** A, B, D
+**Answer:** A, C, D
 
-**Explanation:** Validate input; DLQ/quarantine bad payloads. Infinite retry on bad input fails (C).
+**Explanation:** rate, error ratio, histogram quantiles match RED. user_id labels explode cardinality (B).
 
 ---
 
-### Q49 [Hard] [Case Study] — UptimeCorp Active-Active Write Conflict
+### Q23 [Medium] — USE Method
 
 **Answer:** A, B, C
 
-**Explanation:** Active-active needs conflict resolution. Partitions happen; strong consistency may need single writer (D).
+**Explanation:** USE targets resources: utilization, saturation, errors. HTTP RPS is RED on services (D).
 
 ---
 
-### Q50 [Hard] — Reliability Culture and Operations
+### Q24 [Medium] [Case Study] — SignalOps Queue Backlog
+
+**Answer:** A, B, C
+
+**Explanation:** Queue depth gauge, processed counter, lag/duration histogram fit workers. Counters do not decrease (D).
+
+---
+
+### Q25 [Medium] — Label Cardinality
 
 **Answer:** A, B, D
 
-**Explanation:** Blameless culture, error budgets, operational practice. 100% uptime is not realistic (C).
+**Explanation:** Bounded labels good; unbounded IDs belong in logs/traces. Putting IDs in metrics is the anti-pattern (C).
+
+---
+
+### Q26 [Medium] [Case Study] — SignalOps Metric Cost Explosion
+
+**Answer:** A, B, C
+
+**Explanation:** user_id label caused cardinality; use status labels and logs for per-user drill-down. order_id labels repeat the mistake (D).
+
+---
+
+### Q27 [Medium] — Golden Signals
+
+**Answer:** A, B, D
+
+**Explanation:** Golden signals align with RED/USE coverage. They complement logs, not replace them (C).
+
+---
+
+### Q28 [Medium] — Trace Structure
+
+**Answer:** A, B, C
+
+**Explanation:** Trace/span hierarchy and propagation rules. Each span has its own span ID (D).
+
+---
+
+### Q29 [Medium] [Case Study] — SignalOps Missing Payment Span
+
+**Answer:** A, B, D
+
+**Explanation:** Missing hops mean broken header propagation/instrumentation. Traces require propagation (C).
+
+---
+
+### Q30 [Medium] [Case Study] — SignalOps Async Notification
+
+**Answer:** A, B, D
+
+**Explanation:** Carry trace_id in messages and search across producer/consumer. HTTP trace does not auto-link async work (C).
+
+---
+
+### Q31 [Medium] — OpenTelemetry and Instrumentation
+
+**Answer:** B, C, D
+
+**Explanation:** OTel pipeline and auto+manual spans. Logs remain essential alongside OTel (A).
+
+---
+
+### Q32 [Medium] — Trace Sampling
+
+**Answer:** A, B, C
+
+**Explanation:** Head/tail sampling and keeping error traces. 100% at extreme RPS is not production-viable (D).
+
+---
+
+### Q33 [Medium] [Case Study] — SignalOps N+1 in Inventory
+
+**Answer:** B, C, D
+
+**Explanation:** Repeated spans, dominant span, retries visible in traces. Timelines show parallel vs serial (A).
+
+---
+
+### Q34 [Medium] [Case Study] — SignalOps Service Launch Checklist
+
+**Answer:** A, B, D
+
+**Explanation:** Health, RED, stdout JSON, propagation, metrics endpoint. Tracing with sampling belongs at prod launch (C).
+
+---
+
+### Q35 [Medium] — Gateway and Auto Instrumentation
+
+**Answer:** B, C, D
+
+**Explanation:** Auto for plumbing, manual for business steps, gateway per-route RED. Auto does not replace domain metrics (A).
+
+---
+
+### Q36 [Hard] [Case Study] — SignalOps Gateway Access Logs
+
+**Answer:** A, B, C
+
+**Explanation:** Gateway generates IDs, rich access logs, route RED. Regenerating trace IDs mid-chain breaks traces (D).
+
+---
+
+### Q37 [Hard] — Dashboard Design
+
+**Answer:** B, C, D
+
+**Explanation:** Tiered RED/USE dashboards with deploy markers. Vanity/chart spam wastes on-call time (A).
+
+---
+
+### Q38 [Hard] [Case Study] — SignalOps On-Call Dashboard
+
+**Answer:** A, B, D
+
+**Explanation:** System → service → dependency drill-down with percentiles. CPU alone without symptoms is weak paging (C).
+
+---
+
+### Q39 [Hard] — Alerting on Symptoms
+
+**Answer:** B, C, D
+
+**Explanation:** User-visible error rate and latency; CPU with latency for context. Single 500 pages create fatigue (A).
+
+---
+
+### Q40 [Hard] [Case Study] — SignalOps CPU Pages
+
+**Answer:** A, B, C
+
+**Explanation:** Low CPU threshold without user impact is noisy and erodes trust. Checkout SLO burn uses SLI/budget alerts (D).
+
+---
+
+### Q41 [Hard] — Severity and Runbooks
+
+**Answer:** A, C, D
+
+**Explanation:** P1/P2/P3 discipline with linked runbooks. One-off pod restart is not page-worthy alone (B).
+
+---
+
+### Q42 [Hard] — Alert Routing and Noise
+
+**Answer:** A, C, D
+
+**Explanation:** Route by severity, dedupe, prune quarterly. Runbooks are required for actionable pages (B).
+
+---
+
+### Q43 [Hard] [Case Study] — SignalOps SLO Burn Page
+
+**Answer:** A, C, D
+
+**Explanation:** Fast/slow burn rate on budget consumption beats paging every 500 (B).
+
+---
+
+### Q44 [Hard] [Case Study] — SignalOps Checkout SLI
+
+**Answer:** A, B, D
+
+**Explanation:** Journey-based checkout SLI with metrics and failure logs. process_running ignores user outcomes (C).
+
+---
+
+### Q45 [Hard] — Error Budgets
+
+**Answer:** A, B, D
+
+**Explanation:** Shared budget drives deploy risk decisions. Engineering must respect budget, not only finance (C).
+
+---
+
+### Q46 [Hard] — SLO Dashboards and SLA
+
+**Answer:** A, B, C
+
+**Explanation:** Show SLI, budget, burn; alert on stricter internal SLO. Hiding budget blocks deploy decisions (D).
+
+---
+
+### Q47 [Hard] [Case Study] — SignalOps Deploy Freeze
+
+**Answer:** B, D
+
+**Explanation:** Low budget triggers freeze/discussion; dashboards answer deploy safety. Ignoring budget or shipping blindly (B, D) violates SRE practice.
+
+---
+
+### Q48 [Hard] — Log Aggregation
+
+**Answer:** A, B, D
+
+**Explanation:** stdout → agent → central store with tiered retention and query by IDs. Local container files are lost on reschedule (C).
+
+---
+
+### Q49 [Hard] [Case Study] — SignalOps Lost Pod Logs
+
+**Answer:** A, B, D
+
+**Explanation:** Central shipping and volume control prevent evidence loss. DEBUG forever in hot tier is costly (C).
+
+---
+
+### Q50 [Hard] [Case Study] — SignalOps Mesh and East-West
+
+**Answer:** A, B, C
+
+**Explanation:** Gateway north-south plus mesh east-west and trace graphs; mesh complements app IDs and queue context (D).

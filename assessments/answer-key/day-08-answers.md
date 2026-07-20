@@ -1,404 +1,404 @@
-# Message Queues Deep Dive — Answer Key & Explanations (50)
+# API Gateway & Service Discovery — Answer Key & Explanations (50)
 
 Answer key for [day-08-questions.md](../day-08-questions.md)
 
 
 ---
 
-### Q01 [Easy] [Case Study] — EventPipe Upload Acceptance
+### Q01 [Easy] [Case Study] — CloudMart Deploy Bottleneck
+
+**Answer:** A, B, C
+
+**Explanation:** Deploy pain and scale mismatch are split signals. Early MVP small team should often stay modular monolith (D).
+
+---
+
+### Q02 [Easy] — Monolith Advantages
+
+**Answer:** A, B, C
+
+**Explanation:** Monoliths excel at simplicity and cross-module transactions. Per-service deploy is microservices (D).
+
+---
+
+### Q03 [Easy] [Case Study] — CloudMart MVP Team Size
 
 **Answer:** B, C, D
 
-**Explanation:** Queue offloads slow work and enables retry. DB remains source of truth for metadata (A).
+**Explanation:** Early stage favors monolith/modular monolith. Separate repos day one is premature (A).
 
 ---
 
-### Q02 [Easy] — Message Queue Components
-
-**Answer:** A, B, D
-
-**Explanation:** Standard broker flow with ack and pull backpressure. Queues are not financial ledger (C).
-
----
-
-### Q03 [Easy] [Case Study] — EventPipe Checkout Hybrid
+### Q04 [Easy] — Microservices Trade-offs
 
 **Answer:** B, C, D
 
-**Explanation:** Sync payment decision; async side effects with retry. Payment must not be fire-and-forget (A).
+**Explanation:** Microservices need gateway, discovery, observability — not eliminate them (A).
 
 ---
 
-### Q04 [Easy] — Queue vs Pub/Sub vs Stream
-
-**Answer:** A, B, C
-
-**Explanation:** Three models as described. Redis Pub/Sub is not durable for offline subs (D).
-
----
-
-### Q05 [Easy] [Case Study] — EventPipe Order Notifications
-
-**Answer:** A, B, C, D
-
-**Explanation:** Fan-out needs pub/sub or per-service groups; single task queue load-balances one consumer per message — all statements correctly contrast models.
-
----
-
-### Q06 [Easy] — Broker Core Components
-
-**Answer:** A, B, C
-
-**Explanation:** Partitions cap group parallelism. Extra consumers beyond partitions idle (D).
-
----
-
-### Q07 [Medium] [Case Study] — EventPipe Message Payload Size
-
-**Answer:** A, B, D
-
-**Explanation:** Reference blobs in object storage; small envelope fields. Full row/blob embed is anti-pattern (C).
-
----
-
-### Q08 [Medium] — Commands vs Events
-
-**Answer:** A, B, D
-
-**Explanation:** Events decouple; commands couple. Commands are not better for decoupling (C).
-
----
-
-### Q09 [Medium] [Case Study] — EventPipe Duplicate Charge
-
-**Answer:** A, B, C
-
-**Explanation:** At-least-once duplicates without idempotency (D). Ack after idempotent process.
-
----
-
-### Q10 [Medium] — Delivery Guarantees
-
-**Answer:** A, B, D
-
-**Explanation:** At-most vs at-least trade-offs. Exactly-once end-to-end is not trivial (C).
-
----
-
-### Q11 [Medium] [Case Study] — EventPipe Order State Machine
-
-**Answer:** A, B, D
-
-**Explanation:** order_id partition key; timestamp is bad key (C). Sequence guards out-of-order retries.
-
----
-
-### Q12 [Medium] — Bad Partition Keys
-
-**Answer:** A, B, D
-
-**Explanation:** Timestamp and country skew. order_id/user_id are good (C).
-
----
-
-### Q13 [Medium] [Case Study] — EventPipe Consumer Lag
-
-**Answer:** A, B, C
-
-**Explanation:** Partition limit explains idle pods. Scaling past downstream API bottleneck does not help (D).
-
----
-
-### Q14 [Medium] — Backpressure and Graceful Shutdown
-
-**Answer:** A, B, C
-
-**Explanation:** Graceful drain prevents duplicate redelivery. High prefetch can block on one slow msg (D).
-
----
-
-### Q15 [Hard] [Case Study] — EventPipe Poison Message
+### Q05 [Easy] [Case Study] — CloudMart Strangler Fig
 
 **Answer:** A, C, D
 
-**Explanation:** DLQ + non-retryable classification + alerts. Infinite retry on bad JSON is harmful (B).
+**Explanation:** Strangler fig migrates slice-by-slice behind a facade/gateway. Big-bang rewrite is the anti-pattern (B).
 
 ---
 
-### Q16 [Hard] — Retry vs Non-Retryable Errors
+### Q06 [Easy] [Case Study] — CloudMart Internal RPC Choice
 
 **Answer:** A, C, D
 
-**Explanation:** Retry transients with backoff+jitter. 400/auth failures go to DLQ (B).
+**Explanation:** Typical stack: REST public, gRPC internal, queues async. GraphQL everywhere internal is overkill (B).
 
 ---
 
-### Q17 [Hard] [Case Study] — EventPipe Outbox Pattern
+### Q07 [Easy] — Sync vs Async Between Services
 
 **Answer:** A, B, D
 
-**Explanation:** Same-txn outbox + poller — no 2PC to Kafka (C).
+**Explanation:** User-visible payment decision needs sync path. Async for reactions (C wrong for async-only).
 
 ---
 
-### Q18 [Hard] — Saga Pattern
+### Q08 [Easy] [Case Study] — CloudMart Mobile Data Needs
 
 **Answer:** A, B, D
 
-**Explanation:** Compensating events; local txns only. Global 2PC across services is not standard (C).
+**Explanation:** GraphQL/BFF at edge for clients. N+1 still needs server design (C).
 
 ---
 
-### Q19 [Easy] — Sync vs Async Trade-offs
+### Q09 [Medium] [Case Study] — CloudMart Internal Service Trust
 
-**Answer:** B, C, D
+**Answer:** A, B, C
 
-**Explanation:** Sync for user-visible decisions; async buffers failures. Async is eventual, not strong immediate consistency (A).
+**Explanation:** Authenticate every hop. VPC is not sufficient (D).
 
 ---
 
-### Q20 [Easy] [Case Study] — EventPipe Black Friday Spike
+### Q10 [Medium] — gRPC Production Considerations
 
 **Answer:** A, B, D
 
-**Explanation:** Buffer decouples rates. Workers still required (C).
+**Explanation:** gRPC is not browser-native (C). Needs HTTP/2-aware LB and Day 7 reliability patterns.
 
 ---
 
-### Q21 [Medium] — SQS Standard vs FIFO
-
-**Answer:** B, C, D
-
-**Explanation:** FIFO orders per MessageGroupId, not globally (A).
-
----
-
-### Q22 [Medium] [Case Study] — EventPipe Fan-Out Architecture
-
-**Answer:** A, B, C, D
-
-**Explanation:** SNS→SQS fan-out gives isolated scaling and DLQ per channel — all statements valid.
-
----
-
-### Q23 [Medium] — Kafka vs SQS Tool Selection
-
-**Answer:** A, B, D
-
-**Explanation:** Kafka for replay/streams; SQS for simple jobs. Kafka overkill for tiny email cron (C).
-
----
-
-### Q24 [Medium] — Monitoring Queue Health
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four are standard queue health signals.
-
----
-
-### Q25 [Hard] [Case Study] — EventPipe Exactly-Once Claim
-
-**Answer:** B, C, D
-
-**Explanation:** Idempotent consumers remain mandatory. Never drop idempotency on vendor claims (A).
-
----
-
-### Q26 [Hard] — Idempotency Implementation
+### Q11 [Easy] [Case Study] — CloudMart Client URL Sprawl
 
 **Answer:** A, C, D
 
-**Explanation:** Dedup table, natural idempotent updates, API keys. Ack-before-process risks loss (B).
+**Explanation:** Gateway is single front door. Direct port exposure worsens client sprawl (B).
 
 ---
 
-### Q27 [Easy] — Why Not a Database Table as Queue
+### Q12 [Easy] — API Gateway vs Load Balancer
 
 **Answer:** A, B, D
 
-**Explanation:** DIY queue hits lock/contention limits. Brokers scale messaging; table is not faster at 100K/sec (C).
+**Explanation:** Auth/rate limits are gateway strengths, not typical LB (C reversed).
 
 ---
 
-### Q28 [Medium] [Case Study] — EventPipe CDC Pipeline
-
-**Answer:** A, B, D
-
-**Explanation:** Debezium CDC decouples indexing; sync search on every write is optional not required (C).
-
----
-
-### Q29 [Hard] — Redis Pub/Sub vs Redis Streams
-
-**Answer:** A, B, C
-
-**Explanation:** Pub/Sub ephemeral; Streams persisted. Not durable primary for payments (D).
-
----
-
-### Q30 [Hard] [Case Study] — EventPipe Delayed Reminder
-
-**Answer:** A, B, D
-
-**Explanation:** Delay queues for scheduled work. Real-time chat uses WebSocket, not delayed queue (C).
-
----
-
-### Q31 [Easy] [Case Study] — EventPipe Schema Breaking Change
-
-**Answer:** A, C, D
-
-**Explanation:** Version and evolve compatibly. Remove fields only after consumers updated (B).
-
----
-
-### Q32 [Easy] — Priority and Multiple Queues
-
-**Answer:** A, B, D
-
-**Explanation:** Separate queues/pools for priority. Single FIFO does not auto-prioritize (C).
-
----
-
-### Q33 [Easy] [Case Study] — EventPipe Webhook Replay Request
-
-**Answer:** A, B, C, D
-
-**Explanation:** Kafka replay within retention; SQS consumed messages gone; design logs when replay is required.
-
----
-
-### Q34 [Easy] — Message Ordering Trade-offs
-
-**Answer:** A, B, D
-
-**Explanation:** Global order limits throughput. Ordering has cost; handle out-of-order retries (C).
-
----
-
-### Q35 [Easy] [Case Study] — EventPipe Visibility Timeout Too Short
-
-**Answer:** A, C, D
-
-**Explanation:** Timeout must cover processing; heartbeat extends lease. Short timeout causes duplicates (B).
-
----
-
-### Q36 [Easy] — RabbitMQ Exchange Routing
-
-**Answer:** A, B, C
-
-**Explanation:** Direct, topic, fanout models. RabbitMQ ≠ Kafka partitions (D).
-
----
-
-### Q37 [Medium] [Case Study] — EventPipe Shared Queue Mistake
-
-**Answer:** A, B, D
-
-**Explanation:** Task queue competes — one consumer per message. Fan-out needs pub/sub (C).
-
----
-
-### Q38 [Medium] — Saga Choreography vs Orchestration
-
-**Answer:** A, B, D
-
-**Explanation:** Two saga styles; both need idempotency (C).
-
----
-
-### Q39 [Medium] [Case Study] — EventPipe Rebalance Storm
+### Q13 [Easy] — Gateway Cross-Cutting Concerns
 
 **Answer:** B, C, D
 
-**Explanation:** Rebalance pauses consumption; limit churn; sticky/cooperative rebalance (A).
+**Explanation:** Fine-grained resource auth stays in services (A). Gateway does coarse edge auth.
 
 ---
 
-### Q40 [Medium] — Dead Letter Queue Operations
-
-**Answer:** A, B, D
-
-**Explanation:** Alert, idempotent replay, rich metadata. DLQ messages can be reprocessed (C).
-
----
-
-### Q41 [Medium] [Case Study] — EventPipe Out-of-Order Events
+### Q14 [Medium] [Case Study] — CloudMart Mobile vs Web APIs
 
 **Answer:** B, C, D
 
-**Explanation:** State machine and sequence guards. At-least-once ≠ perfect order (A).
+**Explanation:** Gateway still front door; BFF tailors per UI. BFF alone without gateway loses central edge policy (A).
 
 ---
 
-### Q42 [Medium] — Task Queue Worker Semantics
+### Q15 [Medium] [Case Study] — CloudMart Gateway Routing Table
+
+**Answer:** A, C, D
+
+**Explanation:** Gateway routes and versions — not business logic or DB (B).
+
+---
+
+### Q16 [Medium] — TLS at the Gateway
+
+**Answer:** A, C, D
+
+**Explanation:** Internal HTTP on private VPC is common; mTLS optional upgrade (C overstates).
+
+---
+
+### Q17 [Medium] — Gateway Offloading and Transforms
+
+**Answer:** B, C, D
+
+**Explanation:** Offload cross-cutting edge work; transform headers/protocols. No session state in gateway (A).
+
+---
+
+### Q18 [Medium] [Case Study] — CloudMart Dashboard Aggregation
 
 **Answer:** A, B, C
 
-**Explanation:** Ack-after-success, optional result backend, visibility lease. DB transactions still required (D).
+**Explanation:** Aggregation at gateway/BFF is standard. Forcing three public calls defeats gateway purpose (D).
 
 ---
 
-### Q43 [Medium] [Case Study] — EventPipe Publish-Before-Commit
+### Q19 [Medium] — TCP vs UDP for Service APIs
 
 **Answer:** A, B, D
 
-**Explanation:** Dual-write race; outbox fixes ordering vs commit. Publish-first is unsafe (C).
+**Explanation:** Default APIs use TCP. UDP only for loss-tolerant low-latency cases — not payment RPCs (C).
 
 ---
 
-### Q44 [Medium] — Message Payload Compression
+### Q20 [Medium] [Case Study] — CloudMart Path Routing Incident
 
 **Answer:** A, B, D
 
-**Explanation:** Compression saves bandwidth/CPU trade-off. Large blobs still belong in object storage (C).
+**Explanation:** Deliberate path→service mapping required. Random routing is wrong (C).
 
 ---
 
-### Q45 [Hard] [Case Study] — EventPipe Inbox Pattern
+### Q21 [Medium] — Header-Based Routing
+
+**Answer:** B, C, D
+
+**Explanation:** Header routing for canary/tenant/version — not auth replacement (A).
+
+---
+
+### Q22 [Medium] [Case Study] — CloudMart Canary Release
 
 **Answer:** A, B, C
 
-**Explanation:** Inbound dedup table in same txn. Inbox is for inbound integrations (D).
+**Explanation:** Canary/blue-green hide version routing from clients (C false).
 
 ---
 
-### Q46 [Hard] — Kafka Log Compaction
-
-**Answer:** A, B, C
-
-**Explanation:** Compacted topics for keyed state. Not instant delete-all-history (D).
-
----
-
-### Q47 [Hard] [Case Study] — EventPipe Cross-Region Consumer Lag
+### Q23 [Hard] — gRPC Load Balancing
 
 **Answer:** A, B, D
 
-**Explanation:** Cross-region is eventual; plan lag tolerance. Not synchronous zero-lag (C).
+**Explanation:** gRPC uses HTTP/2 on TCP (C wrong). Connection pinning causes hot spots.
 
 ---
 
-### Q48 [Hard] — FIFO Queue Semantics
+### Q24 [Medium] [Case Study] — CloudMart Anti-Corruption Layer
+
+**Answer:** A, C, D
+
+**Explanation:** ACL translates legacy models at the boundary. Do not leak mainframe schemas everywhere (B).
+
+---
+
+### Q25 [Medium] [Case Study] — CloudMart JWT at Edge
+
+**Answer:** A, B, C
+
+**Explanation:** Never trust client identity headers or IP alone (D).
+
+---
+
+### Q26 [Medium] — API Keys for Partners
+
+**Answer:** A, C, D
+
+**Explanation:** Secrets belong in Vault/Secrets Manager (B).
+
+---
+
+### Q27 [Medium] [Case Study] — CloudMart Admin Route Exposure
 
 **Answer:** A, B, D
 
-**Explanation:** Order per MessageGroupId; parallel groups. Not global account order (C).
+**Explanation:** Resource ownership checks belong in services (C wrong at gateway only).
 
 ---
 
-### Q49 [Hard] [Case Study] — EventPipe Kafka Rolling Upgrade
+### Q28 [Hard] — Federated Identity and Tokens
 
-**Answer:** A, B, C
+**Answer:** A, C, D
 
-**Explanation:** Replication and client retries for leader elections. Single broker is not production-safe (D).
+**Explanation:** Federated IdP + short-lived tokens; allowlist public routes. Long-lived access JWTs are risky (B).
 
 ---
 
-### Q50 [Hard] — When Queues Add Harm
+### Q29 [Medium] — mTLS Gateway to Service
+
+**Answer:** B, C, D
+
+**Explanation:** mTLS is service identity; user auth still at gateway (A).
+
+---
+
+### Q30 [Medium] [Case Study] — CloudMart Scraping Attack
+
+**Answer:** A, B, D
+
+**Explanation:** Edge rate limit protects whole platform. Backend-only limit is too late (C).
+
+---
+
+### Q31 [Easy] [Case Study] — CloudMart Login Brute Force
+
+**Answer:** A, C, D
+
+**Explanation:** Fixed window allows 2× burst at boundary (C false).
+
+---
+
+### Q32 [Medium] — Throttling at the Gateway
+
+**Answer:** A, B, D
+
+**Explanation:** Throttling = rate + concurrency + quota. Never silently drop with fake 200 (C).
+
+---
+
+### Q33 [Hard] — Distributed Rate Limiting
 
 **Answer:** A, B, C
 
-**Explanation:** Queues add ops cost; sync paths need UX for user-visible decisions. Not every call should be queued (D).
+**Explanation:** Without shared store, limits multiply by replica count (B describes the bug).
+
+---
+
+### Q34 [Easy] [Case Study] — CloudMart Hardcoded Upstream IPs
+
+**Answer:** A, B, D
+
+**Explanation:** Containers change IPs — discovery required (C is fragile fiction).
+
+---
+
+### Q35 [Easy] — Service Registry Concepts
+
+**Answer:** A, B, D
+
+**Explanation:** Autoscaled environments need dynamic registry (D wrong).
+
+---
+
+### Q36 [Medium] [Case Study] — CloudMart Kubernetes Service DNS
+
+**Answer:** A, C, D
+
+**Explanation:** K8s endpoints update on pod changes — not stale forever (B).
+
+---
+
+### Q37 [Medium] — DNS-Based Discovery Trade-offs
+
+**Answer:** A, B, D
+
+**Explanation:** DNS has TTL/propagation trade-offs (D false).
+
+---
+
+### Q38 [Medium] — Health-Aware Registry
+
+**Answer:** A, B, C
+
+**Explanation:** Routing to dead instances causes errors (C wrong).
+
+---
+
+### Q39 [Medium] [Case Study] — CloudMart Polyglot Services
+
+**Answer:** B, C, D
+
+**Explanation:** Server-side K8s DNS suits polyglot clients. Client-side adds per-language coupling (C overstates hop elimination).
+
+---
+
+### Q40 [Medium] — Client-Side Discovery
+
+**Answer:** B, C, D
+
+**Explanation:** Client-side embeds discovery in caller (C false).
+
+---
+
+### Q41 [Medium] [Case Study] — CloudMart Internal Call Pattern
+
+**Answer:** B, C, D
+
+**Explanation:** Server-side = simple client, platform LB. Eureka client is client-side (A).
+
+---
+
+### Q42 [Hard] — Mesh Data Plane Discovery
+
+**Answer:** A, B, C
+
+**Explanation:** Mesh removes SDK need from app (C false).
+
+---
+
+### Q43 [Medium] [Case Study] — CloudMart Pod Restart Loop
+
+**Answer:** A, B, D
+
+**Explanation:** Heavy liveness on deps causes cascading kills (C wrong).
+
+---
+
+### Q44 [Medium] — Sidecar vs Ambassador
+
+**Answer:** B, C, D
+
+**Explanation:** Helpers own cross-cutting proxy concerns. Embedding SDKs in every app is the anti-pattern (A).
+
+---
+
+### Q45 [Medium] [Case Study] — CloudMart Deploy Connection Drops
+
+**Answer:** A, B, C
+
+**Explanation:** Drain before exit prevents mid-request kill (C wrong).
+
+---
+
+### Q46 [Hard] — Health Check Cascading Failure
+
+**Answer:** A, C, D
+
+**Explanation:** Blind deep readiness amplifies outages (C wrong).
+
+---
+
+### Q47 [Medium] [Case Study] — CloudMart Mesh Adoption Debate
+
+**Answer:** A, B, D
+
+**Explanation:** Don't adopt mesh day one (C false). Grow into it.
+
+---
+
+### Q48 [Medium] [Case Study] — CloudMart Traffic Directions
+
+**Answer:** A, C, D
+
+**Explanation:** Mesh does not replace public gateway (B).
+
+---
+
+### Q49 [Hard] — External Config Store and Edge Split
+
+**Answer:** B, C, D
+
+**Explanation:** Runtime config store + secret manager. Secrets must not live in git (A).
+
+---
+
+### Q50 [Hard] [Case Study] — CloudMart Order Placement Flow
+
+**Answer:** B, C, D
+
+**Explanation:** Payment async after 201; sync path stays fast (C wrong).

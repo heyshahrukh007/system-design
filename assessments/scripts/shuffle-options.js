@@ -5,7 +5,7 @@
  *
  * Usage: node assessments/scripts/shuffle-options.js [day ...]
  *   e.g. node assessments/scripts/shuffle-options.js 07 08 09
- *   omit days to shuffle all day-XX files (01–09)
+ *   omit days to shuffle all day-XX files (01–13)
  */
 
 const fs = require('fs');
@@ -162,7 +162,7 @@ function shuffleDay(day) {
 const days =
   process.argv.length > 2
     ? process.argv.slice(2).map((d) => d.padStart(2, '0'))
-    : ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10'];
+    : ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13'];
 
 for (const day of days) {
   shuffleDay(day);

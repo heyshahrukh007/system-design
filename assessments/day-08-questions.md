@@ -1,4 +1,4 @@
-# Message Queues Deep Dive — MCQ Questions (50)
+# API Gateway & Service Discovery — MCQ Questions (50)
 
 Multi-select format: each question has **two or more** correct answers. Questions tagged **[Case Study]** include a business context block.
 
@@ -7,800 +7,802 @@ Multi-select format: each question has **two or more** correct answers. Question
 
 ---
 
-### Q01 [Easy] [Case Study] — EventPipe Upload Acceptance
+### Q01 [Easy] [Case Study] — CloudMart Deploy Bottleneck
 
 
 
-**Context:** EventPipe accepts 4K video uploads. Synchronous transcoding takes 8 minutes. Users timeout at 30 seconds. The API returns 504 errors.
+**Context:** CloudMart runs a 400K-line monolith. A one-line CSS fix requires a full 25-minute deploy and weekend change window. Payment and catalog ship together.
 
 **Select all that apply.**
 
-Why should transcoding move to a queue?
+Which signals favor splitting toward microservices over time?
 
-- [ ] A. Queues replace PostgreSQL as the system of record for video metadata
-- [ ] B. Failed transcode jobs can retry without the user re-uploading the file
-- [ ] C. Decouple the HTTP response from slow background work — return quickly after enqueue
-- [ ] D. Absorb upload spikes without blocking the request thread for minutes
+- [ ] A. Clear domain boundaries — catalog, orders, and payments are distinct
+- [ ] B. One module needs 10× scale while blog traffic stays flat
+- [ ] C. Deploy pain — any change requires full redeploy of unrelated modules
+- [ ] D. Small team of 4 engineers still validating product-market fit
 
 ---
 
-### Q02 [Easy] — Message Queue Components
+### Q02 [Easy] — Monolith Advantages
 
 
 
 **Select all that apply.**
 
-Which describe producer–broker–consumer architecture?
+Which are genuine advantages of a monolithic architecture?
 
-- [ ] A. Producer sends messages; broker buffers and persists; consumer pulls or receives push delivery
-- [ ] B. Consumer acknowledges after processing — unacked messages may become visible again (visibility timeout)
-- [ ] C. A message queue is the authoritative ledger for financial balances
-- [ ] D. Pull-based consumption helps apply backpressure when consumers are slow
+- [ ] A. Low operational overhead for early-stage products
+- [ ] B. ACID transactions across modules in one database
+- [ ] C. Simple local debugging — no network between modules
+- [ ] D. Independent per-service deploy without coordination
 
 ---
 
-### Q03 [Easy] [Case Study] — EventPipe Checkout Hybrid
+### Q03 [Easy] [Case Study] — CloudMart MVP Team Size
 
 
 
-**Context:** EventPipe charges a credit card synchronously (~800 ms) but sends receipt email, updates analytics, and notifies webhooks asynchronously via SQS.
+**Context:** CloudMart's startup spin-off has 6 engineers, unclear domain boundaries, and 2K daily users.
 
 **Select all that apply.**
 
-Which design rule does this follow?
+When is staying monolithic (or modular monolith) the better default?
 
-- [ ] A. Every step including payment authorization should be fire-and-forget async
-- [ ] B. Async side effects can retry independently when downstream email API is down
-- [ ] C. Sync for decisions the user must see in the HTTP response; async for reactions and side effects
-- [ ] D. Hybrid architecture — not all-or-nothing async
+- [ ] A. Every team needs separate repos on day one
+- [ ] B. Strong need for cross-module ACID transactions in one workflow
+- [ ] C. Product still finding fit — minimize ops surface area
+- [ ] D. Low traffic and simple domain reduce distributed complexity
 
 ---
 
-### Q04 [Easy] — Queue vs Pub/Sub vs Stream
+### Q04 [Easy] — Microservices Trade-offs
 
 
 
 **Select all that apply.**
 
-Match the messaging model to the use case.
+Which are real costs of adopting microservices?
 
-- [ ] A. Task queue — one job processed by exactly one worker in a consumer group (SQS, Celery)
-- [ ] B. Pub/Sub — one event copied to all subscribers (SNS fan-out, RabbitMQ fanout exchange)
-- [ ] C. Stream — immutable log with offsets; consumers replay from a position (Kafka)
-- [ ] D. Redis Pub/Sub persists messages for offline subscribers automatically
+- [ ] A. Eliminates all need for API gateways and discovery
+- [ ] B. Distributed debugging and tracing across hops
+- [ ] C. Network latency and failure modes between services
+- [ ] D. Harder cross-service data consistency without careful design
 
 ---
 
-### Q05 [Easy] [Case Study] — EventPipe Order Notifications
+### Q05 [Easy] [Case Study] — CloudMart Strangler Fig
 
 
 
-**Context:** EventPipe publishes `OrderCreated` once. Inventory, Billing, Email, and Analytics services each need a copy. One SQS queue would load-balance among them — each order handled by only one service.
+**Context:** CloudMart cannot rewrite its 400K-line monolith in one release. Orders are the highest-pain module. A gateway already sits in front of the monolith.
 
 **Select all that apply.**
 
-Which model fits?
+Which strangler-fig steps fit this migration?
 
-- [ ] A. Kafka topic with separate consumer groups per service
-- [ ] B. Point-to-point queue delivers one copy split across competing consumers only
-- [ ] C. Pub/Sub or SNS → multiple SQS queues — each subscriber gets every message
-- [ ] D. Single task queue — wrong model when every downstream service must react
+- [ ] A. Put a facade/gateway in front and shift traffic slice by slice with monitoring
+- [ ] B. Big-bang cutover of every module on the same weekend for consistency
+- [ ] C. Delete unused monolith order code only after the new path carries production traffic
+- [ ] D. Route `/orders/*` to a new order service while `/legacy/*` still hits the monolith
 
 ---
 
-### Q06 [Easy] — Broker Core Components
+### Q06 [Easy] [Case Study] — CloudMart Internal RPC Choice
 
 
+
+**Context:** CloudMart order service calls inventory 8,000 times/sec with strict latency SLO. Public mobile app uses REST.
 
 **Select all that apply.**
 
-Which Kafka/SQS concepts are correct?
+Which protocol choices fit?
 
-- [ ] A. Topic categorizes messages; partition enables parallel throughput
-- [ ] B. Offset tracks position in a stream partition
-- [ ] C. Consumer group members compete for partitions — max useful parallelism ≈ partition count
-- [ ] D. Adding consumers beyond partition count increases throughput without limit
+- [ ] A. gRPC + Protobuf for high-throughput internal order → inventory calls
+- [ ] B. GraphQL between every internal microservice by default
+- [ ] C. REST/JSON for public client APIs — universal and debuggable
+- [ ] D. Queues for fire-and-forget side effects (email, analytics)
 
 ---
 
-### Q07 [Medium] [Case Study] — EventPipe Message Payload Size
+### Q07 [Easy] — Sync vs Async Between Services
 
 
-
-**Context:** EventPipe embeds full 200 MB video files in Kafka messages. Broker rejects messages and consumers OOM.
 
 **Select all that apply.**
 
-What is sound message design?
+When should service-to-service communication be asynchronous?
 
-- [ ] A. Store blob in S3; message carries `video_id` and `s3_key` reference only
-- [ ] B. Keep payloads small (SQS max 256 KB); large assets referenced by URL/key
-- [ ] C. Embed full database rows in every message for convenience
-- [ ] D. Include `message_id`, `event_type`, `schema_version`, and `correlation_id` in envelope
+- [ ] A. Decoupling producers from slow or flaky consumers
+- [ ] B. Fan-out to inventory, email, and analytics after order placed
+- [ ] C. Payment authorization shown in the HTTP response to the user
+- [ ] D. Side effects where the caller does not need an immediate result
 
 ---
 
-### Q08 [Medium] — Commands vs Events
+### Q08 [Easy] [Case Study] — CloudMart Mobile Data Needs
 
 
+
+**Context:** CloudMart's mobile app needs different field sets per screen — home feed vs checkout vs profile — from overlapping services.
 
 **Select all that apply.**
 
-In microservices, why prefer domain events over command messages?
+Which client-facing API approach helps?
 
-- [ ] A. Events (`OrderCreated`) decouple publisher from subscriber implementations
-- [ ] B. Commands (`InventoryService.decrement`) create tight coupling to callee API
-- [ ] C. Commands are always better for decoupling than events
-- [ ] D. Subscribers choose whether to react to events — publisher does not orchestrate all steps
+- [ ] A. GraphQL at the gateway — client requests exact fields in one round trip
+- [ ] B. GraphQL for flexible client queries; not necessarily between every internal service
+- [ ] C. GraphQL eliminates N+1 risk without server-side DataLoader design
+- [ ] D. BFF per client type is an alternative to a single flexible GraphQL layer
 
 ---
 
-### Q09 [Medium] [Case Study] — EventPipe Duplicate Charge
+### Q09 [Medium] [Case Study] — CloudMart Internal Service Trust
 
 
 
-**Context:** EventPipe payment worker uses at-least-once SQS delivery. A worker processes a charge, crashes before ack. Message redelivers and charges the customer twice.
+**Context:** CloudMart assumed private VPC meant internal HTTP needed no auth. A compromised pod scanned and called payment APIs directly.
 
 **Select all that apply.**
 
-How should EventPipe prevent duplicate financial effects?
+Which internal authentication practices apply?
 
-- [ ] A. Ack only after successful processing plus idempotency guard
-- [ ] B. Idempotent consumer — check `idempotency_key` before charging
-- [ ] C. Practical exactly-once effect = at-least-once + idempotent handler + dedup store
-- [ ] D. At-least-once delivery never produces duplicates without any application logic
+- [ ] A. Service mesh can automate mTLS between sidecars
+- [ ] B. mTLS or service JWT — never trust VPC alone
+- [ ] C. Short-lived service tokens issued by a central auth component
+- [ ] D. Private network means any pod may impersonate any service safely
 
 ---
 
-### Q10 [Medium] — Delivery Guarantees
+### Q10 [Medium] — gRPC Production Considerations
 
 
 
 **Select all that apply.**
 
-Which statements about delivery semantics are correct?
+Which statements about gRPC in production are correct?
 
-- [ ] A. At-most-once: may lose messages, no duplicates — ack before process risks loss on crash
-- [ ] B. At-least-once: industry default — may duplicate without idempotency
-- [ ] C. End-to-end exactly-once across services is trivial with broker settings alone
-- [ ] D. Telemetry/metrics may tolerate at-most-once; payments need at-least-once + idempotency
+- [ ] A. HTTP/2 long-lived connections need L7-aware load balancing
+- [ ] B. Strong contracts via Protobuf with code generation
+- [ ] C. Browser-native without grpc-web or gateway translation
+- [ ] D. Combine with timeouts, retries on idempotent reads, circuit breakers
 
 ---
 
-### Q11 [Medium] [Case Study] — EventPipe Order State Machine
+### Q11 [Easy] [Case Study] — CloudMart Client URL Sprawl
 
 
 
-**Context:** Order events must apply in sequence: `Created → Paid → Shipped` per `order_id`. Events for different orders can process in parallel.
+**Context:** CloudMart's mobile app hardcodes auth.cloudmart.com, orders.internal:8080, and catalog.internal:3000. Certificate and CORS updates require app store releases.
 
 **Select all that apply.**
 
-How should EventPipe partition?
+How does an API gateway address this?
 
-- [ ] A. Use sequence numbers — skip events where `incoming.sequence <= last_processed`
-- [ ] B. Global ordering across all orders requires a single partition — limits throughput
-- [ ] C. Partition key = current timestamp — maximizes even distribution for order sequence
-- [ ] D. Partition key = `order_id` — same order routes to same partition for ordering
+- [ ] A. Centralize CORS, SSL termination, and routing in one place
+- [ ] B. Expose every microservice port directly for lower latency
+- [ ] C. Hide internal hostnames and topology from external consumers
+- [ ] D. Single public domain (api.cloudmart.com) — one TLS cert, simpler clients
 
 ---
 
-### Q12 [Medium] — Bad Partition Keys
+### Q12 [Easy] — API Gateway vs Load Balancer
 
 
 
 **Select all that apply.**
 
-Which partition keys risk hot partitions or wrong ordering guarantees?
+How does an API gateway differ from a basic load balancer?
 
-- [ ] A. `timestamp` or `created_second` — spikes on current second
-- [ ] B. `country_code` alone — skewed traffic (e.g., US dominates)
-- [ ] C. `order_id` or `user_id` — generally even hash distribution
-- [ ] D. Random UUID per message when strict per-entity order is required
+- [ ] A. Gateway is application-aware — path routing, auth, transforms
+- [ ] B. LB typically distributes traffic to one pool; gateway routes to many services
+- [ ] C. LB always validates JWT and API keys; gateway never does
+- [ ] D. Gateway can terminate TLS and apply rate limits per route
 
 ---
 
-### Q13 [Medium] [Case Study] — EventPipe Consumer Lag
+### Q13 [Easy] — Gateway Cross-Cutting Concerns
 
 
-
-**Context:** EventPipe Kafka topic has 6 partitions. Email consumer group runs 8 pods. Two pods sit idle. Queue depth grows during a marketing blast.
 
 **Select all that apply.**
 
-What explains this and valid responses?
+Which concerns are commonly centralized at the API gateway?
 
-- [ ] A. Scale consumers up to partition count or increase partitions (with rebalance cost)
-- [ ] B. Max parallel consumers in a group ≈ partition count — extras idle
-- [ ] C. Auto-scale on consumer lag or queue depth is a standard ops pattern
-- [ ] D. More consumers always help if downstream email API is the bottleneck
+- [ ] A. All resource-level authorization (user owns order 123)
+- [ ] B. JWT validation and request logging at the edge
+- [ ] C. SSL/TLS termination for public HTTPS
+- [ ] D. Per-API-key rate limiting before backends
 
 ---
 
-### Q14 [Medium] — Backpressure and Graceful Shutdown
+### Q14 [Medium] [Case Study] — CloudMart Mobile vs Web APIs
 
 
+
+**Context:** CloudMart mobile needs lightweight payloads; web admin needs rich dashboards. One generic REST API causes over-fetching on mobile and under-powering on web.
 
 **Select all that apply.**
 
-Which practices protect queue consumers?
+Which architecture patterns help?
 
-- [ ] A. Graceful shutdown: finish in-flight work, ack, commit offsets before exit
-- [ ] B. K8s `terminationGracePeriodSeconds` must exceed max message processing time
-- [ ] C. Instant pod kill without drain — messages reappear after visibility timeout → duplicates
-- [ ] D. Unlimited prefetch always maximizes throughput without blocking slow messages
+- [ ] A. BFF replaces all need for a gateway — clients call BFF ports directly on internet
+- [ ] B. API gateway for shared routing/auth; BFF for tailored aggregation
+- [ ] C. BFF (Backend for Frontend) per client type behind the gateway
+- [ ] D. Gateway → BFF → microservices is common at larger scale
 
 ---
 
-### Q15 [Hard] [Case Study] — EventPipe Poison Message
+### Q15 [Medium] [Case Study] — CloudMart Gateway Routing Table
 
 
 
-**Context:** One malformed JSON message fails parsing on every retry. It blocks the single-threaded consumer loop for 6 hours until ops intervenes.
+**Context:** CloudMart exposes /v1/users, /v1/orders, /v1/products, and /graphql on api.cloudmart.com.
 
 **Select all that apply.**
 
-What should EventPipe implement?
+Which gateway routing responsibilities apply?
 
-- [ ] A. Alert when DLQ depth > 0; inspect, fix, replay after correction
-- [ ] B. Retry forever on all errors including bad payload
-- [ ] C. Non-retryable errors (400, invalid schema) go to DLQ immediately
-- [ ] D. Max retry count with exponential backoff + jitter, then route to DLQ
+- [ ] A. Path-based routing maps URL prefixes to backend services
+- [ ] B. Gateway should own all business rules and database queries
+- [ ] C. Host-based routing can separate public API from admin subdomain
+- [ ] D. API versioning routes /v1 and /v2 to different backend pools
 
 ---
 
-### Q16 [Hard] — Retry vs Non-Retryable Errors
+### Q16 [Medium] — TLS at the Gateway
 
 
 
 **Select all that apply.**
 
-Which errors should trigger retry with backoff?
+Which SSL/TLS termination practices are sound?
 
-- [ ] A. HTTP 503, connection timeout, transient 429 with Retry-After
-- [ ] B. HTTP 400 bad request, invalid JSON payload, authentication failure
-- [ ] C. Exponential backoff: `min(base * 2^attempt, max_delay) + jitter`
-- [ ] D. Retry storms occur when many clients retry simultaneously without jitter
+- [ ] A. Terminate HTTPS at gateway; forward HTTP on private network to backends
+- [ ] B. Backends must always terminate TLS again for security — double encryption required always
+- [ ] C. Central certificate management (ACM, Let's Encrypt) at the edge
+- [ ] D. Optional mTLS between gateway and services for stricter internal trust
 
 ---
 
-### Q17 [Hard] [Case Study] — EventPipe Outbox Pattern
+### Q17 [Medium] — Gateway Offloading and Transforms
 
 
-
-**Context:** EventPipe saves an order to PostgreSQL but crashes before publishing `OrderCreated` to Kafka. Downstream inventory never decrements.
 
 **Select all that apply.**
 
-How does the transactional outbox fix this?
+Which edge responsibilities are sound gateway offloading / transform patterns?
 
-- [ ] A. Atomic DB write guarantees event will eventually publish without dual-write race
-- [ ] B. INSERT order + INSERT outbox row in the same DB transaction
-- [ ] C. Requires two-phase commit between PostgreSQL and Kafka
-- [ ] D. Poller reads unsent outbox rows, publishes to broker, marks sent
+- [ ] A. Store shopping cart state in gateway memory for all users
+- [ ] B. Path rewrite and protocol translation (REST client → gRPC backend)
+- [ ] C. Offload TLS, JWT validation, compression, and rate limits so services stay thin
+- [ ] D. Inject X-Request-Id and strip client-supplied spoofed identity headers
 
 ---
 
-### Q18 [Hard] — Saga Pattern
+### Q18 [Medium] [Case Study] — CloudMart Dashboard Aggregation
 
 
 
-EventPipe order saga: ReserveInventory → ChargePayment → ConfirmShipment. Payment fails after inventory reserved.
+**Context:** CloudMart's mobile home screen needs user profile, recent orders, and notification count — three backend services.
 
 **Select all that apply.**
 
-Which saga behavior is correct?
+How should the gateway or BFF handle this?
 
-- [ ] A. Publish compensating events: `ReleaseInventory`, `CancelOrder`
-- [ ] B. Saga is not a single distributed ACID transaction across services
-- [ ] C. Roll back with one global 2PC transaction across three microservice databases
-- [ ] D. Each step is a local transaction; failure triggers compensation via events
+- [ ] A. API composition at edge helps slow mobile networks
+- [ ] B. Keep aggregation thin — no heavy business rules in gateway
+- [ ] C. Parallel backend calls merged into one JSON response — reduces client round trips
+- [ ] D. Mobile client must call three services directly over the public internet
 
 ---
 
-### Q19 [Easy] — Sync vs Async Trade-offs
+### Q19 [Medium] — TCP vs UDP for Service APIs
 
 
 
 **Select all that apply.**
 
-When is synchronous HTTP appropriate vs a queue?
+Which transport choices fit typical microservice APIs?
 
-- [ ] A. Async provides strong immediate consistency for the critical path
-- [ ] B. Callee down: sync fails/timeouts; async messages buffer until consumer recovers
-- [ ] C. User needs payment result in the checkout HTTP response → sync
-- [ ] D. Video transcode, analytics, email — async queue
+- [ ] A. Choose UDP only when you need low latency and can tolerate or repair loss
+- [ ] B. TCP (HTTP/1.1, HTTP/2, TLS) is the default for service APIs and databases
+- [ ] C. UDP for all internal order → payment RPCs because it is always faster and reliable
+- [ ] D. UDP suits loss-tolerant real-time media, DNS, or metrics firehose when designed for it
 
 ---
 
-### Q20 [Easy] [Case Study] — EventPipe Black Friday Spike
+### Q20 [Medium] [Case Study] — CloudMart Path Routing Incident
 
 
 
-**Context:** EventPipe ingests 12,000 webhook events/sec. Workers process 800/sec sustainably. API returns 200 immediately after enqueue.
+**Context:** CloudMart misconfigured gateway: /api/v1/orders/* routed to catalog-service. Checkout returned product JSON for order IDs.
 
 **Select all that apply.**
 
-What queue benefit applies?
+Which routing concepts prevent this class of failure?
 
-- [ ] A. Spike absorption — broker buffers excess until workers catch up
-- [ ] B. Decouples producer throughput from consumer capacity in time
-- [ ] C. Queue eliminates need for any workers — messages process themselves
-- [ ] D. Without queue, producers would block or drop work when workers saturate
+- [ ] A. Explicit path-based upstream mapping per service
+- [ ] B. Integration tests that hit gateway routes end-to-end
+- [ ] C. Path routing is optional — any service can handle any path
+- [ ] D. Separate admin and public routes by host or path prefix
 
 ---
 
-### Q21 [Medium] — SQS Standard vs FIFO
+### Q21 [Medium] — Header-Based Routing
 
 
 
 **Select all that apply.**
 
-Which SQS characteristics are correct?
+When is header-based routing at the gateway useful?
 
-- [ ] A. FIFO guarantees global ordering across all messages in the account
-- [ ] B. Standard queue: consumed message gone — no replay from broker
-- [ ] C. Standard queue: at-least-once, best-effort ordering, high throughput
-- [ ] D. FIFO queue: strict order per MessageGroupId; built-in deduplication window (~5 min)
+- [ ] A. Replacing all need for authentication
+- [ ] B. API version selection without changing URL path
+- [ ] C. Canary releases — route small % to v2 via header or cookie
+- [ ] D. Multi-tenant routing via X-Tenant header to tenant-specific pools
 
 ---
 
-### Q22 [Medium] [Case Study] — EventPipe Fan-Out Architecture
+### Q22 [Medium] [Case Study] — CloudMart Canary Release
 
 
 
-**Context:** EventPipe uses SNS → three SQS queues (email, SMS, push). Email queue backs up; SMS and push remain healthy.
+**Context:** CloudMart deploys order-service v2. Gateway sends 5% of traffic to v2; error rate on v2 is 3× v1.
 
 **Select all that apply.**
 
-Why is this fan-out pattern valuable?
+Which traffic-shaping practices apply?
 
-- [ ] A. Each downstream channel has independent retry, DLQ, and scaling
-- [ ] B. SNS delivers the same event copy to each subscribed queue
-- [ ] C. One slow consumer does not block other channels
-- [ ] D. Single shared queue would require one worker pool for all notification types
+- [ ] A. Canary split at gateway or mesh — roll back by reducing v2 percentage
+- [ ] B. Monitor error rate and latency per upstream pool during canary
+- [ ] C. Blue-green flips all traffic at once after validation
+- [ ] D. Canary requires clients to change URLs for each version
 
 ---
 
-### Q23 [Medium] — Kafka vs SQS Tool Selection
+### Q23 [Hard] — gRPC Load Balancing
 
 
 
 **Select all that apply.**
 
-When choose Kafka over SQS for EventPipe?
+Why does naive TCP round-robin fail for gRPC?
 
-- [ ] A. Need event replay, stream processing, or high-throughput log retention
-- [ ] B. Simple fire-and-forget job queue with minimal ops — SQS often sufficient
-- [ ] C. Kafka is always the right choice for a 50-email/day cron job
-- [ ] D. Kafka consumer groups + partitions enable parallel stream processing at scale
+- [ ] A. HTTP/2 multiplexes many RPCs on one long-lived connection — uneven pinning
+- [ ] B. Need L7-aware proxy (Envoy) or client-side subchannel LB
+- [ ] C. gRPC always uses UDP so TCP LB does not apply
+- [ ] D. Proxy that balances per RPC, not per connection
 
 ---
 
-### Q24 [Medium] — Monitoring Queue Health
+### Q24 [Medium] [Case Study] — CloudMart Anti-Corruption Layer
 
 
+
+**Context:** CloudMart extracts a modern Payment Service that must call a 15-year-old billing mainframe with cryptic field names and error codes. Product wants a clean payment domain model.
 
 **Select all that apply.**
 
-Which metrics indicate queue problems?
+How should an anti-corruption layer (ACL) help?
 
-- [ ] A. Queue depth / consumer lag growing while publish rate exceeds consume rate
-- [ ] B. Oldest message age increasing — messages waiting too long
-- [ ] C. DLQ depth > 0 — poison or repeated failures
-- [ ] D. Depth near zero and publish ≈ consume rate — healthy steady state
+- [ ] A. ACL maps legacy fields, IDs, and errors so the new domain stays clean
+- [ ] B. New services should import mainframe schemas into every microservice API
+- [ ] C. ACL sits between the new Payment Service and the legacy billing API/DB
+- [ ] D. Makes replacing the legacy system later easier — swap behind the ACL
 
 ---
 
-### Q25 [Hard] [Case Study] — EventPipe Exactly-Once Claim
+### Q25 [Medium] [Case Study] — CloudMart JWT at Edge
 
 
 
-**Context:** A vendor claims their broker provides "exactly-once delivery" with no consumer changes. EventPipe processes payments.
+**Context:** CloudMart gateway validates JWT once and forwards X-User-Id to order-service. Order-service trusts any X-User-Id header from the network.
 
 **Select all that apply.**
 
-What should EventPipe engineers respond?
+Which auth design fixes this?
 
-- [ ] A. Accept vendor claim and remove idempotency keys to simplify code
-- [ ] B. Exactly-once end-to-end across DB + broker + external APIs is very hard in practice
-- [ ] C. Interview/production answer: at-least-once delivery with idempotent consumers
-- [ ] D. Broker dedup does not eliminate need for application idempotency on side effects
+- [ ] A. Coarse auth at gateway; resource checks (user owns order) in order-service
+- [ ] B. Backends reject client-supplied identity headers — trust gateway only via network policy/mTLS
+- [ ] C. Gateway strips client X-User-Id; injects verified identity after JWT validation
+- [ ] D. Services should trust any header if request comes from private IP
 
 ---
 
-### Q26 [Hard] — Idempotency Implementation
+### Q26 [Medium] — API Keys for Partners
 
 
 
 **Select all that apply.**
 
-Which are valid idempotency techniques?
+Which API key practices at the gateway are correct?
 
-- [ ] A. Processed-keys table: skip if `message_id` already handled
-- [ ] B. Ack before process guarantees at-least-once without duplicates
-- [ ] C. Natural idempotent SQL: `UPDATE status = 'SHIPPED' WHERE id = ?` — same result if run twice
-- [ ] D. External API idempotency header (e.g., Stripe Idempotency-Key)
+- [ ] A. Lookup key → tenant, rate tier, and permissions
+- [ ] B. API keys in gateway config git repo without secret manager
+- [ ] C. Common for partner and server-to-server integrations
+- [ ] D. Per-key rate limits enforce billing tiers
 
 ---
 
-### Q27 [Easy] — Why Not a Database Table as Queue
+### Q27 [Medium] [Case Study] — CloudMart Admin Route Exposure
 
 
+
+**Context:** CloudMart /admin/* routes were reachable without role check at gateway. Any logged-in user could hit admin upstream.
 
 **Select all that apply.**
 
-Why avoid `SELECT ... FOR UPDATE` on a jobs table at high scale?
+How should gateway and services split authorization?
 
-- [ ] A. DIY polling, visibility, retry, and DLQ semantics are complex and slow at volume
-- [ ] B. Dedicated brokers (SQS, Kafka, RabbitMQ) optimize for messaging throughput and ops
-- [ ] C. DB table as queue is always faster than Kafka for 100K msg/sec
-- [ ] D. Row locking under high concurrency becomes a database bottleneck
+- [ ] A. Authentication at gateway; authorization split coarse (gateway) + fine (service)
+- [ ] B. Services enforce fine-grained resource ownership
+- [ ] C. Gateway alone decides if user 789 may access order 456 owned by user 123
+- [ ] D. Gateway enforces route-level roles — /admin/* requires admin in JWT
 
 ---
 
-### Q28 [Medium] [Case Study] — EventPipe CDC Pipeline
+### Q28 [Hard] — Federated Identity and Tokens
 
 
-
-**Context:** EventPipe search index must update when PostgreSQL rows change. Debezium captures WAL → Kafka → search indexer consumer.
 
 **Select all that apply.**
 
-What pattern is this?
+Which federated identity / token practices at the gateway are production-safe?
 
-- [ ] A. Change Data Capture (CDC) — database changes streamed as events
-- [ ] B. Decouples search indexing from application write path
-- [ ] C. Application must call search API synchronously on every INSERT
-- [ ] D. Stream replay can rebuild search index from Kafka offsets after failure
+- [ ] A. Validate iss, aud, exp; trust external IdP (Google, Okta, Auth0) via OIDC
+- [ ] B. 30-day access JWT with no refresh — simplest UX
+- [ ] C. Short-lived access tokens; refresh handled by auth service / IdP flow
+- [ ] D. Public routes (/health, catalog) explicitly allowlisted without auth
 
 ---
 
-### Q29 [Hard] — Redis Pub/Sub vs Redis Streams
+### Q29 [Medium] — mTLS Gateway to Service
 
 
 
 **Select all that apply.**
 
-Which statements are correct?
+What does mTLS between gateway and backends provide?
 
-- [ ] A. Redis Streams: persisted log with consumer groups — closer to lightweight Kafka
-- [ ] B. Redis Pub/Sub: fire-and-forget — offline subscriber misses messages
-- [ ] C. Use persistent broker or Redis Streams when durability matters
-- [ ] D. Redis Pub/Sub is a durable primary broker for payment events
+- [ ] A. Eliminates need for any user authentication at gateway
+- [ ] B. Both sides present certificates — prevents impersonation inside VPC
+- [ ] C. Service mesh can automate certificate rotation for sidecars
+- [ ] D. Complements JWT user auth with service-to-service trust
 
 ---
 
-### Q30 [Hard] [Case Study] — EventPipe Delayed Reminder
+### Q30 [Medium] [Case Study] — CloudMart Scraping Attack
 
 
 
-**Context:** EventPipe sends "complete your profile" email 15 minutes after signup. Workers should not process the job immediately.
+**Context:** A bot sends 12,000 req/s to CloudMart's search API through the gateway. Catalog pods hit 100% CPU; legitimate users see timeouts.
 
 **Select all that apply.**
 
-Which delivery options apply?
+Which gateway protections apply?
 
-- [ ] A. SQS DelaySeconds (up to 15 minutes) or visibility timeout scheduling
-- [ ] B. RabbitMQ message TTL + dead-letter exchange for delayed delivery patterns
-- [ ] C. Real-time sub-100 ms chat must use the same queue with DelaySeconds
-- [ ] D. Delay queue separates immediate tasks from scheduled follow-ups
+- [ ] A. Rate limit by IP or API key before traffic reaches catalog-service
+- [ ] B. Stricter limits on expensive routes like /search
+- [ ] C. Rate limiting only inside catalog-service — gateway passes all traffic
+- [ ] D. Return 429 with Retry-After when limit exceeded
 
 ---
 
-### Q31 [Easy] [Case Study] — EventPipe Schema Breaking Change
+### Q31 [Easy] [Case Study] — CloudMart Login Brute Force
 
 
 
-**Context:** EventPipe producers add a required JSON field. Old consumers crash on deserialize during a rolling deploy.
+**Context:** CloudMart sees 50,000 POST /login attempts per hour from rotating IPs against stolen email list.
 
 **Select all that apply.**
 
-How should EventPipe evolve message schemas safely?
+Which rate-limiting approaches help?
 
-- [ ] A. Use schema registry or contract tests between producer and consumer teams
-- [ ] B. Remove required fields from producers before any consumer is updated
-- [ ] C. Prefer backward-compatible evolution — add optional fields before making them required
-- [ ] D. Include `schema_version` in the message envelope
+- [ ] A. Sliding window smoother than fixed window for fairness
+- [ ] B. Fixed window has no burst boundary problem at minute rollovers
+- [ ] C. Token bucket allows controlled bursts while capping sustained abuse
+- [ ] D. Low limit on POST /login per IP (e.g., 5/min) — brute-force protection
 
 ---
 
-### Q32 [Easy] — Priority and Multiple Queues
+### Q32 [Medium] — Throttling at the Gateway
 
 
 
 **Select all that apply.**
 
-EventPipe must process urgent fraud alerts before bulk analytics jobs.
+Which throttling mechanisms belong at the API gateway?
 
-- [ ] A. Separate queues for high- vs low-priority work with dedicated worker pools
-- [ ] B. Priority design prevents low-priority backlog from starving urgent jobs when pools are isolated
-- [ ] C. One shared FIFO queue automatically prioritizes urgent messages without configuration
-- [ ] D. SQS has no native priority — multiple queues or routing patterns are common
+- [ ] A. Rate limit — requests per second/minute (token bucket / sliding window)
+- [ ] B. Quota — total calls per day/month for billing tiers
+- [ ] C. HTTP 200 with silent drop — best UX for abusive clients
+- [ ] D. Concurrency limit — cap in-flight requests; return 429 with Retry-After when exceeded
 
 ---
 
-### Q33 [Easy] [Case Study] — EventPipe Webhook Replay Request
+### Q33 [Hard] — Distributed Rate Limiting
 
 
-
-**Context:** A partner missed 3 hours of webhooks during an outage and requests redelivery of those events.
 
 **Select all that apply.**
 
-What enables replay and what are limitations?
+CloudMart runs 6 gateway replicas. Which distributed limit designs work?
 
-- [ ] A. Design durable event logs when business partners require historical redelivery
-- [ ] B. Kafka retained log allows replay from offset or timestamp within retention
-- [ ] C. Retention policy determines how far back historical replay is possible
-- [ ] D. SQS Standard removes messages after consume — broker replay of consumed messages is not available
+- [ ] A. Quota (daily total) separate from per-second rate burst control
+- [ ] B. Shared Redis counters — all nodes see same count
+- [ ] C. Token bucket in Redis with atomic INCR/EXPIRE
+- [ ] D. Per-node counters only — effective limit is limit × replica count
 
 ---
 
-### Q34 [Easy] — Message Ordering Trade-offs
+### Q34 [Easy] [Case Study] — CloudMart Hardcoded Upstream IPs
 
 
+
+**Context:** CloudMart's gateway config lists order-service at 10.0.1.10. After Kubernetes rollout, pods are at 10.0.2.x — all order API calls fail 502.
 
 **Select all that apply.**
 
-Which statements about ordering guarantees are correct?
+What fixes instance discovery?
 
-- [ ] A. Strict global ordering limits throughput to a single partition consumer
-- [ ] B. Per-entity ordering via partition key is a common compromise
-- [ ] C. Ordering guarantees are free — no throughput or design trade-off
-- [ ] D. Out-of-order retries require idempotent handlers or sequence/state guards
+- [ ] A. Service discovery — gateway queries registry for current healthy instances
+- [ ] B. Logical service name (order-service) instead of hardcoded pod IP
+- [ ] C. Static IPs work forever if autoscaler never runs
+- [ ] D. Kubernetes DNS/Endpoints update pod lists on scale and deploy
 
 ---
 
-### Q35 [Easy] [Case Study] — EventPipe Visibility Timeout Too Short
+### Q35 [Easy] — Service Registry Concepts
 
 
-
-**Context:** EventPipe's consumer fetches 100 messages and processes the batch for 60 seconds. SQS visibility timeout is 30 seconds — messages become visible again mid-processing.
 
 **Select all that apply.**
 
-What went wrong and what should change?
+Which service discovery terms are correct?
 
-- [ ] A. Reduce batch size or process serially when timeout cannot be raised safely
-- [ ] B. Shorter visibility timeout always improves throughput without duplicate risk
-- [ ] C. Extend visibility heartbeat during long-running processing
-- [ ] D. Visibility timeout must exceed max processing time with safety buffer
+- [ ] A. Registration — instance announces itself on startup
+- [ ] B. Registry stores logical service name → list of instance addresses
+- [ ] C. Hardcoded IP lists are the cloud-native default for autoscaled pods
+- [ ] D. Deregistration — instance removes itself on graceful shutdown
 
 ---
 
-### Q36 [Easy] — RabbitMQ Exchange Routing
+### Q36 [Medium] [Case Study] — CloudMart Kubernetes Service DNS
 
 
+
+**Context:** CloudMart pods call http://order-service:8080/orders. No Eureka deployed. DNS resolves to ClusterIP; kube-proxy load-balances to endpoints.
 
 **Select all that apply.**
 
-Which RabbitMQ exchange behaviors are correct?
+Which statements about K8s discovery are correct?
 
-- [ ] A. Direct exchange routes by exact routing key match
-- [ ] B. Topic exchange supports pattern-based routing keys
-- [ ] C. Fanout exchange delivers a copy to every bound queue
-- [ ] D. All RabbitMQ queues behave identically to Kafka topic partitions
+- [ ] A. Stable DNS name with endpoints controller updating pod list on rollout
+- [ ] B. DNS TTL delays mean K8s never updates endpoints on pod death
+- [ ] C. Built-in server-side discovery — no separate registry required for K8s-native apps
+- [ ] D. ClusterIP Service provides logical name decoupled from pod IPs
 
 ---
 
-### Q37 [Medium] [Case Study] — EventPipe Shared Queue Mistake
+### Q37 [Medium] — DNS-Based Discovery Trade-offs
 
 
-
-**Context:** Email and inventory workers accidentally share one SQS task queue. Inventory workers consume half the messages meant for email.
 
 **Select all that apply.**
 
-What model error occurred?
+Which statements about DNS-based service discovery are correct?
 
-- [ ] A. Pub/sub or SNS fan-out is appropriate when every subscriber must receive every event
-- [ ] B. Task queues load-balance — each message goes to exactly one competing consumer
-- [ ] C. Adding more service types to one task queue fan-outs each message to all services
-- [ ] D. Separate downstream services need separate queues or explicit routing
+- [ ] A. DNS TTL can delay propagation after instance failure
+- [ ] B. Simple and universal — multiple A records for instances
+- [ ] C. DNS always provides instant failover with zero stale traffic
+- [ ] D. Basic DNS may lack health awareness without health-checked registry
 
 ---
 
-### Q38 [Medium] — Saga Choreography vs Orchestration
+### Q38 [Medium] — Health-Aware Registry
 
 
 
 **Select all that apply.**
 
-EventPipe's order flow can be implemented as a saga. Which comparisons are correct?
+How do health-aware registries improve discovery?
 
-- [ ] A. Choreography: services react to events without a central coordinator
-- [ ] B. Orchestration: a saga coordinator directs step order and compensation
-- [ ] C. Choreography eliminates the need for idempotent consumers
-- [ ] D. EventPipe can implement sagas with either style depending on complexity
+- [ ] A. Tie registration to periodic GET /health probes
+- [ ] B. Consul/Eureka/K8s endpoints filter unhealthy nodes
+- [ ] C. Only return instances passing health checks to callers
+- [ ] D. Return all registered instances including crashed ones for retry practice
 
 ---
 
-### Q39 [Medium] [Case Study] — EventPipe Rebalance Storm
+### Q39 [Medium] [Case Study] — CloudMart Polyglot Services
 
 
 
-**Context:** EventPipe deploys 10 new Kafka consumers at once. Cooperative rebalance pauses processing for 45 seconds and lag spikes.
+**Context:** CloudMart has Go, Python, and Node services. Team debates Eureka+Ribbon (Java client LB) vs Kubernetes Services.
 
 **Select all that apply.**
 
-What explains this and what reduces impact?
+Which discovery pattern fits heterogeneous services?
 
-- [ ] A. Adding consumers never causes rebalance overhead or partition movement
-- [ ] B. Sticky assignment and incremental cooperative rebalance reduce partition churn
-- [ ] C. Consumer group rebalance reassigns partitions — processing pauses during transition
-- [ ] D. Frequent scale churn causes rebalance storms — limit rapid consumer add/remove
+- [ ] A. Client-side discovery eliminates all load balancer hops
+- [ ] B. Client-side discovery requires per-language libraries — higher coupling
+- [ ] C. Server-side discovery via K8s Service DNS — simple HTTP clients
+- [ ] D. External clients still use gateway + LB (server-side) regardless
 
 ---
 
-### Q40 [Medium] — Dead Letter Queue Operations
+### Q40 [Medium] — Client-Side Discovery
 
 
 
 **Select all that apply.**
 
-Which DLQ operational practices are correct?
+Which describe client-side service discovery?
 
-- [ ] A. DLQ depth > 0 should trigger alerts and triage workflow
-- [ ] B. Replay to main queue after fix requires idempotent consumers
-- [ ] C. DLQ is append-only — messages can never be reprocessed
-- [ ] D. Store failure reason and original envelope metadata for debugging
+- [ ] A. Zero discovery logic in application code
+- [ ] B. No intermediary LB hop — direct to chosen instance
+- [ ] C. Caller queries registry and picks instance (Ribbon, gRPC resolver)
+- [ ] D. Netflix Eureka + Ribbon is a classic Java stack example
 
 ---
 
-### Q41 [Medium] [Case Study] — EventPipe Out-of-Order Events
+### Q41 [Medium] [Case Study] — CloudMart Internal Call Pattern
 
 
 
-**Context:** `OrderPaid` arrives before `OrderCreated` due to retry reordering. Inventory worker deducts stock for a nonexistent order.
+**Context:** Order-service calls inventory-service via http://inventory-service:8080 inside the cluster.
 
 **Select all that apply.**
 
-How should EventPipe handle this?
+Which server-side discovery characteristics apply?
 
-- [ ] A. At-least-once delivery guarantees perfect causal ordering without application logic
-- [ ] B. Idempotent create plus state machine guards handle retries and ordering gaps
-- [ ] C. Validate state transitions — reject or defer out-of-order events
-- [ ] D. Track last processed sequence or enforce an order state machine
+- [ ] A. Caller must embed Eureka client to resolve IPs
+- [ ] B. Extra hop through kube-proxy or LB compared to direct client-side pick
+- [ ] C. Client uses stable logical URL; platform picks healthy instance
+- [ ] D. Lower client complexity — any language with HTTP
 
 ---
 
-### Q42 [Medium] — Task Queue Worker Semantics
+### Q42 [Hard] — Mesh Data Plane Discovery
 
 
 
 **Select all that apply.**
 
-Which statements about broker-backed task queues (e.g., Celery, SQS workers) are correct?
+How does service mesh hide discovery from application code?
 
-- [ ] A. Ack-after-success enables retry when processing fails before acknowledgment
-- [ ] B. Visibility timeout semantics are analogous to lease time before redelivery
-- [ ] C. Result backend is optional for fire-and-forget background jobs
-- [ ] D. Task queues replace the need for database transactions on the critical path
+- [ ] A. App calls localhost sidecar; sidecar has endpoint list from control plane
+- [ ] B. Discovery and mTLS handled in data plane without app changes
+- [ ] C. Istio/Envoy pushes routes and endpoints to proxies
+- [ ] D. Apps must import Eureka SDK for every outbound call
 
 ---
 
-### Q43 [Medium] [Case Study] — EventPipe Publish-Before-Commit
+### Q43 [Medium] [Case Study] — CloudMart Pod Restart Loop
 
 
 
-**Context:** EventPipe publishes `OrderCreated` to Kafka, then crashes before the PostgreSQL transaction commits. Downstream inventory decrements for an order that does not exist.
+**Context:** CloudMart liveness probe hits /health/ready which checks PostgreSQL. DB blip causes all pods killed and restarted — worse outage.
 
 **Select all that apply.**
 
-What design flaw is this and how to fix it?
+Which health check design fixes this?
 
-- [ ] A. Dual-write without coordination risks inconsistency between DB and broker
-- [ ] B. Transactional outbox aligns committed business state with eventual publish
-- [ ] C. Publish-first is safer than outbox for financial order workflows
-- [ ] D. Downstream should only react after business state is durably committed — outbox or inbox pattern
+- [ ] A. Liveness lightweight — process up; readiness checks DB for traffic routing
+- [ ] B. Deep DB check on readiness, not liveness — avoid restart storm
+- [ ] C. Same heavy check for liveness and readiness is safest
+- [ ] D. Readiness failure removes pod from LB without killing container
 
 ---
 
-### Q44 [Medium] — Message Payload Compression
+### Q44 [Medium] — Sidecar vs Ambassador
 
 
 
 **Select all that apply.**
 
-EventPipe sends large JSON event envelopes. Which statements are correct?
+Which statements about sidecar and ambassador helpers are correct?
 
-- [ ] A. Compression reduces bandwidth and helps fit broker message size limits
-- [ ] B. Compression trades CPU on producer/consumer for network savings
-- [ ] C. Compression eliminates the need for reference-based message design for blobs
-- [ ] D. Kafka supports compression codecs (e.g., snappy, lz4, gzip)
+- [ ] A. App business logic should embed mTLS and discovery SDKs instead of helpers
+- [ ] B. Ambassador focuses on outbound calls — local proxy to external/legacy dependencies
+- [ ] C. Sidecar sits beside the app (same pod) and often proxies mesh traffic both ways
+- [ ] D. Mesh data planes are a common sidecar implementation (e.g., Envoy)
 
 ---
 
-### Q45 [Hard] [Case Study] — EventPipe Inbox Pattern
+### Q45 [Medium] [Case Study] — CloudMart Deploy Connection Drops
 
 
 
-**Context:** External partner webhooks may redeliver the same `event_id`. EventPipe must apply each external event exactly once to local state.
+**Context:** During CloudMart deploy, SIGKILL stops pods mid-request. Users see 502 and duplicate charges on retry.
 
 **Select all that apply.**
 
-How does the inbox pattern help?
+Which graceful shutdown steps apply?
 
-- [ ] A. Process inbox row in the same database transaction as the business update
-- [ ] B. Inbox table stores incoming `event_id` with a `UNIQUE` constraint
-- [ ] C. Inbox complements outbox for exactly-once effect across integration boundaries
-- [ ] D. Inbox pattern applies only to outbound events — not inbound integrations
+- [ ] A. Finish in-flight requests within terminationGracePeriodSeconds
+- [ ] B. Mark readiness failing — LB stops new traffic to draining pod
+- [ ] C. Align grace period with max request duration
+- [ ] D. Immediate SIGKILL is best for fastest deploy velocity
 
 ---
 
-### Q46 [Hard] — Kafka Log Compaction
+### Q46 [Hard] — Health Check Cascading Failure
 
 
 
 **Select all that apply.**
 
-Which statements about Kafka log-compacted topics are correct?
+Database slow causes all apps to fail deep readiness and LB removes entire fleet. Which mitigations apply?
 
-- [ ] A. Compaction retains the latest value per key — useful for changelog/state topics
-- [ ] B. Config and state-sync topics often use compaction
-- [ ] C. Compaction is a poor fit for unlimited append-only audit logs without key semantics
-- [ ] D. Compaction deletes every historical version immediately on produce
+- [ ] A. Readiness checks only truly critical deps; degraded mode for optional features
+- [ ] B. Fail deep readiness on any slow dependency always — safest
+- [ ] C. Circuit breaker on DB before readiness fails entirely
+- [ ] D. Feature flags disable DB-heavy paths while core stays ready
 
 ---
 
-### Q47 [Hard] [Case Study] — EventPipe Cross-Region Consumer Lag
+### Q47 [Medium] [Case Study] — CloudMart Mesh Adoption Debate
 
 
 
-**Context:** EventPipe publishes from `us-east`. `eu-west` consumers lag 3 minutes during a backbone degradation. EU search index falls behind.
+**Context:** CloudMart has 35 microservices. Platform team proposes Istio day one for a 3-service MVP migration.
 
 **Select all that apply.**
 
-What explains this and what should ops plan for?
+When is a full service mesh justified?
 
-- [ ] A. Multi-region streaming introduces eventual consistency and lag complexity
-- [ ] B. Consumers must tolerate lag or use regional topics with local producers
-- [ ] C. Cross-region replication guarantees synchronous zero-lag delivery
-- [ ] D. Monitor inter-region lag and define failover or catch-up consumer strategy
+- [ ] A. Small team on early MVP — mesh ops overhead may outweigh benefits
+- [ ] B. Start with gateway + K8s DNS + observability before mesh complexity
+- [ ] C. Mesh required on day one for any Kubernetes deployment
+- [ ] D. Many services needing mTLS, retries, and traffic policy without library sprawl
 
 ---
 
-### Q48 [Hard] — FIFO Queue Semantics
+### Q48 [Medium] [Case Study] — CloudMart Traffic Directions
 
 
+
+**Context:** CloudMart uses Kong for mobile API and Istio between internal services.
 
 **Select all that apply.**
 
-Which statements about FIFO queues (e.g., SQS FIFO) are correct?
+Which north-south vs east-west split is correct?
 
-- [ ] A. `MessageGroupId` scopes strict ordering within a group
-- [ ] B. Different message groups can process in parallel
-- [ ] C. One FIFO queue enforces global strict order for all messages in the account
-- [ ] D. Deduplication ID prevents duplicate sends within the deduplication window
+- [ ] A. East-west: service-to-service inside cluster — mesh handles mTLS and retries
+- [ ] B. Service mesh replaces all need for public API gateway
+- [ ] C. North-south: external client → API gateway into cluster
+- [ ] D. Gateway for JWT and external rate limits; mesh for internal hop policy
 
 ---
 
-### Q49 [Hard] [Case Study] — EventPipe Kafka Rolling Upgrade
+### Q49 [Hard] — External Config Store and Edge Split
 
 
-
-**Context:** EventPipe rolls a Kafka broker restart during business hours. Producers and consumers see transient `LEADER_NOT_AVAILABLE` errors for 90 seconds.
 
 **Select all that apply.**
 
-What practices reduce outage risk?
+CloudMart keeps payment timeouts and feature flags out of container images. Which practices fit?
 
-- [ ] A. Clients must retry transient broker leadership errors
-- [ ] B. Replication factor ≥ 2 with appropriate `min.insync.replicas` protects availability
-- [ ] C. Plan upgrades with lag monitoring and validated client retry behavior
-- [ ] D. Single-broker Kafka is production-safe for payment-critical EventPipe workloads
+- [ ] A. Put secrets in git next to gateway config for simpler deploys
+- [ ] B. Change flags/timeouts without redeploy; secrets stay in Vault/KMS
+- [ ] C. Both gateway (north-south) and mesh (east-west) can coexist with complementary scopes
+- [ ] D. Central config store (etcd, Consul, AppConfig) for runtime-tunable keys
 
 ---
 
-### Q50 [Hard] — When Queues Add Harm
+### Q50 [Hard] [Case Study] — CloudMart Order Placement Flow
 
 
+
+**Context:** User POSTs /v1/orders on CloudMart. Flow: Cloud LB → Kong (JWT, rate limit) → order-service via discovery → gRPC catalog check → Kafka order.created → 201 to client. Payment runs async.
 
 **Select all that apply.**
 
-When is introducing a message queue a poor design choice?
+Which statements about this architecture are correct?
 
-- [ ] A. Simple CRUD with read-your-writes and low latency may not benefit from async indirection
-- [ ] B. Queues add operational complexity — DLQ, monitoring, ordering, replay policies
-- [ ] C. User-facing decisions shown in the HTTP response should not be fire-and-forget without UX design
-- [ ] D. Every synchronous microservice call should always be replaced with a queue
+- [ ] A. Synchronous path must include 8-minute payment processor in HTTP request
+- [ ] B. User gets 201 before async payment completes — hybrid sync/async
+- [ ] C. Gateway validates auth and routes before discovery picks order instance
+- [ ] D. Catalog gRPC timeout/circuit breaker prevents hung checkout thread

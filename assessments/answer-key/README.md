@@ -16,8 +16,11 @@ Answers and explanations for the MCQ question bank. **Study with questions first
 | [day-08-answers.md](./day-08-answers.md) | [day-08-questions.md](../day-08-questions.md) | 50 |
 | [day-09-answers.md](./day-09-answers.md) | [day-09-questions.md](../day-09-questions.md) | 50 |
 | [day-10-answers.md](./day-10-answers.md) | [day-10-questions.md](../day-10-questions.md) | 50 |
+| [day-11-answers.md](./day-11-answers.md) | [day-11-questions.md](../day-11-questions.md) | 50 |
+| [day-12-answers.md](./day-12-answers.md) | [day-12-questions.md](../day-12-questions.md) | 50 |
+| [day-13-answers.md](./day-13-answers.md) | [day-13-questions.md](../day-13-questions.md) | 40 |
 
-**Total:** 350 questions
+**Total:** 540 questions
 
 Each entry includes:
 

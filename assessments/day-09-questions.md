@@ -1,803 +1,908 @@
-# Reliability & Fault Tolerance — MCQ Questions (50)
+# Observability Deep Dive — MCQ Questions (50)
 
 Multi-select format: each question has **two or more** correct answers. Questions tagged **[Case Study]** include a business context block.
 
 > **Answers and explanations:** see [answer-key/day-09-answers.md](./answer-key/day-09-answers.md)
 
----
 
-### Q01 [Easy] [Case Study] — UptimeCorp Checkout Outage
 
-**Context:** UptimeCorp's payment API slows to 30 seconds. Order service threads block waiting. The entire site returns 503 even though product catalog and cart APIs are healthy.
-
-**Select all that apply.**
-
-What reliability principle was violated?
-
-- [ ] A. Fast APIs are automatically reliable APIs
-- [ ] B. Blast radius was not limited — one dependency took down unrelated paths
-- [ ] C. Slow dependency caused cascading failure — thread pool exhaustion
-- [ ] D. Reliability means surviving partial failures, not zero failures ever
 
 ---
 
+### Q01 [Easy] [Case Study] — SignalOps Checkout Error Spike
 
 
-### Q02 [Easy] — Reliability vs Performance vs Scalability
+
+
+
+**Context:** SignalOps checkout error rate jumps from 0.1% to 8%. Social media complaints spike. On-call is paged at 2 AM.
 
 **Select all that apply.**
 
-Which distinctions are correct?
+Which observability outcomes shorten this incident compared to flying blind?
 
-- [ ] A. Performance — speed of a single request under normal conditions
-- [ ] B. A scalable system is automatically reliable under dependency failure
-- [ ] C. Scalability — handling increased load/volume
-- [ ] D. Reliability — correct behavior when components fail
+- [ ] A. Restart every pod first because "something is wrong with orders"
+- [ ] B. Metric alert pinpoints when the spike started (e.g., 10:42 UTC)
+- [ ] C. Trace shows Payment Service p99 at 12s while baseline is ~200ms
+- [ ] D. Logs tied to trace_id reveal upstream Stripe 503 timeouts
 
 ---
 
+### Q02 [Easy] — Defining Observability
 
 
-### Q03 [Easy] [Case Study] — UptimeCorp SLA Math
 
-**Context:** UptimeCorp promises customers 99.9% availability in the SLA. Engineering targets 99.95% internally.
+
 
 **Select all that apply.**
 
-Which metric relationships are correct?
+Which statements correctly describe observability?
 
-- [ ] A. SLO (internal target) should be stricter than SLA (customer contract) — buffer before breach
-- [ ] B. 99.9% ≈ 43.8 minutes downtime per month
-- [ ] C. SLA, SLO, and SLI are interchangeable terms
-- [ ] D. Each additional nine is roughly ten times harder to achieve
+- [ ] A. Ability to understand internal system state from external outputs (logs, metrics, traces)
+- [ ] B. How engineers see across services, queues, and databases in distributed systems
+- [ ] C. Centralized, searchable signals because you cannot SSH-debug every pod at scale
+- [ ] D. Same as uptime monitoring — binary healthy/unhealthy only
 
 ---
 
+### Q03 [Easy] [Case Study] — SignalOps Silent Latency Creep
 
 
-### Q04 [Easy] — RPO vs RTO
+
+
+
+**Context:** SignalOps checkout p99 latency doubled over three weeks. No alert fired. Support tickets rose before engineering noticed.
 
 **Select all that apply.**
 
-UptimeCorp defines disaster recovery targets after regional failure.
+Which are costs of flying blind illustrated here?
 
-- [ ] A. RPO — maximum acceptable data loss measured in time
-- [ ] B. RTO — maximum acceptable downtime before service restored
-- [ ] C. RPO and RTO measure the same thing
-- [ ] D. Daily backups only may imply RPO up to 24 hours
+- [ ] A. Silent degradation — latency creeps before anyone pages
+- [ ] B. Longer MTTR when the incident finally surfaces
+- [ ] C. Customer churn from repeated slow checkout without internal visibility
+- [ ] D. Guaranteed elimination of all dependency timeouts
 
 ---
 
+### Q04 [Easy] — Observability vs Reliability
 
 
-### Q05 [Easy] [Case Study] — UptimeCorp SPOF Audit
 
-**Context:** UptimeCorp runs one load balancer, one PostgreSQL primary (no replica), one Redis node, and DNS with no secondary provider.
+
 
 **Select all that apply.**
 
-Which are single points of failure (SPOF)?
+How do observability and reliability relate?
 
-- [ ] A. Three stateless app servers behind one LB — app tier alone is not SPOF if any instance can serve
-- [ ] B. Multi-AZ deployment with health-checked redundant instances eliminates all SPOF without multi-region
-- [ ] C. Single database primary with no failover replica
-- [ ] D. Single Redis instance with no replica/Sentinel
+- [ ] A. Reliability patterns (circuit breakers, redundancy) still need observability to verify behavior
+- [ ] B. Observability focuses on detect and diagnose; reliability on survive failures
+- [ ] C. Observability replaces circuit breakers once metrics exist
+- [ ] D. You need visibility into whether users saw fallback vs 500 when a breaker opens
 
 ---
 
+### Q05 [Easy] [Case Study] — SignalOps Architecture Growth
 
 
-### Q06 [Easy] — Serial Dependency Availability
+
+
+
+**Context:** SignalOps moved from one monolith server to gateway + order + payment + inventory + async notification workers.
 
 **Select all that apply.**
 
-Checkout calls Auth (99.9%) → Inventory (99.9%) → Payment (99.9%) synchronously in series.
+When does observability become non-negotiable?
 
-- [ ] A. Combined availability ≈ 0.999³ ≈ 99.7% — worse than each service alone
-- [ ] B. Your SLA cannot exceed a dependency's SLA without fallback or caching
-- [ ] C. Parallelize, cache, or add fallbacks to reduce serial dependency risk
-- [ ] D. More sync dependencies in the critical path never affect end-to-end availability
+- [ ] A. Single-server monolith with logs on local disk only forever
+- [ ] B. Async queue paths where failure happens minutes after publish
+- [ ] C. On-call production with user-facing SLOs
+- [ ] D. Requests cross service boundaries — trace and request IDs required
 
 ---
 
+### Q06 [Easy] — Design Mindset
 
 
-### Q07 [Medium] [Case Study] — UptimeCorp Multi-AZ Deploy
 
-**Context:** UptimeCorp runs three API instances across two availability zones behind an ALB with deep health checks (DB + Redis reachable).
+
 
 **Select all that apply.**
 
-Which HA practices apply?
+Which practices match an observability-first design mindset?
 
-- [ ] A. Multi-AZ survives datacenter-level failure within a region
-- [ ] B. Deep health checks remove instances that cannot reach dependencies
-- [ ] C. Shallow health check (process up) is sufficient for production traffic routing
-- [ ] D. Stateless app servers with sessions in Redis — not in pod memory
+- [ ] A. Instrument early — metrics before launch, not after the riskiest period
+- [ ] B. Defer all logging until post-launch to maximize dev velocity only
+- [ ] C. Alert on user symptoms (checkout success) not raw CPU alone
+- [ ] D. Every log line should help answer what request, what service, what failed
 
 ---
 
+### Q07 [Easy] — Monitoring vs Observability
 
 
-### Q08 [Medium] — Active-Active vs Active-Passive
+
+
 
 **Select all that apply.**
 
-Which statements compare redundancy models?
+Which contrasts monitoring and observability accurately?
 
-- [ ] A. Active-active — all nodes serve traffic simultaneouslyA
-- [ ] B. Active-passive — standby idle until failover promotion
-- [ ] C. Active-passive failover is always instant with zero promotion delay
-- [ ] D. N+1 redundancy — one extra instance covers failure during rolling deploy
+- [ ] A. Monitoring asks "Is the system healthy?" with predefined dashboards and thresholds
+- [ ] B. Observability supports exploratory questions like "Why is checkout slow for EU users?"
+- [ ] C. Observability replaces the need to ever page on-call
+- [ ] D. Monitoring handles known failure modes; observability helps novel first-time failures
 
 ---
 
+### Q08 [Easy] [Case Study] — SignalOps Alert With No Data
 
 
-### Q09 [Medium] [Case Study] — UptimeCorp Hung Payment Call
 
-**Context:** UptimeCorp order service calls payment API with no timeout. Payment hangs indefinitely. 200 threads block; new checkout requests queue until timeout at the gateway.
+
+
+**Context:** SignalOps pages on-call for elevated error rate, but engineers cannot filter logs by request or open a trace across services.
 
 **Select all that apply.**
 
-What should UptimeCorp implement first?
+What production gap does this describe?
 
-- [ ] A. Timeout is first-line defense against cascading failure
-- [ ] B. Client timeout shorter than user-facing SLA — fail fast and free threads
-- [ ] C. Inner dependency timeouts should be shorter than outer gateway timeout budget
-- [ ] D. Default infinite timeout on internal calls is acceptable
+- [ ] A. Monitoring without observability — alert fires, insufficient data to debug
+- [ ] B. Observability without monitoring — rich data but nobody notified
+- [ ] C. Need both: monitor SLIs/symptoms and observe with logs and traces
+- [ ] D. Metrics alone always show full stack traces for every error
 
 ---
 
+### Q09 [Easy] [Case Study] — SignalOps Post-Deploy Latency
 
 
-### Q10 [Medium] — Timeout Budget
+
+
+
+**Context:** After a deploy, SignalOps p99 latency doubled. Dashboards show the spike but not which dependency changed.
 
 **Select all that apply.**
 
-User-facing checkout SLA is 5 seconds total. Order service calls three dependencies.
+Which are "unknown unknown" style questions observability should answer?
 
-- [ ] A. Sum of inner timeouts + retries must fit within user SLA
-- [ ] B. Client timeout should be ≥ server processing limit to avoid client giving up while server still works
-- [ ] C. Typical internal API timeout range: 1–3 seconds; DB: 500 ms–2 s; Redis: 100–500 ms
-- [ ] D. One global 30-second timeout for all dependencies is best practice
+- [ ] A. Do only Android clients fail while iOS succeeds?
+- [ ] B. Which dependency regressed after the deploy?
+- [ ] C. Do errors correlate with one database shard?
+- [ ] D. Is disk usage above 90% on one node?
 
 ---
 
+### Q10 [Easy] — Health Checks vs Deep Visibility
 
 
-### Q11 [Medium] [Case Study] — UptimeCorp Retry Storm
 
-**Context:** Payment API returns 503 for 30 seconds. 5,000 clients retry simultaneously every second with no backoff. Payment receives 5× normal load and stays down longer.
+
 
 **Select all that apply.**
 
-What fixes apply?
+How do health checks differ from full observability?
 
-- [ ] A. Coordinate retry budgets across layers — avoid 3×3×3 compounded attempts
-- [ ] B. Retry all errors including invalid payload forever
-- [ ] C. Retry only transient errors (503, timeout) — not 400/401
-- [ ] D. Exponential backoff with jitter on retries
+- [ ] A. Health checks are binary up/down monitoring on `/health`
+- [ ] B. An instance can return 200 on health yet be slow on DB queries or in retry storms
+- [ ] C. Health checks alone replace RED metrics and tracing
+- [ ] D. Observability covers elevated GC, slow queries, and degraded UX while "healthy"
 
 ---
 
+### Q11 [Easy] [Case Study] — SignalOps Incident Workflow
 
 
-### Q12 [Medium] — Idempotent Retries
+
+
+
+**Context:** SignalOps error rate alert fires on order-service. On-call opens dashboards, logs, and a slow trace.
 
 **Select all that apply.**
 
-UptimeCorp retries `POST /transfer` on timeout.
+Which sequence uses the three pillars together?
 
-- [ ] A. Requires Idempotency-Key or dedup store — otherwise retry may double-charge
-- [ ] B. GET and idempotent PUT with key are safer to retry
-- [ ] C. Retrying non-idempotent POST without protection is safe
-- [ ] D. Async queue workers may allow more retries (5–10) than sync user path (2–3)
+- [ ] A. Traces only — skip aggregate trends and alerting
+- [ ] B. Dashboard slice by service label, then drill to logs and traces
+- [ ] C. Logs only — skip metrics because they lack context
+- [ ] D. Metric alert on error rate, then logs filtered by trace_id, then trace showing time in payment
 
 ---
 
+### Q12 [Easy] — Logs Pillar
 
 
-### Q13 [Medium] [Case Study] — UptimeCorp Circuit Opens
 
-**Context:** Payment API fails 8 times in 10 seconds. UptimeCorp's circuit breaker opens — checkout returns immediate fallback error instead of waiting 30 s per request.
+
 
 **Select all that apply.**
 
-Which circuit breaker facts are correct?
+What are logs best suited for?
 
-- [ ] A. Per-dependency circuits — payment open should not trip unrelated recommendation circuit
-- [ ] B. States: CLOSED → OPEN (fail fast) → HALF-OPEN (test) → CLOSED or OPEN
-- [ ] C. Open circuit means the payment API is fixed
-- [ ] D. Stops wasted calls to a failing dependency — protects caller resources
+- [ ] A. Discrete events with context — errors, audit trails, business events
+- [ ] B. Debugging a specific request when correlated with trace_id or request_id
+- [ ] C. Cheap fleet-wide alerting on every request without aggregation
+- [ ] D. Per-event granularity at higher volume/cost than metrics
 
 ---
 
+### Q13 [Easy] — Metrics Pillar
 
 
-### Q14 [Medium] — Circuit Breaker vs Retries
+
+
 
 **Select all that apply.**
 
-How do retries and circuit breakers work together?
+Which metric types and behaviors are correct?
 
-- [ ] A. Complementary — 2–3 retries on transient failure, then count toward open threshold
-- [ ] B. Circuit breaker replaces retries entirely — use one or the other
-- [ ] C. Retries help brief blips; circuit breaker stops sustained outage amplification
-- [ ] D. Unlimited retries while circuit is closed can still saturate the caller during prolonged outage
+- [ ] A. Counter — reset every minute by design for rate queries
+- [ ] B. Counter — monotonic increase (e.g., http_requests_total)
+- [ ] C. Histogram — latency distribution in buckets
+- [ ] D. Gauge — value goes up or down (e.g., queue_depth)
 
 ---
 
+### Q14 [Easy] — Traces Pillar
 
 
-### Q15 [Hard] [Case Study] — UptimeCorp Bulkhead Saves Browse
 
-**Context:** Payment processing uses a dedicated thread pool (20 threads). Recommendations use a separate pool (30 threads). Payment slows but product browse and cart remain responsive.
+
 
 **Select all that apply.**
 
-What pattern is this?
+What do distributed traces provide?
 
-- [ ] A. Bulkhead and circuit breaker solve identical problems
-- [ ] B. When bulkhead is full: fail fast (503) or bounded queue — not unbounded block
-- [ ] C. Bulkhead — isolate resource pools so one area cannot drain the entire system
-- [ ] D. Bulkhead is proactive isolation; circuit breaker is reactive to failure rate
+- [ ] A. End-to-end path of one request across services with timing per span
+- [ ] B. Latency analysis — which span consumed the most time
+- [ ] C. Complete unsampled detail for every request at 100K RPS with no cost tradeoff
+- [ ] D. Dependency mapping for microservices debugging
 
 ---
 
+### Q15 [Medium] [Case Study] — SignalOps Metrics-Only Stack
 
 
-### Q16 [Hard] — Bulkhead Types
+
+
+
+**Context:** SignalOps invested only in Prometheus counters. No centralized logs or tracing. Errors doubled but on-call cannot see individual failure context.
 
 **Select all that apply.**
 
-Which are bulkhead implementations?
+Which anti-patterns apply?
 
-- [ ] A. Separate thread pools per dependency or feature tier
-- [ ] B. Separate DB connection pools for checkout vs reporting queries
-- [ ] C. Message queue absorbing spike while workers drain at fixed rate
-- [ ] D. Larger bulkhead always improves isolation without trade-off
+- [ ] A. Only traces — miss aggregate trends and sampling gaps
+- [ ] B. Using all three pillars with shared correlation IDs
+- [ ] C. Metrics alone — know something changed but not where or full context
+- [ ] D. Only logs — cannot alert efficiently at scale
 
 ---
 
+### Q16 [Medium] [Case Study] — SignalOps Telemetry Pipeline
 
 
-### Q17 [Hard] [Case Study] — UptimeCorp Graceful Degradation
 
-**Context:** Recommendations service is down. UptimeCorp product pages load without "You may also like" section. Checkout and cart work normally.
+
+
+**Context:** SignalOps standardizes on OpenTelemetry SDKs in services, a collector, and Grafana for dashboards and alerts.
 
 **Select all that apply.**
 
-Which degradation principles apply?
+Which collection pattern matches modern observability stacks?
 
-- [ ] A. Cached or static fallback for recommendations is a valid strategy
-- [ ] B. Feature tiers: core (checkout) vs optional (recommendations) — disable optional silently
-- [ ] C. Return 500 for entire product page when optional service fails
-- [ ] D. Circuit breaker is mechanism; graceful degradation is policy for what UX to show
+- [ ] A. Services → OpenTelemetry SDK/agent → collector → backends for logs, metrics, traces
+- [ ] B. Metrics backend (e.g., Prometheus) plus trace backend (e.g., Jaeger/Tempo) plus log store
+- [ ] C. Each engineer SSHs to pods to tail unstructured files during incidents
+- [ ] D. Tool names vary but the pillar patterns are universal
 
 ---
 
+### Q17 [Medium] — Structured Logging
 
 
-### Q18 [Hard] — Load Shedding Priority
+
+
 
 **Select all that apply.**
 
-UptimeCorp must drop traffic under extreme overload.
+Why prefer structured JSON logs over plain text?
 
-- [ ] A. Shed lowest priority first: analytics beacons before anonymous browse before paying checkout
-- [ ] B. Return 503 with Retry-After for shed requests
-- [ ] C. All traffic types must be treated equally during overload
-- [ ] D. Payment path is core — cannot fully degrade authorized checkout without explicit policy
+- [ ] A. Treat logs like APIs with intentional fields
+- [ ] B. Machine-parseable — filter, aggregate, and alert in log platforms
+- [ ] C. Plain text is always faster to search across terabytes
+- [ ] D. Stable field names enable queries like level=ERROR and service=order-service
 
 ---
 
+### Q18 [Medium] [Case Study] — SignalOps Alert Fatigue
 
 
-### Q19 [Easy] [Case Study] — UptimeCorp Regional Failover Drill
 
-**Context:** Primary region fails. Route 53 shifts traffic to secondary region. RTO target is 15 minutes; last quarter drill measured 22 minutes due to untested runbook steps.
+
+
+**Context:** SignalOps logged every health check and retry at ERROR. Pager fires nightly; on-call ignores real checkout failures.
 
 **Select all that apply.**
 
-What DR practices improve outcomes?
+Which logging practices reduce fatigue?
 
-- [ ] A. Multi-region is free and default for all systems regardless of tier
-- [ ] B. Automatic failover RTO often 30 s–2 min; manual avoids split-brain risk but slower
-- [ ] C. Tested runbooks and quarterly restore/failover drills reduce MTTR
-- [ ] D. Untested backup equals no backup — verify restores, not just snapshots
+- [ ] A. Use WARN for recoverable oddities; ERROR for failed operations needing attention
+- [ ] B. Do not log everything as ERROR
+- [ ] C. DEBUG verbose detail off in prod or sampled
+- [ ] D. Log passwords and API secrets for faster debugging
 
 ---
 
+### Q19 [Medium] — Correlation IDs
 
 
-### Q20 [Easy] — Split-Brain Prevention
+
+
 
 **Select all that apply.**
 
-During DB failover, two nodes briefly believe they are primary and accept writes.
+How should request and trace correlation work?
 
-- [ ] A. Split-brain causes diverging writes — must be prevented with quorum, STONITH, or fencing
-- [ ] B. Patroni, RDS Multi-AZ, and etcd quorum help coordinate safe failover
-- [ ] C. Split-brain is harmless — databases merge conflicting writes automatically
-- [ ] D. Manual failover trades speed for reduced split-brain risk in some architectures
+- [ ] A. Each service generates a new request_id mid-chain for uniqueness
+- [ ] B. Every log line includes request_id aligned with trace_id from tracing
+- [ ] C. One request_id per user request propagated gateway → downstream services
+- [ ] D. Gateway generates or forwards X-Request-Id and traceparent headers
 
 ---
 
+### Q20 [Medium] — Safe Logging Content
 
 
-### Q21 [Medium] [Case Study] — UptimeCorp Error Budget Burn
 
-**Context:** UptimeCorp SLO is 99.95% availability (0.05% error budget ≈ 22 min/month). A bad deploy burns 12% of the monthly budget in one hour. Pager fires on fast burn rate.
+
 
 **Select all that apply.**
 
-Which SLO/error budget practices apply?
+What should appear in production logs?
 
-- [ ] A. SLI measures successful valid requests — typically exclude client 4xx from availability SLI
-- [ ] B. One 500 error should always page on-call immediately
-- [ ] C. Alert on error budget burn rate — not every single 500 error
-- [ ] D. Budget exhausted → freeze risky features; focus stability
+- [ ] A. Request start/end, duration, error type, business IDs like order_id
+- [ ] B. Downstream dependency failure details without secrets
+- [ ] C. Full credit card numbers and API keys for audit
+- [ ] D. Avoid huge response bodies and unredacted PII unless policy allows
 
 ---
 
+### Q21 [Medium] [Case Study] — SignalOps Order Service SLOs
 
 
-### Q22 [Medium] — SLI Selection
+
+
+
+**Context:** SignalOps exports HTTP metrics from order-service for dashboards and SLO alerts.
 
 **Select all that apply.**
 
-Which are valid SLIs for UptimeCorp checkout?
+Which metrics belong to the RED method for request-driven services?
 
-- [ ] A. Percentage of checkout attempts completing payment within 30 seconds
-- [ ] B. Error rate (5xx + timeout) on checkout path
-- [ ] C. Server process "up" ping alone — sufficient for user-perceived availability
-- [ ] D. P99 latency of payment API
+- [ ] A. Duration — latency distribution (e.g., p99 from histogram)
+- [ ] B. Utilization — CPU percent only, ignoring request outcomes
+- [ ] C. Rate — requests per second
+- [ ] D. Errors — failed requests per second or error ratio
 
 ---
 
+### Q22 [Medium] [Case Study] — SignalOps Payment Latency
 
 
-### Q23 [Medium] [Case Study] — UptimeCorp Canary Deploy
 
-**Context:** UptimeCorp deploys new order service to 5% of traffic, monitors checkout SLI for 10 minutes, then rolls to 100%. SLI drops 0.3% during canary — pipeline auto-rolls back.
+
+
+**Context:** SignalOps queries Prometheus for payment-service after a latency incident.
 
 **Select all that apply.**
 
-Which safe deploy practices apply?
+Which query ideas match RED instrumentation?
 
-- [ ] A. Canary limits blast radius of bad deploys — majority of traffic unaffected
-- [ ] B. Automated rollback when SLI degrades during canary window
-- [ ] C. Big-bang deploy to 100% without metrics is fastest and safest
-- [ ] D. Feature flags can disable bad code paths without full redeploy
+- [ ] A. rate(http_requests_total[5m]) for traffic
+- [ ] B. Label http_requests_total with unbounded user_id for per-user SLO
+- [ ] C. Error ratio from 5xx rate divided by total request rate
+- [ ] D. histogram_quantile(0.99, http_request_duration_seconds) for tail latency
 
 ---
 
+### Q23 [Medium] — USE Method
 
 
-### Q24 [Medium] — Defense in Depth Stack
+
+
 
 **Select all that apply.**
 
-UptimeCorp layers reliability patterns on the payment path.
+Which examples fit USE metrics for infrastructure resources?
 
-- [ ] A. Redundancy → timeouts → retries → circuit breaker → bulkhead → graceful degradation → failover
-- [ ] B. One pattern alone (e.g., circuit breaker only) is sufficient defense
-- [ ] C. Patterns work together — not in isolation
-- [ ] D. Assume failure — design, test, and operate for components breaking
+- [ ] A. Utilization — active DB connections / max_connections
+- [ ] B. Saturation — queries waiting on locks or disk queue depth
+- [ ] C. Errors — replication failures or disk errors
+- [ ] D. Rate — HTTP requests per second on an API route (RED, not USE)
 
 ---
 
+### Q24 [Medium] [Case Study] — SignalOps Queue Backlog
 
 
-### Q25 [Hard] [Case Study] — UptimeCorp Chaos Experiment
 
-**Context:** SRE kills one AZ instance during business hours. Hypothesis: "Checkout SLI stays above 99.9%." SLI drops to 98% — sessions were in pod memory.
+
+
+**Context:** SignalOps notification workers fall behind; checkout API stays green while emails delay hours.
 
 **Select all that apply.**
 
-What chaos engineering practices apply?
+Which metric choices fit the worker and queue?
 
-- [ ] A. Start with small blast radius in staging, then controlled production experiments
-- [ ] B. Define steady-state metric (checkout SLI) and hypothesis before injecting failure
-- [ ] C. Fix findings — move sessions to Redis; rerun experiment to validate
-- [ ] D. Chaos in full production without limits on day one is standard first step
+- [ ] A. Gauge queue_depth rising under load
+- [ ] B. Counter messages_processed_total for throughput
+- [ ] C. Histogram consumer_lag or processing duration
+- [ ] D. Counter that decreases when messages complete
 
 ---
 
+### Q25 [Medium] — Label Cardinality
 
 
-### Q26 [Hard] — Partial vs Total Failure
+
+
 
 **Select all that apply.**
 
-Which statements about failure modes are correct?
+Which label practices are sound?
 
-- [ ] A. Partial/slow failures are harder to detect than total outage — need latency/error-rate alerts
-- [ ] B. Cascading failure can start from one slow dependency without multiple root causes
-- [ ] C. Only total failures require design attention
-- [ ] D. Timeouts and circuit breakers address slow partial failures
+- [ ] A. Never use user_id as a metric label — millions of unique values
+- [ ] B. Slice by service, method, status — bounded cardinality
+- [ ] C. Put unbounded IDs in metrics instead of logs/traces
+- [ ] D. High cardinality explodes storage and query cost
 
 ---
 
+### Q26 [Medium] [Case Study] — SignalOps Metric Cost Explosion
 
 
-### Q27 [Easy] — MTBF and MTTR
+
+
+
+**Context:** An engineer added checkout_duration_seconds{user_id="..."}. Prometheus memory spiked within a day.
 
 **Select all that apply.**
 
-Availability relates to MTBF and MTTR.
+What went wrong and how to fix?
 
-- [ ] A. Lowering MTTR raises availability without reducing failure frequency
-- [ ] B. Higher MTBF alone guarantees high availability if MTTR is hours
-- [ ] C. Availability ≈ MTBF / (MTBF + MTTR)
-- [ ] D. Incident MTTR spans alert → fix → verified restoration
+- [ ] A. Unbounded user_id label — high cardinality anti-pattern
+- [ ] B. Prefer checkout_duration_seconds{status="success|failure"} instead
+- [ ] C. Use logs/traces for per-user investigation, not metric labels
+- [ ] D. Add every order_id as a label for precise alerting
 
 ---
 
+### Q27 [Medium] — Golden Signals
 
 
-### Q28 [Medium] [Case Study] — UptimeCorp Read-Only Mode
 
-**Context:** Primary DB fails over to replica with 45-second lag. UptimeCorp enables read-only mode: browse works, checkout disabled with clear banner.
+
 
 **Select all that apply.**
 
-What degradation strategy is this?
+How do Google's golden signals relate to RED/USE?
 
-- [ ] A. Graceful degradation — partial function over total outage
-- [ ] B. Core browse path alive; enhanced checkout paused until consistency restored
-- [ ] C. Continue accepting payments against potentially stale inventory during failover
-- [ ] D. Communicate clearly to users — better than silent wrong charges
+- [ ] A. Latency, traffic, errors, saturation — overlapping with RED for services and USE for resources
+- [ ] B. RED covers rate, errors, duration for request-driven services
+- [ ] C. Golden signals eliminate need for logs entirely
+- [ ] D. USE covers utilization, saturation, errors on infrastructure
 
 ---
 
+### Q28 [Medium] — Trace Structure
 
 
-### Q29 [Hard] — Designing for Failure Checklist
+
+
 
 **Select all that apply.**
 
-Which belong on UptimeCorp's reliability checklist?
+Which distributed tracing terms are correct?
 
-- [ ] A. Idempotency on all write paths that retry (API, queue, failover)
-- [ ] B. Eliminate SPOF with multi-instance, multi-AZ redundancy and health checks
-- [ ] C. Most outages are external hardware — ignore deploy pipeline quality
-- [ ] D. Blameless postmortems with owned action items after incidents
+- [ ] A. Trace — entire journey; spans — units of work with parent/child relationships
+- [ ] B. Trace ID shared across spans; span ID unique per span
+- [ ] C. Broken propagation stops the trace at the first hop with no downstream spans
+- [ ] D. One span ID reused for every service in the chain
 
 ---
 
+### Q29 [Medium] [Case Study] — SignalOps Missing Payment Span
 
 
-### Q30 [Hard] [Case Study] — UptimeCorp Game Day
 
-**Context:** UptimeCorp simulates payment provider 503 for one hour. On-call follows runbook, enables cached fallback for order status, communicates via status page. MTTR improves 40% vs last real incident.
+
+
+**Context:** SignalOps traces show gateway and order-service but payment-service and Stripe never appear.
 
 **Select all that apply.**
 
-What practices does this exercise?
+Likely causes and fixes?
 
-- [ ] A. Game day — scheduled incident simulation improves runbooks and MTTR
-- [ ] B. Test degradations in staging by manually opening circuits before production need
-- [ ] C. Game days replace need for metrics, SLOs, or automated rollback
-- [ ] D. Problem→pattern: dependency down → circuit breaker + fallback + comms
+- [ ] A. Gateway not forwarding trace context to order-service
+- [ ] B. Payment service not extracting/injecting traceparent on outbound calls
+- [ ] C. Traces always include all hops without instrumentation
+- [ ] D. Broken propagation — common bug when headers dropped
 
 ---
 
+### Q30 [Medium] [Case Study] — SignalOps Async Notification
 
 
-### Q31 [Easy] [Case Study] — UptimeCorp DNS Outage
 
-**Context:** UptimeCorp's DNS provider fails for 20 minutes. All application servers are healthy but users cannot resolve `shop.uptimecorp.com`.
+
+
+**Context:** Checkout returns 201 quickly; notification worker logs errors 30 seconds later with no link to the API request.
 
 **Select all that apply.**
 
-What reliability lesson applies?
+How to maintain observability across async boundaries?
 
-- [ ] A. Very low TTL eliminates all DNS failure impact with zero trade-offs
-- [ ] B. Healthy application servers matter little if DNS resolution fails
-- [ ] C. Secondary DNS provider or failover registrar reduces risk
-- [ ] D. DNS is an easily overlooked single point of failure
+- [ ] A. Include trace_id (and correlation_id) in queue message metadata
+- [ ] B. Search logs by trace_id across API publisher and consumer
+- [ ] C. Assume sync HTTP trace covers post-response worker work automatically
+- [ ] D. Propagate context from order.created publish through consume
 
 ---
 
+### Q31 [Medium] — OpenTelemetry and Instrumentation
 
 
-### Q32 [Easy] — Kubernetes Probe Types
+
+
 
 **Select all that apply.**
 
-Which probe purposes are correct?
+Which statements about OpenTelemetry and instrumentation are accurate?
 
-- [ ] A. Liveness — is the process alive; restart if dead
-- [ ] B. Readiness — can this instance accept traffic; remove from load balancer if failing
-- [ ] C. Startup — slow-init apps need extended probe before liveness kills the pod
-- [ ] D. Liveness should fail the pod on any transient database blip across the dependency graph
+- [ ] A. OpenTelemetry replaces need for structured logging entirely
+- [ ] B. App → OTel SDK → collector → backends like Jaeger or Tempo
+- [ ] C. Auto-instrumentation for HTTP, gRPC, DB drivers; manual spans for business steps
+- [ ] D. Industry-standard APIs/SDKs for traces, metrics, and logs
 
 ---
 
+### Q32 [Medium] — Trace Sampling
 
 
-### Q33 [Easy] [Case Study] — UptimeCorp Post-Outage Login Surge
 
-**Context:** After a 30-minute outage, 500,000 users refresh simultaneously. Auth service is overwhelmed despite capacity for normal peak of 50,000 logins per minute.
+
 
 **Select all that apply.**
 
-What describes this failure mode and valid responses?
+Which sampling strategies fit high-traffic production?
 
-- [ ] A. Staged recovery or token-bucket limits on the login path may be required
-- [ ] B. Recovery storm / thundering herd after incidents
-- [ ] C. Steady-state peak capacity automatically handles post-outage recovery surges
-- [ ] D. Rate limiting, jittered client retry, and edge queueing help absorb the surge
+- [ ] A. Head sampling — decide at trace start (e.g., 1% of requests)
+- [ ] B. Tail sampling — retain slow or errored traces
+- [ ] C. Always sample failed checkout traces — never drop critical errors
+- [ ] D. 100% trace every request at 100K RPS with no cost concern
 
 ---
 
+### Q33 [Medium] [Case Study] — SignalOps N+1 in Inventory
 
 
-### Q34 [Easy] — Classifying Dependency Failures
+
+
+
+**Context:** SignalOps trace shows dozens of repeated inventory DB child spans under one checkout span.
 
 **Select all that apply.**
 
-How should UptimeCorp classify dependency failures for handling policy?
+What can traces reveal here?
 
-- [ ] A. Transient — retry with backoff may succeed (503, timeout)
-- [ ] B. Permanent — bad input; retry will not help (400, invalid schema)
-- [ ] C. Slow partial — may need timeout and circuit breaker before hard failure
-- [ ] D. All failures should be retried identically with the same policy
+- [ ] A. Traces cannot show parallel vs serial work on a timeline
+- [ ] B. N+1 or fan-out call pattern visible as many repeated child spans
+- [ ] C. Retry storms appear as duplicate spans to the same dependency
+- [ ] D. Longest span highlights which dependency dominates time
 
 ---
 
+### Q34 [Medium] [Case Study] — SignalOps Service Launch Checklist
 
 
-### Q35 [Easy] [Case Study] — UptimeCorp Health Check Flapping
 
-**Context:** UptimeCorp's ALB uses deep health checks including Redis reachability. A 2-second Redis blip marks all 6 instances unhealthy simultaneously — the site goes fully down.
+
+
+**Context:** SignalOps launches a new inventory-service into production behind the gateway.
 
 **Select all that apply.**
 
-What went wrong and what should change?
+Which minimum instrumentation should be in place?
 
-- [ ] A. Brief shared dependency blips should not drain the entire fleet without hysteresis or layered checks
-- [ ] B. More aggressive dependency checks always improve end-user reliability
-- [ ] C. Unhealthy threshold and check interval tuning reduces flapping
-- [ ] D. When all backends fail health checks, the load balancer serves no traffic
+- [ ] A. /health and /ready, RED metrics with low-cardinality labels
+- [ ] B. JSON logs to stdout with request_id; propagate trace headers in/out
+- [ ] C. Log and metric dependency failures; defer tracing until year two
+- [ ] D. Metrics endpoint (Prometheus/OpenTelemetry) for scraping
 
 ---
 
+### Q35 [Medium] — Gateway and Auto Instrumentation
 
 
-### Q36 [Easy] — N+1 Redundant Capacity
+
+
 
 **Select all that apply.**
 
-Which capacity planning statements are correct?
+Where should auto vs manual instrumentation focus?
 
-- [ ] A. N+1 spare capacity covers one instance failure during normal load
-- [ ] B. Headroom for deploys and traffic spikes is separate from failure redundancy
-- [ ] C. Running at 100% utilization maximizes reliability and user experience
-- [ ] D. Chaos drills and load tests validate redundancy assumptions
+- [ ] A. Auto replaces all business metrics like orders_per_minute
+- [ ] B. Gateway: per-route rate, 4xx/5xx, latency histogram, 429 rate-limit metrics
+- [ ] C. Auto for HTTP plumbing, DB drivers, framework middleware
+- [ ] D. Manual spans at critical business steps like validate_cart or charge_payment
 
 ---
 
+### Q36 [Hard] [Case Study] — SignalOps Gateway Access Logs
 
 
-### Q37 [Medium] [Case Study] — UptimeCorp Hedged Requests
 
-**Context:** UptimeCorp's search service calls two read replicas; the first response wins and the slower call is cancelled. P99 latency drops 40%.
+
+
+**Context:** SignalOps API gateway sees all north-south traffic. Mobile clients omit request IDs.
 
 **Select all that apply.**
 
-What pattern is this and when is it appropriate?
+What should the gateway emit?
 
-- [ ] A. Hedging every request always doubles cost with no selective cap or benefit
-- [ ] B. Apply selectively — risky for non-idempotent writes without careful design
-- [ ] C. Hedged requests trade extra load for tail-latency reduction
-- [ ] D. Useful when an occasional slow replica causes tail spikes
+- [ ] A. Generate request_id if client did not send X-Request-Id
+- [ ] B. Access logs: method, path, status, duration, user_id, request_id
+- [ ] C. Per-route RED metrics plus rate-limit rejection counts
+- [ ] D. Regenerate new trace IDs at each downstream hop for security
 
 ---
 
+### Q37 [Hard] — Dashboard Design
 
 
-### Q38 [Medium] — Fallback vs Fail Fast
+
+
 
 **Select all that apply.**
 
-Which compare fallback and fail-fast strategies?
+Which belong on effective observability dashboards?
 
-- [ ] A. Fallback returns a degraded response when a dependency fails
-- [ ] B. Fail fast returns an error immediately and preserves caller resources
-- [ ] C. Fallback and fail fast are identical strategies with the same UX
-- [ ] D. Choice depends on feature criticality and acceptable user experience
+- [ ] A. Fifty nearly identical charts and vanity metrics nobody acts on
+- [ ] B. Deploy markers annotated to correlate spikes with releases
+- [ ] C. Level 1 system health — availability, error rate, p99 latency
+- [ ] D. Level 2 per-service RED and dependency error rates
 
 ---
 
+### Q38 [Hard] [Case Study] — SignalOps On-Call Dashboard
 
 
-### Q39 [Medium] [Case Study] — UptimeCorp API Rate Limiting
 
-**Context:** Under a traffic spike resembling a DDoS, UptimeCorp enables per-API-key rate limits returning `429` with `Retry-After`. Core paying customers remain stable.
+
+
+**Context:** SignalOps on-call opens Grafana during a checkout incident.
 
 **Select all that apply.**
 
-What reliability pattern applies?
+Which panels help the drill-down hierarchy?
 
-- [ ] A. Accepting unlimited traffic is required for high availability
-- [ ] B. Per-tenant limits protect the shared platform from one abusive client
-- [ ] C. Rate limiting is overload protection — a form of load shedding
-- [ ] D. `Retry-After` helps well-behaved clients back off
+- [ ] A. Platform error rate and p99, then order-service RED
+- [ ] B. Queue depth and replication lag when dependencies suspect
+- [ ] C. Raw CPU at 62% with no latency or error context as sole page trigger
+- [ ] D. Latency percentiles p50, p95, p99 per service
 
 ---
 
+### Q39 [Hard] — Alerting on Symptoms
 
 
-### Q40 [Medium] — Blue-Green vs Rolling Deploy
+
+
 
 **Select all that apply.**
 
-Which statements compare deploy strategies?
+Which alerts align with user impact?
 
-- [ ] A. Blue-green enables fast rollback by switching traffic between environments
-- [ ] B. Rolling deploy replaces instances gradually — smaller blast radius per wave
-- [ ] C. Blue-green often requires duplicate infrastructure during cutover
-- [ ] D. Rolling deploys never need health checks, canaries, or automated rollback
+- [ ] A. Any single 500 error pages immediately
+- [ ] B. CPU > 90% for ten minutes **and** latency elevated — cause plus symptom
+- [ ] C. Checkout error rate > 1% for five minutes
+- [ ] D. p99 latency > 2s sustained — symptom users feel
 
 ---
 
+### Q40 [Hard] [Case Study] — SignalOps CPU Pages
 
 
-### Q41 [Medium] [Case Study] — UptimeCorp Hidden Dependency Chain
 
-**Context:** Post-incident review reveals Payment synchronously calls a legacy Fraud service nobody documented. Checkout failed when Fraud slowed.
+
+
+**Context:** SignalOps pages on-call whenever CPU > 50%. Checkout is fine; on-call disables alerts.
 
 **Select all that apply.**
 
-What practices prevent surprise cascades?
+What makes this a bad alert?
 
-- [ ] A. Documentation alone eliminates the need for timeouts and circuit breakers
-- [ ] B. Distributed tracing reveals runtime dependencies missing from architecture diagrams
-- [ ] C. Dependency maps and service catalogs improve blast-radius analysis
-- [ ] D. Undocumented sync chains hide cascading failure risk
+- [ ] A. Not actionable — no required human fix when users unaffected
+- [ ] B. Threshold too low without symptom correlation
+- [ ] C. Contributes to alert fatigue — real P1s get ignored
+- [ ] D. Perfect primary signal for checkout SLO burn
 
 ---
 
+### Q41 [Hard] — Severity and Runbooks
 
 
-### Q42 [Medium] — Synthetic Monitoring
+
+
 
 **Select all that apply.**
 
-Which statements about synthetic monitoring are correct?
+Which practices match production alerting discipline?
 
-- [ ] A. External probes exercise checkout path on a schedule
-- [ ] B. Run probes from multiple regions for geo-aware availability measurement
-- [ ] C. Synthetic checks can detect failures before user reports — improving MTTD
-- [ ] D. Synthetic traffic fully replaces real-user metrics and SLIs
+- [ ] A. P3 — ticket next day for non-urgent items like disk 80%
+- [ ] B. Page on every pod restart once with no restart loop threshold
+- [ ] C. P1 pages immediately for checkout down or data loss
+- [ ] D. Every P1/P2 alert links to a runbook with diagnostic steps
 
 ---
 
+### Q42 [Hard] — Alert Routing and Noise
 
 
-### Q43 [Medium] [Case Study] — UptimeCorp Status Page Trust
 
-**Context:** During a partial checkout outage, UptimeCorp's status page shows "All systems operational." Support tickets spike and customer trust erodes.
+
 
 **Select all that apply.**
 
-What should incident communication include?
+How should teams route and maintain alerts?
 
-- [ ] A. Accurate status communication is part of incident response
-- [ ] B. Component-level status reduces support load and confusion
-- [ ] C. Hiding partial outages improves long-term customer trust
-- [ ] D. Automate status updates from SLI burn or synthetic checks where possible
+- [ ] A. P1 → PagerDuty primary on-call; aggregate by service and symptom
+- [ ] B. Never tie alerts to runbooks — engineers should guess steps
+- [ ] C. Avoid duplicate alerts firing the same underlying issue five ways
+- [ ] D. Prune noisy alerts quarterly to fight fatigue
 
 ---
 
+### Q43 [Hard] [Case Study] — SignalOps SLO Burn Page
 
 
-### Q44 [Medium] — Blast Radius Reduction
+
+
+
+**Context:** SignalOps checkout SLO is 99.9% per 30 days. A brief outage consumed 2% of the monthly error budget in one hour.
 
 **Select all that apply.**
 
-Which techniques limit blast radius?
+Which alerting philosophy fits?
 
-- [ ] A. Cell-based architecture confines failure to one cell or shard
-- [ ] B. Feature flags disable bad code paths without full redeploy rollback
-- [ ] C. Monoliths always have smaller blast radius than microservices
-- [ ] D. Isolate experimental workloads from production critical paths
+- [ ] A. Fast burn — page when budget loss exceeds threshold in a short window
+- [ ] B. Wake on-call for every isolated 500 regardless of budget
+- [ ] C. Multi-window burn rate alerts — industry best practice
+- [ ] D. Slow burn — ticket when budget drains faster than expected over hours
 
 ---
 
+### Q44 [Hard] [Case Study] — SignalOps Checkout SLI
 
 
-### Q45 [Hard] [Case Study] — UptimeCorp Compounded Retries
 
-**Context:** API gateway retries 3×, order service retries 3×, and mobile client retries 3×. During a payment blip, Payment receives up to 27× effective load.
+
+
+**Context:** SignalOps defines reliability by successful checkout within 30s, not process uptime.
 
 **Select all that apply.**
 
-What fixes apply?
+Which SLI implementations are strong?
 
-- [ ] A. Server idempotency is still required, but budgets reduce load during outages
-- [ ] B. Retry budgets per layer prevent end-to-end amplification
-- [ ] C. Document and cap retries end-to-end in architecture reviews
-- [ ] D. Multi-layer retries always improve reliability with zero downside
+- [ ] A. checkout_completed / checkout_attempted with payment success within 30s
+- [ ] B. Metrics labeled to match SLI definition; log failures with reason codes
+- [ ] C. process_running == 1 as the only SLI
+- [ ] D. Instrument the user journey, not just server up/down
 
 ---
 
+### Q45 [Hard] — Error Budgets
 
 
-### Q46 [Hard] — Cold, Warm, and Hot Standby
+
+
 
 **Select all that apply.**
 
-Which compare disaster recovery standby models?
+How should teams use error budgets?
 
-- [ ] A. Cold standby — minimal running cost; longer RTO to provision and start
-- [ ] B. Warm standby — partially running; faster RTO than cold
-- [ ] C. Hot active-active standby has lowest RTO but highest cost and complexity
-- [ ] D. Cold standby automatically guarantees zero RPO without backup design
+- [ ] A. High remaining budget — room for risky features; exhausted — freeze deploys and fix stability
+- [ ] B. Budget = allowed unreliability derived from SLO (e.g., 0.1% for 99.9%)
+- [ ] C. Error budget is only for finance — engineering ignores it for deploys
+- [ ] D. Product and engineering share the budget as one team
 
 ---
 
+### Q46 [Hard] — SLO Dashboards and SLA
 
 
-### Q47 [Hard] [Case Study] — UptimeCorp Latency SLO Miss
 
-**Context:** Error rate is 0.1% but checkout P99 latency SLO is breached for 2 hours. No pages fire because alerts only watch 5xx rate.
+
 
 **Select all that apply.**
 
-What monitoring gap exists?
+What should SLO dashboards and internal vs external thresholds show?
 
-- [ ] A. Tail latency degrades UX even when HTTP 5xx rate stays low
-- [ ] B. Zero errors means all reliability and user-experience goals are met
-- [ ] C. Multi-window burn alerts on latency percentiles are needed alongside availability
-- [ ] D. Latency SLIs catch slow partial failures without elevated error rate
+- [ ] A. Rolling SLI, SLO target line, budget remaining, burn rate trend
+- [ ] B. Alert at stricter internal SLO before customer SLA breach
+- [ ] C. Internal SLO 99.95% with external SLA 99.9% — page on SLO not SLA
+- [ ] D. Hide budget remaining so deploy decisions stay opaque
 
 ---
 
+### Q47 [Hard] [Case Study] — SignalOps Deploy Freeze
 
 
-### Q48 [Hard] — Poison Input on Sync Path
+
+
+
+**Context:** SignalOps error budget for checkout drops below 10% remaining mid-sprint. Product wants a major feature release Friday.
 
 **Select all that apply.**
 
-A webhook handler crashes on one malformed payload in a loop. Which responses apply?
+What should observability-driven policy suggest?
 
-- [ ] A. Validate and reject bad input at the edge before crash-prone parsing
-- [ ] B. Circuit breaker on downstream dependencies does not fix own crash-on-parse bugs
-- [ ] C. Retry the same malformed payload forever until it succeeds
-- [ ] D. Dead-letter or quarantine pattern applies to sync workers handling untrusted input
+- [ ] A. Ignore budget — only SLA credits matter internally
+- [ ] B. Dashboard burn rate answers "can we deploy today?"
+- [ ] C. Ship anyway because metrics exist
+- [ ] D. Notify stakeholders — deploy freeze or reduced risk until budget recovers
 
 ---
 
+### Q48 [Hard] — Log Aggregation
 
 
-### Q49 [Hard] [Case Study] — UptimeCorp Active-Active Write Conflict
 
-**Context:** Two regions accept writes during a network partition. The same user updates their profile in both regions — conflicting versions on merge.
+
 
 **Select all that apply.**
 
-What does active-active require?
+Which log aggregation practices are correct?
 
-- [ ] A. Last-write-wins may silently lose data — design consciously
-- [ ] B. Conflict resolution strategy — last-write-wins, CRDT, or primary-writer per entity
-- [ ] C. Choose active-passive or single write region when strong consistency is mandatory
-- [ ] D. Cloud networks never partition — active-active has no merge conflicts
+- [ ] A. Apps write structured JSON to stdout; agents (Fluent Bit, Promtail) ship to central store
+- [ ] B. Search by service, level, request_id, trace_id across the fleet
+- [ ] C. Rely on log files inside containers without shipping — ephemeral pods lose data
+- [ ] D. Tier retention: hot days for on-call, warm for review, cold for compliance if needed
 
 ---
 
+### Q49 [Hard] [Case Study] — SignalOps Lost Pod Logs
 
 
-### Q50 [Hard] — Reliability Culture and Operations
+
+
+
+**Context:** During an incident an engineer SSHs to a pod; it restarts before grep finishes. Logs were only on local disk.
 
 **Select all that apply.**
 
-Which belong in UptimeCorp's long-term reliability culture?
+What should SignalOps have done?
 
-- [ ] A. Blameless postmortems focus on systems and process, not individual blame
-- [ ] B. Error budgets align product velocity with measurable reliability trade-offs
-- [ ] C. 100% uptime is a realistic engineering target for all tier-1 services
-- [ ] D. Runbooks, game days, and chaos experiments convert design into operational skill
+- [ ] A. Container stdout collection with labels: service, pod, environment
+- [ ] B. Centralize logs — pod death should not erase evidence
+- [ ] C. Keep DEBUG forever in hot tier for all services
+- [ ] D. Control volume — drop noisy /health INFO, DEBUG off in prod
+
+---
+
+### Q50 [Hard] [Case Study] — SignalOps Mesh and East-West
+
+
+
+
+
+**Context:** SignalOps runs a service mesh. Gateway metrics look fine but east-west payment→Stripe latency regressed.
+
+**Select all that apply.**
+
+Which observability layers apply in microservices?
+
+- [ ] A. Gateway north-south access logs, RED, ID propagation
+- [ ] B. Mesh sidecars export spans/metrics for east-west without replacing business logs
+- [ ] C. Service graph from tracing shows dependency latency averages
+- [ ] D. Mesh alone eliminates need for app correlation IDs and queue trace_id
