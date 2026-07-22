@@ -1,6 +1,6 @@
 # Observability Deep Dive — MCQ Questions (50)
 
-Multi-select format: each question has **two or more** correct answers. Questions tagged **[Case Study]** include a business context block.
+Multi-select format: each question has **two or more** correct answers.
 
 > **Answers and explanations:** see [answer-key/day-09-answers.md](./answer-key/day-09-answers.md)
 
@@ -9,8 +9,7 @@ Multi-select format: each question has **two or more** correct answers. Question
 
 ---
 
-### Q01 [Easy] [Case Study] — SignalOps Checkout Error Spike
-
+### Q01
 
 
 
@@ -21,15 +20,14 @@ Multi-select format: each question has **two or more** correct answers. Question
 
 Which observability outcomes shorten this incident compared to flying blind?
 
-- [ ] A. Restart every pod first because "something is wrong with orders"
-- [ ] B. Metric alert pinpoints when the spike started (e.g., 10:42 UTC)
-- [ ] C. Trace shows Payment Service p99 at 12s while baseline is ~200ms
-- [ ] D. Logs tied to trace_id reveal upstream Stripe 503 timeouts
+- [ ] A. Metric alert pinpoints when the spike started (e.g., 10:42 UTC)
+- [ ] B. Trace shows Payment Service p99 at 12s while baseline is ~200ms
+- [ ] C. Delete traces and logs after each alert so responders start from a clean slate
+- [ ] D. Restart every pod first because "something is wrong with orders"
 
 ---
 
-### Q02 [Easy] — Defining Observability
-
+### Q02
 
 
 
@@ -40,13 +38,12 @@ Which statements correctly describe observability?
 
 - [ ] A. Ability to understand internal system state from external outputs (logs, metrics, traces)
 - [ ] B. How engineers see across services, queues, and databases in distributed systems
-- [ ] C. Centralized, searchable signals because you cannot SSH-debug every pod at scale
+- [ ] C. Keep telemetry only on each ephemeral pod because centralized search adds no value
 - [ ] D. Same as uptime monitoring — binary healthy/unhealthy only
 
 ---
 
-### Q03 [Easy] [Case Study] — SignalOps Silent Latency Creep
-
+### Q03
 
 
 
@@ -57,15 +54,14 @@ Which statements correctly describe observability?
 
 Which are costs of flying blind illustrated here?
 
-- [ ] A. Silent degradation — latency creeps before anyone pages
-- [ ] B. Longer MTTR when the incident finally surfaces
-- [ ] C. Customer churn from repeated slow checkout without internal visibility
-- [ ] D. Guaranteed elimination of all dependency timeouts
+- [ ] A. Longer MTTR when the incident finally surfaces
+- [ ] B. Silent degradation — latency creeps before anyone pages
+- [ ] C. Guaranteed elimination of all dependency timeouts
+- [ ] D. Silent latency degradation improves retention because users rarely notice checkout speed
 
 ---
 
-### Q04 [Easy] — Observability vs Reliability
-
+### Q04
 
 
 
@@ -74,15 +70,14 @@ Which are costs of flying blind illustrated here?
 
 How do observability and reliability relate?
 
-- [ ] A. Reliability patterns (circuit breakers, redundancy) still need observability to verify behavior
-- [ ] B. Observability focuses on detect and diagnose; reliability on survive failures
-- [ ] C. Observability replaces circuit breakers once metrics exist
-- [ ] D. You need visibility into whether users saw fallback vs 500 when a breaker opens
+- [ ] A. You need visibility into whether users saw fallback vs 500 when a breaker opens
+- [ ] B. Observability replaces circuit breakers once metrics exist
+- [ ] C. Once circuit breakers are configured, measuring their behavior is unnecessary
+- [ ] D. Observability focuses on detect and diagnose; reliability on survive failures
 
 ---
 
-### Q05 [Easy] [Case Study] — SignalOps Architecture Growth
-
+### Q05
 
 
 
@@ -93,15 +88,14 @@ How do observability and reliability relate?
 
 When does observability become non-negotiable?
 
-- [ ] A. Single-server monolith with logs on local disk only forever
-- [ ] B. Async queue paths where failure happens minutes after publish
-- [ ] C. On-call production with user-facing SLOs
+- [ ] A. Async queue paths where failure happens minutes after publish
+- [ ] B. Single-server monolith with logs on local disk only forever
+- [ ] C. User-facing SLOs make centralized telemetry optional because targets diagnose failures
 - [ ] D. Requests cross service boundaries — trace and request IDs required
 
 ---
 
-### Q06 [Easy] — Design Mindset
-
+### Q06
 
 
 
@@ -111,14 +105,13 @@ When does observability become non-negotiable?
 Which practices match an observability-first design mindset?
 
 - [ ] A. Instrument early — metrics before launch, not after the riskiest period
-- [ ] B. Defer all logging until post-launch to maximize dev velocity only
-- [ ] C. Alert on user symptoms (checkout success) not raw CPU alone
-- [ ] D. Every log line should help answer what request, what service, what failed
+- [ ] B. Log messages should omit service and request context to minimize field count
+- [ ] C. Defer all logging until post-launch to maximize dev velocity only
+- [ ] D. Alert on user symptoms (checkout success) not raw CPU alone
 
 ---
 
-### Q07 [Easy] — Monitoring vs Observability
-
+### Q07
 
 
 
@@ -127,15 +120,14 @@ Which practices match an observability-first design mindset?
 
 Which contrasts monitoring and observability accurately?
 
-- [ ] A. Monitoring asks "Is the system healthy?" with predefined dashboards and thresholds
-- [ ] B. Observability supports exploratory questions like "Why is checkout slow for EU users?"
-- [ ] C. Observability replaces the need to ever page on-call
-- [ ] D. Monitoring handles known failure modes; observability helps novel first-time failures
+- [ ] A. Observability is limited to predefined yes/no health checks
+- [ ] B. Monitoring asks "Is the system healthy?" with predefined dashboards and thresholds
+- [ ] C. Monitoring handles known failure modes; observability helps novel first-time failures
+- [ ] D. Observability replaces the need to ever page on-call
 
 ---
 
-### Q08 [Easy] [Case Study] — SignalOps Alert With No Data
-
+### Q08
 
 
 
@@ -146,15 +138,14 @@ Which contrasts monitoring and observability accurately?
 
 What production gap does this describe?
 
-- [ ] A. Monitoring without observability — alert fires, insufficient data to debug
-- [ ] B. Observability without monitoring — rich data but nobody notified
-- [ ] C. Need both: monitor SLIs/symptoms and observe with logs and traces
-- [ ] D. Metrics alone always show full stack traces for every error
+- [ ] A. Need both: monitor SLIs/symptoms and observe with logs and traces
+- [ ] B. Metrics alone always show full stack traces for every error
+- [ ] C. Observability without monitoring — rich data but nobody notified
+- [ ] D. Monitoring without observability — alert fires, insufficient data to debug
 
 ---
 
-### Q09 [Easy] [Case Study] — SignalOps Post-Deploy Latency
-
+### Q09
 
 
 
@@ -165,15 +156,14 @@ What production gap does this describe?
 
 Which are "unknown unknown" style questions observability should answer?
 
-- [ ] A. Do only Android clients fail while iOS succeeds?
-- [ ] B. Which dependency regressed after the deploy?
-- [ ] C. Do errors correlate with one database shard?
+- [ ] A. Do errors correlate with one database shard?
+- [ ] B. Assume the most recently deployed dependency is responsible without comparing telemetry
+- [ ] C. Do only Android clients fail while iOS succeeds?
 - [ ] D. Is disk usage above 90% on one node?
 
 ---
 
-### Q10 [Easy] — Health Checks vs Deep Visibility
-
+### Q10
 
 
 
@@ -182,15 +172,14 @@ Which are "unknown unknown" style questions observability should answer?
 
 How do health checks differ from full observability?
 
-- [ ] A. Health checks are binary up/down monitoring on `/health`
-- [ ] B. An instance can return 200 on health yet be slow on DB queries or in retry storms
-- [ ] C. Health checks alone replace RED metrics and tracing
-- [ ] D. Observability covers elevated GC, slow queries, and degraded UX while "healthy"
+- [ ] A. Observability covers elevated GC, slow queries, and degraded UX while "healthy"
+- [ ] B. A successful `/health` response proves every user journey meets its latency SLO
+- [ ] C. An instance can return 200 on health yet be slow on DB queries or in retry storms
+- [ ] D. Health checks alone replace RED metrics and tracing
 
 ---
 
-### Q11 [Easy] [Case Study] — SignalOps Incident Workflow
-
+### Q11
 
 
 
@@ -201,15 +190,14 @@ How do health checks differ from full observability?
 
 Which sequence uses the three pillars together?
 
-- [ ] A. Traces only — skip aggregate trends and alerting
-- [ ] B. Dashboard slice by service label, then drill to logs and traces
-- [ ] C. Logs only — skip metrics because they lack context
-- [ ] D. Metric alert on error rate, then logs filtered by trace_id, then trace showing time in payment
+- [ ] A. Dashboard slice by service label, then drill to logs and traces
+- [ ] B. Metric alert on error rate, then logs filtered by trace_id, then trace showing time in payment
+- [ ] C. Traces only — skip aggregate trends and alerting
+- [ ] D. Logs only — skip metrics because they lack context
 
 ---
 
-### Q12 [Easy] — Logs Pillar
-
+### Q12
 
 
 
@@ -218,15 +206,14 @@ Which sequence uses the three pillars together?
 
 What are logs best suited for?
 
-- [ ] A. Discrete events with context — errors, audit trails, business events
-- [ ] B. Debugging a specific request when correlated with trace_id or request_id
-- [ ] C. Cheap fleet-wide alerting on every request without aggregation
-- [ ] D. Per-event granularity at higher volume/cost than metrics
+- [ ] A. Cheap fleet-wide alerting on every request without aggregation
+- [ ] B. Exact fleet-wide percentiles without aggregation or a metrics backend
+- [ ] C. Per-event granularity at higher volume/cost than metrics
+- [ ] D. Debugging a specific request when correlated with trace_id or request_id
 
 ---
 
-### Q13 [Easy] — Metrics Pillar
-
+### Q13
 
 
 
@@ -235,15 +222,14 @@ What are logs best suited for?
 
 Which metric types and behaviors are correct?
 
-- [ ] A. Counter — reset every minute by design for rate queries
-- [ ] B. Counter — monotonic increase (e.g., http_requests_total)
+- [ ] A. Gauge — a value that may only increase until the process restarts
+- [ ] B. Counter — reset every minute by design for rate queries
 - [ ] C. Histogram — latency distribution in buckets
-- [ ] D. Gauge — value goes up or down (e.g., queue_depth)
+- [ ] D. Counter — monotonic increase (e.g., http_requests_total)
 
 ---
 
-### Q14 [Easy] — Traces Pillar
-
+### Q14
 
 
 
@@ -253,14 +239,13 @@ Which metric types and behaviors are correct?
 What do distributed traces provide?
 
 - [ ] A. End-to-end path of one request across services with timing per span
-- [ ] B. Latency analysis — which span consumed the most time
+- [ ] B. Guaranteed root-cause identification even when downstream services are not instrumented
 - [ ] C. Complete unsampled detail for every request at 100K RPS with no cost tradeoff
 - [ ] D. Dependency mapping for microservices debugging
 
 ---
 
-### Q15 [Medium] [Case Study] — SignalOps Metrics-Only Stack
-
+### Q15
 
 
 
@@ -271,15 +256,14 @@ What do distributed traces provide?
 
 Which anti-patterns apply?
 
-- [ ] A. Only traces — miss aggregate trends and sampling gaps
-- [ ] B. Using all three pillars with shared correlation IDs
-- [ ] C. Metrics alone — know something changed but not where or full context
-- [ ] D. Only logs — cannot alert efficiently at scale
+- [ ] A. Only logs — cannot alert efficiently at scale
+- [ ] B. Only traces — miss aggregate trends and sampling gaps
+- [ ] C. Using all three pillars with shared correlation IDs
+- [ ] D. Metrics alone always preserve the complete payload and stack trace of every failed request
 
 ---
 
-### Q16 [Medium] [Case Study] — SignalOps Telemetry Pipeline
-
+### Q16
 
 
 
@@ -290,15 +274,14 @@ Which anti-patterns apply?
 
 Which collection pattern matches modern observability stacks?
 
-- [ ] A. Services → OpenTelemetry SDK/agent → collector → backends for logs, metrics, traces
-- [ ] B. Metrics backend (e.g., Prometheus) plus trace backend (e.g., Jaeger/Tempo) plus log store
-- [ ] C. Each engineer SSHs to pods to tail unstructured files during incidents
-- [ ] D. Tool names vary but the pillar patterns are universal
+- [ ] A. Tool names vary but the pillar patterns are universal
+- [ ] B. Each engineer SSHs to pods to tail unstructured files during incidents
+- [ ] C. Send all telemetry directly from every request to an engineer's laptop
+- [ ] D. Metrics backend (e.g., Prometheus) plus trace backend (e.g., Jaeger/Tempo) plus log store
 
 ---
 
-### Q17 [Medium] — Structured Logging
-
+### Q17
 
 
 
@@ -307,15 +290,14 @@ Which collection pattern matches modern observability stacks?
 
 Why prefer structured JSON logs over plain text?
 
-- [ ] A. Treat logs like APIs with intentional fields
-- [ ] B. Machine-parseable — filter, aggregate, and alert in log platforms
-- [ ] C. Plain text is always faster to search across terabytes
-- [ ] D. Stable field names enable queries like level=ERROR and service=order-service
+- [ ] A. Stable field names enable queries like level=ERROR and service=order-service
+- [ ] B. JSON guarantees low-cardinality fields even when arbitrary user IDs are logged
+- [ ] C. Treat logs like APIs with intentional fields
+- [ ] D. Plain text is always faster to search across terabytes
 
 ---
 
-### Q18 [Medium] [Case Study] — SignalOps Alert Fatigue
-
+### Q18
 
 
 
@@ -326,15 +308,14 @@ Why prefer structured JSON logs over plain text?
 
 Which logging practices reduce fatigue?
 
-- [ ] A. Use WARN for recoverable oddities; ERROR for failed operations needing attention
-- [ ] B. Do not log everything as ERROR
-- [ ] C. DEBUG verbose detail off in prod or sampled
-- [ ] D. Log passwords and API secrets for faster debugging
+- [ ] A. DEBUG verbose detail off in prod or sampled
+- [ ] B. Log passwords and API secrets for faster debugging
+- [ ] C. Use WARN for recoverable oddities; ERROR for failed operations needing attention
+- [ ] D. Promote every successful health check to ERROR so dashboards stay active
 
 ---
 
-### Q19 [Medium] — Correlation IDs
-
+### Q19
 
 
 
@@ -343,15 +324,14 @@ Which logging practices reduce fatigue?
 
 How should request and trace correlation work?
 
-- [ ] A. Each service generates a new request_id mid-chain for uniqueness
-- [ ] B. Every log line includes request_id aligned with trace_id from tracing
-- [ ] C. One request_id per user request propagated gateway → downstream services
-- [ ] D. Gateway generates or forwards X-Request-Id and traceparent headers
+- [ ] A. Every log line includes request_id aligned with trace_id from tracing
+- [ ] B. Gateway generates or forwards X-Request-Id and traceparent headers
+- [ ] C. Each service generates a new request_id mid-chain for uniqueness
+- [ ] D. Strip correlation headers at every service boundary to prevent cross-service searches
 
 ---
 
-### Q20 [Medium] — Safe Logging Content
-
+### Q20
 
 
 
@@ -361,14 +341,13 @@ How should request and trace correlation work?
 What should appear in production logs?
 
 - [ ] A. Request start/end, duration, error type, business IDs like order_id
-- [ ] B. Downstream dependency failure details without secrets
+- [ ] B. Include provider API keys in dependency errors so responders can replay calls
 - [ ] C. Full credit card numbers and API keys for audit
 - [ ] D. Avoid huge response bodies and unredacted PII unless policy allows
 
 ---
 
-### Q21 [Medium] [Case Study] — SignalOps Order Service SLOs
-
+### Q21
 
 
 
@@ -379,15 +358,14 @@ What should appear in production logs?
 
 Which metrics belong to the RED method for request-driven services?
 
-- [ ] A. Duration — latency distribution (e.g., p99 from histogram)
-- [ ] B. Utilization — CPU percent only, ignoring request outcomes
-- [ ] C. Rate — requests per second
-- [ ] D. Errors — failed requests per second or error ratio
+- [ ] A. Utilization — CPU percent only, ignoring request outcomes
+- [ ] B. Rate — requests per second
+- [ ] C. Errors — failed requests per second or error ratio
+- [ ] D. Duration — record only the arithmetic mean so tail latency remains hidden
 
 ---
 
-### Q22 [Medium] [Case Study] — SignalOps Payment Latency
-
+### Q22
 
 
 
@@ -398,15 +376,14 @@ Which metrics belong to the RED method for request-driven services?
 
 Which query ideas match RED instrumentation?
 
-- [ ] A. rate(http_requests_total[5m]) for traffic
-- [ ] B. Label http_requests_total with unbounded user_id for per-user SLO
-- [ ] C. Error ratio from 5xx rate divided by total request rate
-- [ ] D. histogram_quantile(0.99, http_request_duration_seconds) for tail latency
+- [ ] A. Count only successful responses and infer errors without recording status
+- [ ] B. histogram_quantile(0.99, http_request_duration_seconds) for tail latency
+- [ ] C. rate(http_requests_total[5m]) for traffic
+- [ ] D. Label http_requests_total with unbounded user_id for per-user SLO
 
 ---
 
-### Q23 [Medium] — USE Method
-
+### Q23
 
 
 
@@ -416,14 +393,13 @@ Which query ideas match RED instrumentation?
 Which examples fit USE metrics for infrastructure resources?
 
 - [ ] A. Utilization — active DB connections / max_connections
-- [ ] B. Saturation — queries waiting on locks or disk queue depth
-- [ ] C. Errors — replication failures or disk errors
-- [ ] D. Rate — HTTP requests per second on an API route (RED, not USE)
+- [ ] B. Rate — HTTP requests per second on an API route (RED, not USE)
+- [ ] C. Saturation — queries waiting on locks or disk queue depth
+- [ ] D. Errors — HTTP requests per second regardless of resource failures
 
 ---
 
-### Q24 [Medium] [Case Study] — SignalOps Queue Backlog
-
+### Q24
 
 
 
@@ -434,15 +410,14 @@ Which examples fit USE metrics for infrastructure resources?
 
 Which metric choices fit the worker and queue?
 
-- [ ] A. Gauge queue_depth rising under load
-- [ ] B. Counter messages_processed_total for throughput
-- [ ] C. Histogram consumer_lag or processing duration
-- [ ] D. Counter that decreases when messages complete
+- [ ] A. Histogram consumer_lag or processing duration
+- [ ] B. Counter queue_depth_total that decrements whenever a message completes
+- [ ] C. Counter that decreases when messages complete
+- [ ] D. Counter messages_processed_total for throughput
 
 ---
 
-### Q25 [Medium] — Label Cardinality
-
+### Q25
 
 
 
@@ -451,15 +426,14 @@ Which metric choices fit the worker and queue?
 
 Which label practices are sound?
 
-- [ ] A. Never use user_id as a metric label — millions of unique values
-- [ ] B. Slice by service, method, status — bounded cardinality
-- [ ] C. Put unbounded IDs in metrics instead of logs/traces
-- [ ] D. High cardinality explodes storage and query cost
+- [ ] A. Put unbounded IDs in metrics instead of logs/traces
+- [ ] B. High cardinality explodes storage and query cost
+- [ ] C. Slice by service, method, status — bounded cardinality
+- [ ] D. Never use user_id as a metric label — millions of unique values
 
 ---
 
-### Q26 [Medium] [Case Study] — SignalOps Metric Cost Explosion
-
+### Q26
 
 
 
@@ -470,15 +444,14 @@ Which label practices are sound?
 
 What went wrong and how to fix?
 
-- [ ] A. Unbounded user_id label — high cardinality anti-pattern
-- [ ] B. Prefer checkout_duration_seconds{status="success|failure"} instead
-- [ ] C. Use logs/traces for per-user investigation, not metric labels
-- [ ] D. Add every order_id as a label for precise alerting
+- [ ] A. Add every order_id as a label for precise alerting
+- [ ] B. Use logs/traces for per-user investigation, not metric labels
+- [ ] C. Unbounded user_id label — high cardinality anti-pattern
+- [ ] D. Prefer checkout_duration_seconds{status="success|failure"} instead
 
 ---
 
-### Q27 [Medium] — Golden Signals
-
+### Q27
 
 
 
@@ -494,8 +467,7 @@ How do Google's golden signals relate to RED/USE?
 
 ---
 
-### Q28 [Medium] — Trace Structure
-
+### Q28
 
 
 
@@ -504,15 +476,14 @@ How do Google's golden signals relate to RED/USE?
 
 Which distributed tracing terms are correct?
 
-- [ ] A. Trace — entire journey; spans — units of work with parent/child relationships
+- [ ] A. Broken propagation stops the trace at the first hop with no downstream spans
 - [ ] B. Trace ID shared across spans; span ID unique per span
-- [ ] C. Broken propagation stops the trace at the first hop with no downstream spans
+- [ ] C. Trace — entire journey; spans — units of work with parent/child relationships
 - [ ] D. One span ID reused for every service in the chain
 
 ---
 
-### Q29 [Medium] [Case Study] — SignalOps Missing Payment Span
-
+### Q29
 
 
 
@@ -523,15 +494,14 @@ Which distributed tracing terms are correct?
 
 Likely causes and fixes?
 
-- [ ] A. Gateway not forwarding trace context to order-service
-- [ ] B. Payment service not extracting/injecting traceparent on outbound calls
-- [ ] C. Traces always include all hops without instrumentation
-- [ ] D. Broken propagation — common bug when headers dropped
+- [ ] A. Traces always include all hops without instrumentation
+- [ ] B. Broken propagation — common bug when headers dropped
+- [ ] C. Payment service not extracting/injecting traceparent on outbound calls
+- [ ] D. Gateway not forwarding trace context to order-service
 
 ---
 
-### Q30 [Medium] [Case Study] — SignalOps Async Notification
-
+### Q30
 
 
 
@@ -542,15 +512,14 @@ Likely causes and fixes?
 
 How to maintain observability across async boundaries?
 
-- [ ] A. Include trace_id (and correlation_id) in queue message metadata
-- [ ] B. Search logs by trace_id across API publisher and consumer
-- [ ] C. Assume sync HTTP trace covers post-response worker work automatically
-- [ ] D. Propagate context from order.created publish through consume
+- [ ] A. Assume sync HTTP trace covers post-response worker work automatically
+- [ ] B. Include trace_id (and correlation_id) in queue message metadata
+- [ ] C. Propagate context from order.created publish through consume
+- [ ] D. Search logs by trace_id across API publisher and consumer
 
 ---
 
-### Q31 [Medium] — OpenTelemetry and Instrumentation
-
+### Q31
 
 
 
@@ -559,15 +528,14 @@ How to maintain observability across async boundaries?
 
 Which statements about OpenTelemetry and instrumentation are accurate?
 
-- [ ] A. OpenTelemetry replaces need for structured logging entirely
-- [ ] B. App → OTel SDK → collector → backends like Jaeger or Tempo
-- [ ] C. Auto-instrumentation for HTTP, gRPC, DB drivers; manual spans for business steps
-- [ ] D. Industry-standard APIs/SDKs for traces, metrics, and logs
+- [ ] A. Industry-standard APIs/SDKs for traces, metrics, and logs
+- [ ] B. OpenTelemetry replaces need for structured logging entirely
+- [ ] C. App → OTel SDK → collector → backends like Jaeger or Tempo
+- [ ] D. Auto-instrumentation for HTTP, gRPC, DB drivers; manual spans for business steps
 
 ---
 
-### Q32 [Medium] — Trace Sampling
-
+### Q32
 
 
 
@@ -578,13 +546,12 @@ Which sampling strategies fit high-traffic production?
 
 - [ ] A. Head sampling — decide at trace start (e.g., 1% of requests)
 - [ ] B. Tail sampling — retain slow or errored traces
-- [ ] C. Always sample failed checkout traces — never drop critical errors
-- [ ] D. 100% trace every request at 100K RPS with no cost concern
+- [ ] C. 100% trace every request at 100K RPS with no cost concern
+- [ ] D. Always sample failed checkout traces — never drop critical errors
 
 ---
 
-### Q33 [Medium] [Case Study] — SignalOps N+1 in Inventory
-
+### Q33
 
 
 
@@ -595,15 +562,14 @@ Which sampling strategies fit high-traffic production?
 
 What can traces reveal here?
 
-- [ ] A. Traces cannot show parallel vs serial work on a timeline
-- [ ] B. N+1 or fan-out call pattern visible as many repeated child spans
+- [ ] A. N+1 or fan-out call pattern visible as many repeated child spans
+- [ ] B. Longest span highlights which dependency dominates time
 - [ ] C. Retry storms appear as duplicate spans to the same dependency
-- [ ] D. Longest span highlights which dependency dominates time
+- [ ] D. Traces cannot show parallel vs serial work on a timeline
 
 ---
 
-### Q34 [Medium] [Case Study] — SignalOps Service Launch Checklist
-
+### Q34
 
 
 
@@ -614,15 +580,14 @@ What can traces reveal here?
 
 Which minimum instrumentation should be in place?
 
-- [ ] A. /health and /ready, RED metrics with low-cardinality labels
+- [ ] A. Metrics endpoint (Prometheus/OpenTelemetry) for scraping
 - [ ] B. JSON logs to stdout with request_id; propagate trace headers in/out
-- [ ] C. Log and metric dependency failures; defer tracing until year two
-- [ ] D. Metrics endpoint (Prometheus/OpenTelemetry) for scraping
+- [ ] C. /health and /ready, RED metrics with low-cardinality labels
+- [ ] D. Log and metric dependency failures; defer tracing until year two
 
 ---
 
-### Q35 [Medium] — Gateway and Auto Instrumentation
-
+### Q35
 
 
 
@@ -631,15 +596,14 @@ Which minimum instrumentation should be in place?
 
 Where should auto vs manual instrumentation focus?
 
-- [ ] A. Auto replaces all business metrics like orders_per_minute
-- [ ] B. Gateway: per-route rate, 4xx/5xx, latency histogram, 429 rate-limit metrics
-- [ ] C. Auto for HTTP plumbing, DB drivers, framework middleware
-- [ ] D. Manual spans at critical business steps like validate_cart or charge_payment
+- [ ] A. Manual spans at critical business steps like validate_cart or charge_payment
+- [ ] B. Auto replaces all business metrics like orders_per_minute
+- [ ] C. Gateway: per-route rate, 4xx/5xx, latency histogram, 429 rate-limit metrics
+- [ ] D. Auto for HTTP plumbing, DB drivers, framework middleware
 
 ---
 
-### Q36 [Hard] [Case Study] — SignalOps Gateway Access Logs
-
+### Q36
 
 
 
@@ -650,15 +614,14 @@ Where should auto vs manual instrumentation focus?
 
 What should the gateway emit?
 
-- [ ] A. Generate request_id if client did not send X-Request-Id
-- [ ] B. Access logs: method, path, status, duration, user_id, request_id
+- [ ] A. Regenerate new trace IDs at each downstream hop for security
+- [ ] B. Generate request_id if client did not send X-Request-Id
 - [ ] C. Per-route RED metrics plus rate-limit rejection counts
-- [ ] D. Regenerate new trace IDs at each downstream hop for security
+- [ ] D. Access logs: method, path, status, duration, user_id, request_id
 
 ---
 
-### Q37 [Hard] — Dashboard Design
-
+### Q37
 
 
 
@@ -667,15 +630,14 @@ What should the gateway emit?
 
 Which belong on effective observability dashboards?
 
-- [ ] A. Fifty nearly identical charts and vanity metrics nobody acts on
-- [ ] B. Deploy markers annotated to correlate spikes with releases
-- [ ] C. Level 1 system health — availability, error rate, p99 latency
-- [ ] D. Level 2 per-service RED and dependency error rates
+- [ ] A. Level 2 per-service RED and dependency error rates
+- [ ] B. Fifty nearly identical charts and vanity metrics nobody acts on
+- [ ] C. Deploy markers annotated to correlate spikes with releases
+- [ ] D. Level 1 system health — availability, error rate, p99 latency
 
 ---
 
-### Q38 [Hard] [Case Study] — SignalOps On-Call Dashboard
-
+### Q38
 
 
 
@@ -686,15 +648,14 @@ Which belong on effective observability dashboards?
 
 Which panels help the drill-down hierarchy?
 
-- [ ] A. Platform error rate and p99, then order-service RED
-- [ ] B. Queue depth and replication lag when dependencies suspect
-- [ ] C. Raw CPU at 62% with no latency or error context as sole page trigger
+- [ ] A. Average latency as the only latency panel, because averages expose tail behavior
+- [ ] B. Platform error rate and p99, then order-service RED
+- [ ] C. Queue depth and replication lag when dependencies suspect
 - [ ] D. Latency percentiles p50, p95, p99 per service
 
 ---
 
-### Q39 [Hard] — Alerting on Symptoms
-
+### Q39
 
 
 
@@ -703,15 +664,14 @@ Which panels help the drill-down hierarchy?
 
 Which alerts align with user impact?
 
-- [ ] A. Any single 500 error pages immediately
-- [ ] B. CPU > 90% for ten minutes **and** latency elevated — cause plus symptom
-- [ ] C. Checkout error rate > 1% for five minutes
-- [ ] D. p99 latency > 2s sustained — symptom users feel
+- [ ] A. Checkout error rate > 1% for five minutes
+- [ ] B. p99 latency > 2s sustained — symptom users feel
+- [ ] C. CPU > 90% for ten minutes **and** latency elevated — cause plus symptom
+- [ ] D. Any single 500 error pages immediately
 
 ---
 
-### Q40 [Hard] [Case Study] — SignalOps CPU Pages
-
+### Q40
 
 
 
@@ -729,8 +689,7 @@ What makes this a bad alert?
 
 ---
 
-### Q41 [Hard] — Severity and Runbooks
-
+### Q41
 
 
 
@@ -739,15 +698,14 @@ What makes this a bad alert?
 
 Which practices match production alerting discipline?
 
-- [ ] A. P3 — ticket next day for non-urgent items like disk 80%
-- [ ] B. Page on every pod restart once with no restart loop threshold
-- [ ] C. P1 pages immediately for checkout down or data loss
-- [ ] D. Every P1/P2 alert links to a runbook with diagnostic steps
+- [ ] A. Page on every pod restart once with no restart loop threshold
+- [ ] B. P1 pages immediately for checkout down or data loss
+- [ ] C. Every P1/P2 alert links to a runbook with diagnostic steps
+- [ ] D. P3 — ticket next day for non-urgent items like disk 80%
 
 ---
 
-### Q42 [Hard] — Alert Routing and Noise
-
+### Q42
 
 
 
@@ -757,14 +715,13 @@ Which practices match production alerting discipline?
 How should teams route and maintain alerts?
 
 - [ ] A. P1 → PagerDuty primary on-call; aggregate by service and symptom
-- [ ] B. Never tie alerts to runbooks — engineers should guess steps
-- [ ] C. Avoid duplicate alerts firing the same underlying issue five ways
-- [ ] D. Prune noisy alerts quarterly to fight fatigue
+- [ ] B. Avoid duplicate alerts firing the same underlying issue five ways
+- [ ] C. Prune noisy alerts quarterly to fight fatigue
+- [ ] D. Never tie alerts to runbooks — engineers should guess steps
 
 ---
 
-### Q43 [Hard] [Case Study] — SignalOps SLO Burn Page
-
+### Q43
 
 
 
@@ -775,15 +732,14 @@ How should teams route and maintain alerts?
 
 Which alerting philosophy fits?
 
-- [ ] A. Fast burn — page when budget loss exceeds threshold in a short window
-- [ ] B. Wake on-call for every isolated 500 regardless of budget
+- [ ] A. Slow burn — ticket when budget drains faster than expected over hours
+- [ ] B. Fast burn — page when budget loss exceeds threshold in a short window
 - [ ] C. Multi-window burn rate alerts — industry best practice
-- [ ] D. Slow burn — ticket when budget drains faster than expected over hours
+- [ ] D. Wake on-call for every isolated 500 regardless of budget
 
 ---
 
-### Q44 [Hard] [Case Study] — SignalOps Checkout SLI
-
+### Q44
 
 
 
@@ -794,15 +750,14 @@ Which alerting philosophy fits?
 
 Which SLI implementations are strong?
 
-- [ ] A. checkout_completed / checkout_attempted with payment success within 30s
-- [ ] B. Metrics labeled to match SLI definition; log failures with reason codes
-- [ ] C. process_running == 1 as the only SLI
-- [ ] D. Instrument the user journey, not just server up/down
+- [ ] A. Metrics labeled to match SLI definition; log failures with reason codes
+- [ ] B. process_running == 1 as the only SLI
+- [ ] C. Instrument the user journey, not just server up/down
+- [ ] D. checkout_completed / checkout_attempted with payment success within 30s
 
 ---
 
-### Q45 [Hard] — Error Budgets
-
+### Q45
 
 
 
@@ -811,15 +766,14 @@ Which SLI implementations are strong?
 
 How should teams use error budgets?
 
-- [ ] A. High remaining budget — room for risky features; exhausted — freeze deploys and fix stability
+- [ ] A. Error budget is only for finance — engineering ignores it for deploys
 - [ ] B. Budget = allowed unreliability derived from SLO (e.g., 0.1% for 99.9%)
-- [ ] C. Error budget is only for finance — engineering ignores it for deploys
+- [ ] C. High remaining budget — room for risky features; exhausted — freeze deploys and fix stability
 - [ ] D. Product and engineering share the budget as one team
 
 ---
 
-### Q46 [Hard] — SLO Dashboards and SLA
-
+### Q46
 
 
 
@@ -829,14 +783,13 @@ How should teams use error budgets?
 What should SLO dashboards and internal vs external thresholds show?
 
 - [ ] A. Rolling SLI, SLO target line, budget remaining, burn rate trend
-- [ ] B. Alert at stricter internal SLO before customer SLA breach
+- [ ] B. Hide budget remaining so deploy decisions stay opaque
 - [ ] C. Internal SLO 99.95% with external SLA 99.9% — page on SLO not SLA
-- [ ] D. Hide budget remaining so deploy decisions stay opaque
+- [ ] D. Alert at stricter internal SLO before customer SLA breach
 
 ---
 
-### Q47 [Hard] [Case Study] — SignalOps Deploy Freeze
-
+### Q47
 
 
 
@@ -847,15 +800,14 @@ What should SLO dashboards and internal vs external thresholds show?
 
 What should observability-driven policy suggest?
 
-- [ ] A. Ignore budget — only SLA credits matter internally
-- [ ] B. Dashboard burn rate answers "can we deploy today?"
-- [ ] C. Ship anyway because metrics exist
-- [ ] D. Notify stakeholders — deploy freeze or reduced risk until budget recovers
+- [ ] A. Dashboard burn rate answers "can we deploy today?"
+- [ ] B. Notify stakeholders — deploy freeze or reduced risk until budget recovers
+- [ ] C. Ignore budget — only SLA credits matter internally
+- [ ] D. Ship anyway because metrics exist
 
 ---
 
-### Q48 [Hard] — Log Aggregation
-
+### Q48
 
 
 
@@ -864,15 +816,14 @@ What should observability-driven policy suggest?
 
 Which log aggregation practices are correct?
 
-- [ ] A. Apps write structured JSON to stdout; agents (Fluent Bit, Promtail) ship to central store
+- [ ] A. Rely on log files inside containers without shipping — ephemeral pods lose data
 - [ ] B. Search by service, level, request_id, trace_id across the fleet
-- [ ] C. Rely on log files inside containers without shipping — ephemeral pods lose data
+- [ ] C. Apps write structured JSON to stdout; agents (Fluent Bit, Promtail) ship to central store
 - [ ] D. Tier retention: hot days for on-call, warm for review, cold for compliance if needed
 
 ---
 
-### Q49 [Hard] [Case Study] — SignalOps Lost Pod Logs
-
+### Q49
 
 
 
@@ -883,15 +834,14 @@ Which log aggregation practices are correct?
 
 What should SignalOps have done?
 
-- [ ] A. Container stdout collection with labels: service, pod, environment
-- [ ] B. Centralize logs — pod death should not erase evidence
-- [ ] C. Keep DEBUG forever in hot tier for all services
-- [ ] D. Control volume — drop noisy /health INFO, DEBUG off in prod
+- [ ] A. Keep DEBUG forever in hot tier for all services
+- [ ] B. Control volume — drop noisy /health INFO, DEBUG off in prod
+- [ ] C. Centralize logs — pod death should not erase evidence
+- [ ] D. Container stdout collection with labels: service, pod, environment
 
 ---
 
-### Q50 [Hard] [Case Study] — SignalOps Mesh and East-West
-
+### Q50
 
 
 
@@ -902,7 +852,7 @@ What should SignalOps have done?
 
 Which observability layers apply in microservices?
 
-- [ ] A. Gateway north-south access logs, RED, ID propagation
+- [ ] A. Service graph from tracing shows dependency latency averages
 - [ ] B. Mesh sidecars export spans/metrics for east-west without replacing business logs
-- [ ] C. Service graph from tracing shows dependency latency averages
+- [ ] C. Gateway north-south access logs, RED, ID propagation
 - [ ] D. Mesh alone eliminates need for app correlation IDs and queue trace_id

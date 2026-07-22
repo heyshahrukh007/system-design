@@ -7,7 +7,7 @@ A day-by-day guide to system design — fundamentals through distributed systems
 Each day is published under `docs/day-XX/`. Every day folder contains focused topics you can read in order or jump to individually.
 
 
-**Practice questions:** multi-select MCQs with separate answer keys in [assessments/](./assessments/) (aligned to earlier local day topics).
+**Practice questions:** 650 multi-select MCQs (50 per day) with separate answer keys in [assessments/](./assessments/), aligned to docs/day-01 through docs/day-13.
 
 ## Index
 

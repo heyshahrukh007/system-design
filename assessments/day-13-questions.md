@@ -1,34 +1,44 @@
-# Synthesis — MCQ Questions (40)
+# Synthesis — MCQ Questions (50)
 
-Multi-select format: each question has **two or more** correct answers. Questions tagged **[Case Study]** include a business context block.
+Multi-select format: each question has **two or more** correct answers.
 
 > **Answers and explanations:** see [answer-key/day-13-answers.md](./answer-key/day-13-answers.md)
 
 
 
 
+
 ---
 
-### Q01 [Easy] [Case Study] — DesignLab URL Shortener Writes
+### Q01
 
 
 
 
 
-**Context:** DesignLab interview practice: 100M new short URLs per month, ~500 bytes per row including indexes overhead in the estimate.
+
+
+
+
+**Context:** A team interview practice: 100M new short URLs per month, ~500 bytes per row including indexes overhead in the estimate.
 
 **Select all that apply.**
 
 Which back-of-envelope conclusions are sound?
 
-- [ ] A. Read QPS is often 10–100× writes for URL lookup workloads
-- [ ] B. Average write QPS ≈ 100M / 2.5M seconds/month → on the order of 40 writes/s
-- [ ] C. At this scale, multi-region active-active is mandatory on day one
-- [ ] D. Raw storage ~600 GB/year order of magnitude before replicas and growth headroom
+- [ ] A. Average write QPS ≈ 100M / 2.5M seconds/month → on the order of 40 writes/s
+- [ ] B. Read QPS is often 10–100× writes for URL lookup workloads
+- [ ] C. Raw storage is only about 6 GB/year, so replication and headroom are negligible
+- [ ] D. At this scale, multi-region active-active is mandatory on day one
 
 ---
 
-### Q02 [Easy] — Estimation Constants
+### Q02
+
+
+
+
+
 
 
 
@@ -39,51 +49,66 @@ Which back-of-envelope conclusions are sound?
 Which approximations are commonly used in interview-style capacity math?
 
 - [ ] A. ~10^5 seconds per day (86,400) for QPS from daily actions
-- [ ] B. ~2.5 × 10^6 seconds per month for monthly write rates
+- [ ] B. Interview estimates must be exact to within 1%; order-of-magnitude reasoning is not useful
 - [ ] C. Cross-region RTT is typically ~0.5–2 ms — same as in-DC hops
-- [ ] D. Being wrong by ~2× on an estimate is often acceptable; wrong by 100× steers the wrong architecture
+- [ ] D. ~2.5 × 10^6 seconds per month for monthly write rates
 
 ---
 
-### Q03 [Easy] [Case Study] — DesignLab Chat Message Rate
+### Q03
 
 
 
 
 
-**Context:** DesignLab models a chat product: 50M DAU, 20 messages per user per day.
+
+
+
+
+
+**Context:** A team models a chat product: 50M DAU, 20 messages per user per day.
 
 **Select all that apply.**
 
-What follows from the docs’ estimation approach?
+What follows from the estimation approach?
 
 - [ ] A. At ~11K writes/s average, a single unpartitioned SQLite file is always sufficient without further analysis
-- [ ] B. Peak QPS is often estimated as average × a peak factor (commonly 2–5×)
+- [ ] B. Message write rate ≈ 50M × 20 / 86,400 → ~11,500 msg/s average
 - [ ] C. Fan-out to recipients and presence often dominate design more than raw average QPS alone
-- [ ] D. Message write rate ≈ 50M × 20 / 86,400 → ~11,500 msg/s average
+- [ ] D. Peak QPS should be assumed equal to average QPS unless the product already has an outage
 
 ---
 
-### Q04 [Easy] [Case Study] — DesignLab Read-Heavy Feed
+### Q04
 
 
 
 
 
-**Context:** DesignLab sketches a social feed: 100 reads per write on the hot path.
+
+
+
+
+
+**Context:** A team sketches a social feed: 100 reads per write on the hot path.
 
 **Select all that apply.**
 
 Which architecture leans are justified by the read/write split guidance?
 
-- [ ] A. Cache and read replicas are likely high-value investments
-- [ ] B. Write-heavy partitioning and queue absorption are the primary first lever
-- [ ] C. Separate read and write QPS estimates before picking components
-- [ ] D. Identify whether CPU, disk IOPS, network, or storage is the bottleneck resource
+- [ ] A. Identify whether CPU, disk IOPS, network, or storage is the bottleneck resource
+- [ ] B. Separate read and write QPS estimates before picking components
+- [ ] C. A 100:1 read/write ratio makes caching ineffective because writes dominate invalidation
+- [ ] D. Write-heavy partitioning and queue absorption are the primary first lever
 
 ---
 
-### Q05 [Easy] — Estimation Habits
+### Q05
+
+
+
+
+
 
 
 
@@ -95,31 +120,41 @@ Which practices improve back-of-envelope estimates in design reviews?
 
 - [ ] A. Pick Kafka first, then derive QPS to match the choice
 - [ ] B. Round aggressively (e.g., 2,314 → ~2,000) to keep math tractable
-- [ ] C. Estimate reads and writes separately
+- [ ] C. Combine reads and writes into one QPS number because their resource costs are interchangeable
 - [ ] D. State assumptions aloud: peak factor, bytes per row, retention
 
 ---
 
-### Q06 [Easy] [Case Study] — DesignLab Traffic Tier
+### Q06
 
 
 
 
 
-**Context:** DesignLab compares two products: ~100 req/s sustained vs ~10K req/s peak.
+
+
+
+
+
+**Context:** A team compares two products: ~100 req/s sustained vs ~10K req/s peak.
 
 **Select all that apply.**
 
 Which implications match the scale table mindset?
 
-- [ ] A. ~100 req/s often allows single region and a simpler database story
-- [ ] B. ~10K req/s typically pushes cache, replicas, and careful indexing
-- [ ] C. ~100K+ req/s class problems usually need partitioning, CDN, async, and multiple tiers
+- [ ] A. ~10K req/s typically pushes cache, replicas, and careful indexing
+- [ ] B. At ~100K req/s, a single unpartitioned process is the default regardless of workload
+- [ ] C. ~100 req/s often allows single region and a simpler database story
 - [ ] D. Every product above 50 req/s requires sharded Cassandra on launch day
 
 ---
 
-### Q07 [Easy] — Design Process Order
+### Q07
+
+
+
+
+
 
 
 
@@ -130,13 +165,18 @@ Which implications match the scale table mindset?
 Which steps belong in the recommended design decision order before naming specific products?
 
 - [ ] A. Open with “we’ll use Kafka and microservices” and backfill requirements later
-- [ ] B. Data model, high-level components, then deepen bottlenecks and failure modes
-- [ ] C. Rough scale estimation and API/event shapes
+- [ ] B. Delay scale estimates and API shapes until after selecting vendors
+- [ ] C. Data model, high-level components, then deepen bottlenecks and failure modes
 - [ ] D. Clarify functional and non-functional requirements (SLA, consistency, budget, geo)
 
 ---
 
-### Q08 [Easy] — Requirement Clarifiers
+### Q08
+
+
+
+
+
 
 
 
@@ -144,35 +184,45 @@ Which steps belong in the recommended design decision order before naming specif
 
 **Select all that apply.**
 
-Which questions should you ask early in a DesignLab-style interview?
+Which questions should you ask early in a A team-style interview?
 
 - [ ] A. Who are the users, DAU, and geographic spread?
-- [ ] B. Is stale data acceptable on this path, and is money or inventory involved?
-- [ ] C. p99 latency targets and availability nines per critical path?
+- [ ] B. p99 latency targets and availability nines per critical path?
+- [ ] C. Consistency and money-path questions can wait until implementation because they do not affect architecture
 - [ ] D. Which logo color the mobile app uses for the loading spinner
 
 ---
 
-### Q09 [Easy] [Case Study] — DesignLab Post-Checkout Email
+### Q09
 
 
 
 
 
-**Context:** DesignLab’s practice storefront sends order confirmation email after checkout succeeds.
+
+
+
+
+
+**Context:** A team’s storefront sends order confirmation email after checkout succeeds.
 
 **Select all that apply.**
 
 When does async messaging fit the decision framework?
 
 - [ ] A. Retries and buffering help when downstream consumers are slow or flaky
-- [ ] B. Work exceeds ~100–200 ms or is spiky compared to user-facing budget
-- [ ] C. The user must see payment authorization result in the same synchronous response
-- [ ] D. Fan-out to email, analytics, and search index without blocking the HTTP response
+- [ ] B. The user must see payment authorization result in the same synchronous response
+- [ ] C. Fan-out to email, analytics, and search index without blocking the HTTP response
+- [ ] D. Any work over 100 ms must remain synchronous so queues cannot absorb spikes
 
 ---
 
-### Q10 [Easy] — Progressive Complexity
+### Q10
+
+
+
+
+
 
 
 
@@ -182,14 +232,19 @@ When does async messaging fit the decision framework?
 
 Which match the “don’t design day-one like hyperscaler year-three” guidance?
 
-- [ ] A. v1: single region, primary DB, simple cache
-- [ ] B. Growth: replicas, CDN, queues for notifications
-- [ ] C. Scale: shard/partition, CQRS read models where justified
-- [ ] D. Launch v1 with multi-region active-active inventory and event-source every entity
+- [ ] A. Launch v1 with multi-region active-active inventory and event-source every entity
+- [ ] B. Shard every database and add physical CQRS before measuring a scaling bottleneck
+- [ ] C. Growth: replicas, CDN, queues for notifications
+- [ ] D. v1: single region, primary DB, simple cache
 
 ---
 
-### Q11 [Easy] — Terminology Basics
+### Q11
+
+
+
+
+
 
 
 
@@ -199,33 +254,43 @@ Which match the “don’t design day-one like hyperscaler year-three” guidanc
 
 Which definitions are accurate?
 
-- [ ] A. DLQ — dead-letter queue for poison or repeatedly failing messages
-- [ ] B. Eventual consistency — every read is linearizable across all regions
-- [ ] C. Idempotent — same effect if applied multiple times
-- [ ] D. SPOF — single point of failure
+- [ ] A. Eventual consistency — every read is linearizable across all regions
+- [ ] B. Idempotent — guaranteed to execute exactly once with no retries
+- [ ] C. SPOF — single point of failure
+- [ ] D. DLQ — dead-letter queue for poison or repeatedly failing messages
 
 ---
 
-### Q12 [Easy] [Case Study] — DesignLab Video Egress
+### Q12
 
 
 
 
 
-**Context:** DesignLab estimates API egress: 2,000 QPS × 50 KB JSON responses (no video in this path).
+
+
+
+
+
+**Context:** A team estimates API egress: 2,000 QPS × 50 KB JSON responses (no video in this path).
 
 **Select all that apply.**
 
 Which estimation notes apply?
 
-- [ ] A. Egress ≈ QPS × response_bytes × 8 for bits per second mindset
-- [ ] B. Video and large images should be estimated separately from small JSON APIs
-- [ ] C. Include replicas, indexes, and backups when estimating storage — not only raw row size
-- [ ] D. Bandwidth for 50 KB JSON responses is negligible at any QPS without calculation
+- [ ] A. Bandwidth for 50 KB JSON responses is negligible at any QPS without calculation
+- [ ] B. Include replicas, indexes, and backups when estimating storage — not only raw row size
+- [ ] C. Media bandwidth can be inferred from JSON response size, so it needs no separate estimate
+- [ ] D. Egress ≈ QPS × response_bytes × 8 for bits per second mindset
 
 ---
 
-### Q13 [Medium] — Peak and Headroom
+### Q13
+
+
+
+
+
 
 
 
@@ -233,22 +298,27 @@ Which estimation notes apply?
 
 **Select all that apply.**
 
-Which rules of thumb appear in Day 13 synthesis material?
+Which rules of thumb appear in system design?
 
-- [ ] A. Cache hit ratio goals for hot keys are often > 80–90% when caching helps
-- [ ] B. DB connection pool size should equal max_connections × number of pods
-- [ ] C. Peak traffic often ≈ 2–5× average unless a known flash-sale pattern exists
-- [ ] D. Plan ~30–50% headroom instead of running continuously at 100% utilization
+- [ ] A. Plan ~30–50% headroom instead of running continuously at 100% utilization
+- [ ] B. Cache hit ratio goals for hot keys are often > 80–90% when caching helps
+- [ ] C. DB connection pool size should equal max_connections × number of pods
+- [ ] D. Capacity should target average load with no peak factor or utilization headroom
 
 ---
 
-### Q14 [Medium] [Case Study] — DesignLab Storage Planning
+### Q14
 
 
 
 
 
-**Context:** DesignLab records 500M rows/year at 2 KB logical size; 3× replication; indexes add ~30%.
+
+
+
+
+
+**Context:** A team records 500M rows/year at 2 KB logical size; 3× replication; indexes add ~30%.
 
 **Select all that apply.**
 
@@ -257,11 +327,16 @@ Which storage math and habits are appropriate?
 - [ ] A. Base ≈ records × bytes × time; multiply copies and index overhead explicitly
 - [ ] B. Revisit estimates when retention or features change requirements
 - [ ] C. Ignore backups and logs if the interviewer only asked for “database size”
-- [ ] D. Round intermediate values; state assumptions about growth years
+- [ ] D. Keep every intermediate byte exact and omit the growth horizon to avoid approximation
 
 ---
 
-### Q15 [Medium] — Decision Tree: Transactions
+### Q15
+
+
+
+
+
 
 
 
@@ -271,33 +346,43 @@ Which storage math and habits are appropriate?
 
 Which choices align with the short decision tree for transactions?
 
-- [ ] A. Multi-row ACID inside one service → relational DB with local transactions
-- [ ] B. Cross-service money flow → saga + outbox; not 2PC by default
-- [ ] C. Every microservice sharing one writable Postgres schema for convenience
-- [ ] D. Must every reader see latest write? If yes → strong consistency path; if no → eventual + UX for lag
+- [ ] A. Cross-service money flows should default to one long XA transaction through external providers
+- [ ] B. Multi-row ACID inside one service → relational DB with local transactions
+- [ ] C. Must every reader see latest write? If yes → strong consistency path; if no → eventual + UX for lag
+- [ ] D. Every microservice sharing one writable Postgres schema for convenience
 
 ---
 
-### Q16 [Medium] [Case Study] — DesignLab Hot Product Page
+### Q16
 
 
 
 
 
-**Context:** DesignLab’s catalog page is read-heavy; occasional stale price for seconds is acceptable; balances are not on this path.
+
+
+
+
+
+**Context:** A team’s catalog page is read-heavy; occasional stale price for seconds is acceptable; balances are not on this path.
 
 **Select all that apply.**
 
 Which caching rules apply?
 
-- [ ] A. Cache-aside is a sensible default pattern to start
+- [ ] A. Cache account balances on this catalog path without a strong read path
 - [ ] B. TTL on cached entries or an explicit invalidation plan
-- [ ] C. Cache account balances on this catalog path without a strong read path
+- [ ] C. Cache-aside guarantees cached catalog values can never become stale, even without TTL or invalidation
 - [ ] D. Stampede protection (singleflight / lock / probabilistic early expiry) on hot keys
 
 ---
 
-### Q17 [Medium] — Messaging Defaults
+### Q17
+
+
+
+
+
 
 
 
@@ -307,14 +392,19 @@ Which caching rules apply?
 
 Which messaging rules of thumb are emphasized?
 
-- [ ] A. Partition by entity ID when per-entity ordering matters
-- [ ] B. At-least-once delivery with idempotent consumers as default
-- [ ] C. Use the Kafka topic as the system of record for all CRUD without projections
+- [ ] A. Randomly partition every event independently when per-entity ordering matters
+- [ ] B. Use the Kafka topic as the system of record for all CRUD without projections
+- [ ] C. At-least-once delivery with idempotent consumers as default
 - [ ] D. Outbox pattern over dual-write to DB and broker
 
 ---
 
-### Q18 [Medium] — Pattern Lookup: Infrastructure
+### Q18
+
+
+
+
+
 
 
 
@@ -324,14 +414,19 @@ Which messaging rules of thumb are emphasized?
 
 Which pattern–idea pairs are correct from the catalog?
 
-- [ ] A. CDN — edge cache for static assets and media segments
-- [ ] B. Bloom filter — guarantees a key is definitely present in the database
-- [ ] C. API Gateway — auth, rate limiting, routing entry
-- [ ] D. Transactional outbox — atomic DB state change plus event row in one transaction
+- [ ] A. Bloom filter — guarantees a key is definitely present in the database
+- [ ] B. API Gateway — auth, rate limiting, routing entry
+- [ ] C. CDN — edge cache for static assets and media segments
+- [ ] D. Transactional outbox — publish to the broker first, then update the database in an unrelated transaction
 
 ---
 
-### Q19 [Medium] — Trade-Off: Consistency vs Availability
+### Q19
+
+
+
+
+
 
 
 
@@ -341,33 +436,43 @@ Which pattern–idea pairs are correct from the catalog?
 
 Which statements reflect the trade-off matrix?
 
-- [ ] A. Strong consistency can increase latency and may refuse writes under partition
-- [ ] B. Availability-first (AP) designs may serve stale or conflicting data
-- [ ] C. Low latency in PACELC “else” often trades against stronger consistency
-- [ ] D. Strong consistency and zero latency under partition are always simultaneously achievable
+- [ ] A. Availability-first (AP) designs may serve stale or conflicting data
+- [ ] B. Strong consistency can increase latency and may refuse writes under partition
+- [ ] C. Strong consistency and zero latency under partition are always simultaneously achievable
+- [ ] D. PACELC says healthy-network latency is unrelated to consistency choices
 
 ---
 
-### Q20 [Medium] [Case Study] — DesignLab Static Assets
+### Q20
 
 
 
 
 
-**Context:** DesignLab’s interview app serves JS bundles and product images globally; API stays origin-hosted.
+
+
+
+
+
+**Context:** A team’s interview app serves JS bundles and product images globally; API stays origin-hosted.
 
 **Select all that apply.**
 
 Which component choices fit the selection guide?
 
-- [ ] A. CDN for static assets and video/image segments
+- [ ] A. A load balancer should keep routing traffic to unhealthy instances to preserve stickiness
 - [ ] B. API Gateway for auth, rate limits, and routing to services
 - [ ] C. Relational DB as primary store for multi-GB video blobs
-- [ ] D. Load balancer to distribute traffic to healthy app instances
+- [ ] D. CDN for static assets and video/image segments
 
 ---
 
-### Q21 [Medium] — Component Selection: Data Stores
+### Q21
+
+
+
+
+
 
 
 
@@ -377,33 +482,43 @@ Which component choices fit the selection guide?
 
 Which need → component mappings are appropriate?
 
-- [ ] A. Session, rate limits, hot keys → Redis / Memcached class KV
-- [ ] B. Transactions, relations, constraints → relational database
-- [ ] C. Immutable facts with replay → event store or durable log (e.g., Kafka + lake)
-- [ ] D. Full-text search / autocomplete → search engine or dedicated trie service
+- [ ] A. Full-text search and autocomplete are best implemented as normalized relational joins with no search index
+- [ ] B. Immutable replayable facts belong only in an in-memory cache with no durable retention
+- [ ] C. Session, rate limits, hot keys → Redis / Memcached class KV
+- [ ] D. Transactions, relations, constraints → relational database
 
 ---
 
-### Q22 [Medium] [Case Study] — DesignLab Quorum Sketch
+### Q22
 
 
 
 
 
-**Context:** DesignLab reviews a replicated KV sketch: N=3, W=2, R=2.
+
+
+
+
+
+**Context:** A team reviews a replicated KV sketch: N=3, W=2, R=2.
 
 **Select all that apply.**
 
 Which statements are valid?
 
 - [ ] A. W + R > N gives quorum overlap for read/write intersection under the model discussed
-- [ ] B. Prefer local ACID over distributed 2PC for most product paths
-- [ ] C. Unique constraints should live in the database, not app-only checks
-- [ ] D. Shard on a random UUID when the product requires efficient range scans on creation time
+- [ ] B. Prefer distributed 2PC over local ACID even when all affected rows share one database
+- [ ] C. Shard on a random UUID when the product requires efficient range scans on creation time
+- [ ] D. Unique constraints should live in the database, not app-only checks
 
 ---
 
-### Q23 [Medium] — Observability Rules
+### Q23
+
+
+
+
+
 
 
 
@@ -413,33 +528,43 @@ Which statements are valid?
 
 Which observability defaults are listed?
 
-- [ ] A. Alert on every CPU blip instead of SLO error-budget burn
-- [ ] B. Trace cross-service flows with correlation IDs end-to-end
-- [ ] C. USE (Utilization, Saturation, Errors) for resources
+- [ ] A. USE (Utilization, Saturation, Errors) for resources
+- [ ] B. Assign a new unrelated correlation ID at every hop so end-to-end tracing cannot join spans
+- [ ] C. Alert on every CPU blip instead of SLO error-budget burn
 - [ ] D. RED (Rate, Errors, Duration) for services
 
 ---
 
-### Q24 [Medium] [Case Study] — DesignLab Multi-Step Checkout
+### Q24
 
 
 
 
 
-**Context:** DesignLab checkout spans order service, inventory, and external payment provider.
+
+
+
+
+
+**Context:** A team checkout spans order service, inventory, and external payment provider.
 
 **Select all that apply.**
 
 Which patterns fit?
 
-- [ ] A. Saga with compensations (release inventory on payment failure)
-- [ ] B. Two-phase commit spanning the payment provider and internal Postgres
-- [ ] C. Idempotency keys on create and payment calls
-- [ ] D. Circuit breaker on payment client to stop cascades
+- [ ] A. Two-phase commit spanning the payment provider and internal Postgres
+- [ ] B. Circuit breaker on payment client to stop cascades
+- [ ] C. A saga relies on automatic cross-service SQL rollback and needs no compensating action
+- [ ] D. Idempotency keys on create and payment calls
 
 ---
 
-### Q25 [Medium] — Patterns: Reliability
+### Q25
+
+
+
+
+
 
 
 
@@ -449,33 +574,43 @@ Which patterns fit?
 
 Which reliability pattern descriptions are accurate?
 
-- [ ] A. Retry without jitter on all POST endpoints including non-idempotent creates
-- [ ] B. Circuit breaker — stop calling a dependency in an error storm
+- [ ] A. Circuit breaker — retry every failing dependency call indefinitely with no backoff
+- [ ] B. Bulkhead — isolate pools so one noisy neighbor does not exhaust all threads
 - [ ] C. Graceful degradation — keep core path alive when non-critical features fail
-- [ ] D. Bulkhead — isolate pools so one noisy neighbor does not exhaust all threads
+- [ ] D. Retry without jitter on all POST endpoints including non-idempotent creates
 
 ---
 
-### Q26 [Medium] [Case Study] — DesignLab Service Boundaries
+### Q26
 
 
 
 
 
-**Context:** DesignLab teams debate three services all updating the same `users` table in one shared database.
+
+
+
+
+
+**Context:** A team teams debate three services all updating the same `users` table in one shared database.
 
 **Select all that apply.**
 
 Which align with data ownership rules?
 
-- [ ] A. Each piece of data should have one write owner
-- [ ] B. Other services get copies via events, CDC, or API — not shared mutable writes
+- [ ] A. Document explicit consistency per API including stale windows where eventual
+- [ ] B. Each piece of data should have one write owner
 - [ ] C. Shared writable DB across many services is acceptable if migrations are coordinated
-- [ ] D. Document explicit consistency per API including stale windows where eventual
+- [ ] D. Other services get copies via events, CDC, or API — not shared mutable writes
 
 ---
 
-### Q27 [Medium] — Trade-Off: SQL vs Event Log
+### Q27
+
+
+
+
+
 
 
 
@@ -485,14 +620,19 @@ Which align with data ownership rules?
 
 Which trade-off rows are represented?
 
-- [ ] A. Document/KV — flexible scale by key; weaker joins and multi-row transactions
-- [ ] B. Event log eliminates all need for materialized views or projections
-- [ ] C. Relational — gains transactions, joins, constraints; horizontal scale is harder
-- [ ] D. Event log — gains replay and fan-out; pays projection lag and ops complexity
+- [ ] A. Event log eliminates all need for materialized views or projections
+- [ ] B. Relational — gains transactions, joins, constraints; horizontal scale is harder
+- [ ] C. Event log — gains replay and fan-out; pays projection lag and ops complexity
+- [ ] D. Document/KV — flexible scale by key; weaker joins and multi-row transactions
 
 ---
 
-### Q28 [Medium] — Terminology and Consistency Phrases
+### Q28
+
+
+
+
+
 
 
 
@@ -502,33 +642,43 @@ Which trade-off rows are represented?
 
 Which are correct?
 
-- [ ] A. Read-your-writes — a user sees their own updates in session
-- [ ] B. PACELC — if partition, choose A or C; else latency vs consistency
-- [ ] C. Poison message — a message that repeatedly fails processing
-- [ ] D. Linearizability — same as “best-effort async with no guarantees”
+- [ ] A. Linearizability — same as “best-effort async with no guarantees”
+- [ ] B. Poison message — a message that repeatedly fails processing
+- [ ] C. PACELC — if partition, choose A or C; else latency vs consistency
+- [ ] D. Read-your-writes — a user sees their own updates in session
 
 ---
 
-### Q29 [Hard] [Case Study] — DesignLab ShopFast Checkout
+### Q29
 
 
 
 
 
-**Context:** DesignLab walks through ShopFast-like e-commerce: 2M DAU, 500 QPS peak checkout, 15K QPS peak catalog browse, payment correctness required, email async.
+
+
+
+
+
+**Context:** A team walks through ShopFast-like e-commerce: 2M DAU, 500 QPS peak checkout, 15K QPS peak catalog browse, payment correctness required, email async.
 
 **Select all that apply.**
 
 Which architecture choices match the reference walkthrough?
 
-- [ ] A. Event-source every entity and multi-region active-active inventory in v1
-- [ ] B. CDN + cache for catalog browse; checkout modest QPS but correctness-first
+- [ ] A. Postgres local transactions for inventory decrement where possible
+- [ ] B. Event-source every entity and multi-region active-active inventory in v1
 - [ ] C. Outbox → Kafka (or similar) instead of dual-write to DB and broker
-- [ ] D. Postgres local transactions for inventory decrement where possible
+- [ ] D. CDN + cache for catalog browse; checkout modest QPS but correctness-first
 
 ---
 
-### Q30 [Hard] — Before You Call It Done
+### Q30
+
+
+
+
+
 
 
 
@@ -538,39 +688,49 @@ Which architecture choices match the reference walkthrough?
 
 What should a complete design narrative include?
 
-- [ ] A. Written requirements and rough scale numbers
-- [ ] B. A named bottleneck and consistency story per path
-- [ ] C. Failure story per major component and observability to detect breakage
+- [ ] A. A named bottleneck and consistency story per path
+- [ ] B. Failure story per major component and observability to detect breakage
+- [ ] C. Written requirements and rough scale numbers
 - [ ] D. Technology choices alone are sufficient — skip documenting trade-offs and scale evolution
 
 ---
 
-### Q31 [Hard] [Case Study] — DesignLab Checkout Failures
+### Q31
 
 
 
 
 
-**Context:** DesignLab’s ShopFast practice design: payment provider times out; Kafka relay is down; email workers lag.
+
+
+
+
+
+**Context:** A team’s ShopFast practice design: payment provider times out; Kafka relay is down; email workers lag.
 
 **Select all that apply.**
 
 Which responses match the reference failure table?
 
 - [ ] A. Email worker down → checkout still succeeds; notification lag acceptable
-- [ ] B. Kafka down → fail checkout synchronously until broker recovers
+- [ ] B. Kafka down → outbox retains events; relay catches up when broker returns
 - [ ] C. Payment timeout → idempotent retry / status confirm; avoid duplicate order rows
-- [ ] D. Kafka down → outbox retains events; relay catches up when broker returns
+- [ ] D. Kafka down → fail checkout synchronously until broker recovers
 
 ---
 
-### Q32 [Hard] [Case Study] — DesignLab Consistency Map
+### Q32
 
 
 
 
 
-**Context:** DesignLab documents consistency per path for ShopFast-style commerce.
+
+
+
+
+
+**Context:** A team documents consistency per path for ShopFast-style commerce.
 
 **Select all that apply.**
 
@@ -583,7 +743,12 @@ Which path → model pairings fit the walkthrough?
 
 ---
 
-### Q33 [Hard] — Stream Architecture Trade-Offs
+### Q33
+
+
+
+
+
 
 
 
@@ -593,20 +758,25 @@ Which path → model pairings fit the walkthrough?
 
 Which trade-off statements are accurate?
 
-- [ ] A. Real-time everything — freshness at higher cost and complexity
-- [ ] B. Batch everything — always best for user-facing checkout authorization
-- [ ] C. Lambda architecture — batch correctness path plus speed layer; dual logic cost
-- [ ] D. Kappa — single stream with replay discipline; retention matters
+- [ ] A. Kappa — single stream with replay discipline; retention matters
+- [ ] B. Lambda architecture — batch correctness path plus speed layer; dual logic cost
+- [ ] C. Real-time everything — freshness at higher cost and complexity
+- [ ] D. Batch everything — always best for user-facing checkout authorization
 
 ---
 
-### Q34 [Hard] [Case Study] — DesignLab 10× Inventory Pressure
+### Q34
 
 
 
 
 
-**Context:** DesignLab asks: “What changes at 10× for ShopFast hot SKUs and global users?”
+
+
+
+
+
+**Context:** A team asks: “What changes at 10× for ShopFast hot SKUs and global users?”
 
 **Select all that apply.**
 
@@ -619,7 +789,12 @@ Which evolutions are reasonable?
 
 ---
 
-### Q35 [Hard] — Latency Hierarchy and Caching
+### Q35
+
+
+
+
+
 
 
 
@@ -636,26 +811,36 @@ Which insights connect estimation constants to design?
 
 ---
 
-### Q36 [Hard] [Case Study] — DesignLab Observability Checklist
+### Q36
 
 
 
 
 
-**Context:** DesignLab grades mock interviews on operability, not only boxes and arrows.
+
+
+
+
+
+**Context:** A team grades mock interviews on operability, not only boxes and arrows.
 
 **Select all that apply.**
 
 Which observability items fit ShopFast-style checkout?
 
-- [ ] A. RED on gateway, checkout service, and payment client
-- [ ] B. Saga / stuck-order metrics and alerts
-- [ ] C. Outbox lag and consumer lag on downstream processors
-- [ ] D. Trace `checkout_id` or `idempotency_key` across hops
+- [ ] A. Trace `checkout_id` or `idempotency_key` across hops
+- [ ] B. Checkout observability needs only host CPU; outbox and consumer lag are irrelevant
+- [ ] C. RED on gateway, checkout service, and payment client
+- [ ] D. Saga / stuck-order metrics and alerts
 
 ---
 
-### Q37 [Hard] — Build vs Buy and Boring Tech
+### Q37
+
+
+
+
+
 
 
 
@@ -665,14 +850,19 @@ Which observability items fit ShopFast-style checkout?
 
 Which trade-off framing matches the matrix?
 
-- [ ] A. Self-host — control at people-and-ops cost
-- [ ] B. Managed services — speed and ops offload; less control and ongoing cost
-- [ ] C. Newest database on launch — always lowers risk and hiring cost
-- [ ] D. Boring tech — predictability; may not be perfect fit
+- [ ] A. Managed services — speed and ops offload; less control and ongoing cost
+- [ ] B. Boring tech — predictability; may not be perfect fit
+- [ ] C. Self-host — control at people-and-ops cost
+- [ ] D. Newest database on launch — always lowers risk and hiring cost
 
 ---
 
-### Q38 [Hard] — Sensible v1 Non-Goals
+### Q38
+
+
+
+
+
 
 
 
@@ -682,14 +872,19 @@ Which trade-off framing matches the matrix?
 
 For mid-scale e-commerce v1 (single region, correctness-focused checkout), which are reasonable explicit non-goals?
 
-- [ ] A. Event-source every entity on day one
-- [ ] B. Multi-region active-active inventory
+- [ ] A. Multi-region active-active inventory
+- [ ] B. Event-source every entity on day one
 - [ ] C. Real-time OLAP on the checkout critical path
 - [ ] D. Idempotency keys on payment and order create
 
 ---
 
-### Q39 [Hard] — Sync Path Decision Tree
+### Q39
+
+
+
+
+
 
 
 
@@ -699,26 +894,211 @@ For mid-scale e-commerce v1 (single region, correctness-focused checkout), which
 
 For user-facing request/response paths, which guidance applies?
 
-- [ ] A. Every internal call should be async even when the user waits for the HTTP response
-- [ ] B. Money or stock on write path → strong write path and careful retries (idempotent only)
-- [ ] C. Slow or background work → async queue or stream
-- [ ] D. User needs answer now → sync path; add cache if read-heavy
+- [ ] A. Slow or background work → async queue or stream
+- [ ] B. Every internal call should be async even when the user waits for the HTTP response
+- [ ] C. User needs answer now → sync path; add cache if read-heavy
+- [ ] D. Money or stock on write path → strong write path and careful retries (idempotent only)
 
 ---
 
-### Q40 [Hard] [Case Study] — DesignLab Interview Synthesis
+### Q40
 
 
 
 
 
-**Context:** DesignLab’s final mock: candidate must tie requirements, numbers, diagram, failures, and metrics in 35 minutes.
+
+
+
+
+
+**Context:** A team’s final interview: candidate must tie requirements, numbers, diagram, failures, and metrics in 35 minutes.
 
 **Select all that apply.**
 
 Which checklist items reflect the end-to-end template?
 
-- [ ] A. Requirements → estimation → high-level diagram → decisions with “because”
-- [ ] B. Consistency map and failure table per major dependency
-- [ ] C. Observability story (metrics, traces, SLOs) tied to user-visible paths
-- [ ] D. Start the clock by listing every pattern from the catalog alphabetically
+- [ ] A. Consistency map and failure table per major dependency
+- [ ] B. Observability story (metrics, traces, SLOs) tied to user-visible paths
+- [ ] C. Start the clock by listing every pattern from the catalog alphabetically
+- [ ] D. Requirements → estimation → high-level diagram → decisions with “because”
+
+---
+
+### Q41
+
+
+
+
+
+
+**Select all that apply.**
+
+A payment may have succeeded before timeout. Which responses are sound?
+
+- [ ] A. Reconcile uncertain outcomes
+- [ ] B. Create a new payment ID per retry
+- [ ] C. Retry with the same idempotency key
+- [ ] D. Query provider status
+
+---
+
+### Q42
+
+
+
+
+
+
+**Select all that apply.**
+
+Kafka is down after an order and outbox commit. Which outcomes are intended?
+
+- [ ] A. The outbox is discarded
+- [ ] B. Views temporarily lag
+- [ ] C. The order remains committed
+- [ ] D. The relay publishes later
+
+---
+
+### Q43
+
+
+
+
+
+
+**Select all that apply.**
+
+Which consistency choices fit commerce?
+
+- [ ] A. Eventual catalog search
+- [ ] B. Strong inventory decrement
+- [ ] C. Eventual uniqueness without constraints
+- [ ] D. Read-your-writes order confirmation
+
+---
+
+### Q44
+
+
+
+
+
+
+**Select all that apply.**
+
+Which signals belong in checkout observability?
+
+- [ ] A. Checkout success and p99
+- [ ] B. Host CPU alone is sufficient; asynchronous pipeline lag need not be measured
+- [ ] C. Payment errors and timeouts
+- [ ] D. Correlated checkout IDs
+
+---
+
+### Q45
+
+
+
+
+
+
+**Select all that apply.**
+
+A flash sale creates one hot SKU. Which responses fit?
+
+- [ ] A. Per-SKU serialization
+- [ ] B. Admission control
+- [ ] C. Conditional inventory updates
+- [ ] D. Random overselling
+
+---
+
+### Q46
+
+
+
+
+
+
+**Select all that apply.**
+
+Which changes are justified at 10× growth?
+
+- [ ] A. Re-estimate first
+- [ ] B. Shard pressured workflows
+- [ ] C. Regionalize catalog reads
+- [ ] D. Replace all proven technology
+
+---
+
+### Q47
+
+
+
+
+
+
+**Select all that apply.**
+
+Which omissions keep commerce v1 simpler?
+
+- [ ] A. Avoid unneeded active-active inventory
+- [ ] B. Keep OLAP off checkout
+- [ ] C. Remove payment idempotency
+- [ ] D. Do not event-source every entity
+
+---
+
+### Q48
+
+
+
+
+
+
+**Select all that apply.**
+
+How should a design choice be defended?
+
+- [ ] A. Compare gains and costs
+- [ ] B. Tie it to requirements
+- [ ] C. State revisit triggers
+- [ ] D. Say only that it depends
+
+---
+
+### Q49
+
+
+
+
+
+
+**Select all that apply.**
+
+A small single-team product proposes microservices. Which cautions apply?
+
+- [ ] A. More services always improve availability
+- [ ] B. Distributed operations add cost
+- [ ] C. A modular monolith preserves local transactions
+- [ ] D. Boundaries need domain or scale reasons
+
+---
+
+### Q50
+
+
+
+
+
+
+**Select all that apply.**
+
+Which elements complete an end-to-end design?
+
+- [ ] A. Requirements, estimates, and APIs
+- [ ] B. Data, components, and consistency
+- [ ] C. Failures, observability, and evolution
+- [ ] D. Vendor names without reasons

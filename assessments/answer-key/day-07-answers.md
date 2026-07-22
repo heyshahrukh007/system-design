@@ -1,404 +1,406 @@
-# Caching Deep Dive — Answer Key & Explanations (50)
+# Reliability & Fault Tolerance — Answer Key & Explanations (50)
 
 Answer key for [day-07-questions.md](../day-07-questions.md)
 
 
----
 
-### Q01 [Easy] [Case Study] — RetailHub Product Page Load
-
-**Answer:** A, B, D
-
-**Explanation:** Read-heavy catalog benefits from Redis speed and hit-rate math. Cache is not source of truth (C).
 
 ---
 
-### Q02 [Easy] — Cache vs Database
+### Q01
 
-**Answer:** A, B, D
+**Answer:** A, B
 
-**Explanation:** Cache is ephemeral and refillable. ACID durability belongs to DB (C).
-
----
-
-### Q03 [Easy] [Case Study] — RetailHub Static Assets
-
-**Answer:** A, C, D
-
-**Explanation:** Multi-layer caching from browser/CDN to origin. LBs do not replace edge/browser cache (B).
+**Explanation:** A bounded timeout frees callers and a bulkhead protects unrelated capacity (B, C). Immediate retries amplify the outage (D), while continuing normal traffic after sustained failure defeats circuit breaking (C).
 
 ---
 
-### Q04 [Easy] — What Not to Cache
+### Q02
 
-**Answer:** A, B, D
+**Answer:** A, B
 
-**Explanation:** Authoritative money movement and OTP need DB truth. Catalog with TTL+invalidation is cacheable (C).
-
----
-
-### Q05 [Easy] [Case Study] — RetailHub Session Store
-
-**Answer:** B, C, D
-
-**Explanation:** Shared Redis or JWT for stateless fleet. Per-pod memory breaks behind LB (A).
+**Explanation:** Reliability concerns surviving failures, and a fast system can still fail poorly (A, C). Scaling alone does not remove SPOFs (D), while performance concerns response speed rather than only failure survival (C).
 
 ---
 
-### Q06 [Easy] — Cache Key Design
+### Q03
 
-**Answer:** A, C, D
+**Answer:** B, C
 
-**Explanation:** Namespaced shared keys maximize reuse. Unique per-request keys never hit (B).
-
----
-
-### Q07 [Medium] [Case Study] — RetailHub Cache-Aside Read Path
-
-**Answer:** A, B, C
-
-**Explanation:** App-managed lazy load and explicit invalidation; graceful Redis bypass. Auto-sync on write is read-through/write-through, not cache-aside (D).
+**Explanation:** Safety, contractual exposure, data loss, and business impact should shape reliability targets (B, D). One target does not fit every system (A), and redundancy adds rather than always lowers cost and complexity (D).
 
 ---
 
-### Q08 [Medium] — Cache-Aside Write Path
+### Q04
 
-**Answer:** A, D
+**Answer:** A, B
 
-**Explanation:** DB first, then delete cache. Delete-before-commit races with stale refill (B). TTL-only for prices is risky (C).
-
----
-
-### Q09 [Medium] [Case Study] — RetailHub Profile Settings
-
-**Answer:** B, C, D
-
-**Explanation:** Write-through fits immediate post-write reads on low-write paths. Cold-key write-through wastes RAM (A).
+**Explanation:** MTBF describes time between failures, and reducing MTTR improves availability (A, B). Correctness and timeliness can matter to availability (D), so a running process returning errors is not meaningfully available (C).
 
 ---
 
-### Q10 [Medium] — Write-Back Cache Risks
+### Q05
 
-**Answer:** A, B, C
+**Answer:** B, C
 
-**Explanation:** Write-back is fast and eventual — not for payments/inventory without durable queue (D).
-
----
-
-### Q11 [Medium] [Case Study] — RetailHub Admin Price Update
-
-**Answer:** A, B, D
-
-**Explanation:** Multi-layer invalidation required. Delete-before-commit can repopulate stale data (C).
+**Explanation:** A 99.9% month permits about 43.8 minutes, while 99.99% permits roughly one-tenth as much (A, D). Maintenance treatment depends on policy (A), and 4.4 minutes corresponds to 99.99%, not 99.9% (D).
 
 ---
 
-### Q12 [Medium] — TTL Best Practices
-
-**Answer:** A, B, D
-
-**Explanation:** Jitter prevents synchronized expiry; long TTL + invalidation for stable data. Uniform TTL on all keys causes stampedes (C).
-
----
-
-### Q13 [Medium] [Case Study] — RetailHub Black Friday Stampede
-
-**Answer:** A, B, C
-
-**Explanation:** Hot-key expiry stampede — not penetration (D). Lock, jitter, refresh-ahead help.
-
----
-
-### Q14 [Medium] — Cache Penetration
-
-**Answer:** A, B, D
-
-**Explanation:** Null caching, Bloom filters, validation, rate limits. Jitter does not stop invalid-key scans (C).
-
----
-
-### Q15 [Hard] [Case Study] — RetailHub Redis Restart
-
-**Answer:** B, C, D
-
-**Explanation:** Empty cache avalanche — warm-up, HA, circuit breaker. Restart absolutely spikes DB load (A).
-
----
-
-### Q16 [Hard] — Distributed Cache Architecture
-
-**Answer:** A, B, D
-
-**Explanation:** Cluster scales; noeviction errors when full. L1 is not auto-shared across pods (C).
-
----
-
-### Q17 [Hard] [Case Study] — RetailHub Hot Celebrity Product
-
-**Answer:** B, C, D
-
-**Explanation:** Local cache, CDN, key splitting address hot keys. Sharding alone does not split one logical key (A).
-
----
-
-### Q18 [Hard] — Read-Through vs Cache-Aside
-
-**Answer:** A, B, D
-
-**Explanation:** Read-through delegates miss load to cache layer; app still writes DB on updates (C).
-
----
-
-### Q19 [Easy] — Multi-Layer Cache Stack
-
-**Answer:** A, C, D
-
-**Explanation:** Browser, CDN, Redis layers stack. MySQL query cache removed in 8.0 (B).
-
----
-
-### Q20 [Easy] [Case Study] — RetailHub Rate Limit Counter
-
-**Answer:** A, B, D
-
-**Explanation:** Ephemeral Redis counters shared fleet-wide. Not financial ledger (C).
-
----
-
-### Q21 [Medium] — Write-Through vs Cache-Aside Writes
-
-**Answer:** B, C, D
-
-**Explanation:** Cache-aside deletes; write-through sets both. Cache-aside is default, not write-through (A).
-
----
-
-### Q22 [Medium] [Case Study] — RetailHub Display Balance
-
-**Answer:** A, B, D
-
-**Explanation:** Display TTL OK if transfers read locked DB balance. Never cache authoritative transfer balance (C).
-
----
-
-### Q23 [Medium] — HTTP Cache Headers
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four are valid Cache-Control semantics for different cache layers and sensitivity.
-
----
-
-### Q24 [Medium] [Case Study] — RetailHub Deploy Cold Start
+### Q06
 
 **Answer:** A, C
 
-**Explanation:** Preload before traffic — warming. Refresh-ahead is ongoing TTL-based (B). Warming does not replace invalidation (D).
+**Explanation:** Four hours is the intended RTO, and hourly backups imply about a one-hour RPO (A, C). A target alone does not prove recovery speed without drills (B), and RPO concerns data loss rather than failover time (D).
 
 ---
 
-### Q25 [Hard] — Refresh-Ahead Pattern
+### Q07
+
+**Answer:** A, B
+
+**Explanation:** Required sequential dependencies multiply risk, and unnecessary synchronous hops lower path availability (A, C). Independent redundancy can improve availability rather than always reduce it (C), and replicas need not fail together (D).
+
+---
+
+### Q08
+
+**Answer:** B, C
+
+**Explanation:** Each sole critical tier is a SPOF, and tested database replication reduces one such risk (A, B). Processes on one host do not remove the host SPOF (D), and app scaling does not make the database redundant (A).
+
+---
+
+### Q09
+
+**Answer:** B, C
+
+**Explanation:** Bounded timeouts and latency/error monitoring address partial failure (B, D). One isolated slow response should not permanently open a circuit (A), and a TCP connection does not prove application health (D).
+
+---
+
+### Q10
+
+**Answer:** A, D
+
+**Explanation:** Least privilege, tested recovery, canaries, and automated rollback reduce human-error impact (B, C). Blame adds no safeguard (C), and unreviewed manual changes are riskier than validated IaC (B).
+
+---
+
+### Q11
+
+**Answer:** B, D
+
+**Explanation:** Same-zone instances can tolerate one instance loss and preserve rolling-deploy capacity (A, D). They do not tolerate that zone's outage (A) or regional loss (C).
+
+---
+
+### Q12
+
+**Answer:** A, D
+
+**Explanation:** Active-passive may pay for idle standby, while active-active nodes already serve traffic (B, C). Active-active still has synchronization concerns (C), and passive promotion is neither guaranteed instantaneous nor decision-free (B).
+
+---
+
+### Q13
 
 **Answer:** C, D
 
-**Explanation:** Proactive refresh before expiry vs one-time warm-up. Some staleness possible during refresh (B). They differ (A).
+**Explanation:** Repeated readiness failures should remove traffic, and an appropriate deep readiness check can reflect critical dependencies (B, D). Using dependency readiness as liveness can create restart loops (B), while process liveness alone does not guarantee request success (A).
 
 ---
 
-### Q26 [Hard] — Consistency Spectrum
+### Q14
 
-**Answer:** A, B, C
+**Answer:** A, B
 
-**Explanation:** Write-through strongest; cache-aside default; write-back weakest/fastest. TTL-only without invalidation is weak, not strongest (D).
-
----
-
-### Q27 [Easy] — Monitoring Cache Health
-
-**Answer:** A, B, C, D
-
-**Explanation:** All are valid operational signals for cache misconfiguration or failure.
+**Explanation:** Stateless handling lets any healthy or replacement instance serve the next request (C, D). Keeping the only session copy in one instance, even with stickiness, undermines failover (A, B).
 
 ---
 
-### Q28 [Medium] [Case Study] — RetailHub Big Product JSON
+### Q15
 
-**Answer:** A, B, D
+**Answer:** C, D
 
-**Explanation:** Split/compress/reference — big keys hurt Redis single thread. Larger keys are not free wins (C).
-
----
-
-### Q29 [Hard] [Case Study] — RetailHub Invalidation Race
-
-**Answer:** A, B, C
-
-**Explanation:** Delete after commit; read primary or version on miss. Delete-before-commit worsens races (D).
+**Explanation:** With N equal to four, N+1 is five and tolerates one server loss at peak (C, D). 2N would be eight, not five (B), and N+1 does not guarantee regional survival (A).
 
 ---
 
-### Q30 [Hard] — Circuit Breaker During Cache Outage
+### Q16
 
-**Answer:** A, B, D
+**Answer:** C, D
 
-**Explanation:** Breaker protects DB; stale CDN/L1 may help briefly. Unlimited retries amplify outage (C).
-
----
-
-### Q31 [Easy] [Case Study] — RetailHub ETag Revalidation
-
-**Answer:** A, B, D
-
-**Explanation:** Conditional requests save bandwidth. ETags complement — not replace — write invalidation (C).
+**Explanation:** DNS caching can delay failover, so TTL must reflect the recovery objective (B, C). Neither a low TTL (B) nor health checking (A) bypasses every resolver and client cache.
 
 ---
 
-### Q32 [Easy] — Stale-While-Revalidate
+### Q17
 
-**Answer:** A, B, D
+**Answer:** B, D
 
-**Explanation:** SWR trades brief staleness for speed. Not for authoritative financial reads (C).
-
----
-
-### Q33 [Easy] [Case Study] — RetailHub Eviction Under Memory Pressure
-
-**Answer:** A, B, C
-
-**Explanation:** LRU evicts hot keys under pressure. Monitor and tune policy — not perfect hot-key preservation (D).
+**Explanation:** Inner timeouts and downstream allocations must fit within the total deadline (B, D). Retries cannot safely exceed that deadline (A), and independent full-length timeouts exhaust the budget (C).
 
 ---
 
-### Q34 [Easy] — Memcached vs Redis
+### Q18
 
-**Answer:** A, B, D
+**Answer:** A, B
 
-**Explanation:** Feature trade-offs between cache engines. Neither auto-syncs with PostgreSQL (C).
+**Explanation:** Connect and read timeouts bound distinct phases (C, D). A read timeout does not replace connect timeout (C), and a write timeout governs sending rather than reading the response (D).
 
 ---
 
-### Q35 [Easy] [Case Study] — RetailHub Double Cache Populate
+### Q19
+
+**Answer:** A, C
+
+**Explanation:** A timed-out non-idempotent retry can duplicate effects, and abandoned server work can keep consuming resources (A, D). The client timeout does not prove server cancellation (B), while propagated cancellation can reduce waste (D).
+
+---
+
+### Q20
+
+**Answer:** A, C
+
+**Explanation:** Timeout handling should choose a bounded retry, fallback, or failure and cancel in-flight work when supported (B, D). Waiting indefinitely defeats the timeout (D), and suppressing diagnostics prevents useful correlation (B).
+
+---
+
+### Q21
+
+**Answer:** A, C
+
+**Explanation:** An unchanged unauthorized request should not be retried blindly, while a 503 can use bounded backoff (B, C). Malformed 400 requests need correction (B), and 429 handling should respect `Retry-After` rather than retry immediately (D).
+
+---
+
+### Q22
+
+**Answer:** C, D
+
+**Explanation:** Exponential backoff and jitter spread recovery traffic (B, C). Synchronized schedules (B) and unlimited attempts (A) sustain the retry storm.
+
+---
+
+### Q23
+
+**Answer:** B, D
+
+**Explanation:** A stable key and uniqueness constraint make retries represent one business operation (A, B). Discarding prior results repeats side effects (A), while a new identifier makes the retry new work (C).
+
+---
+
+### Q24
+
+**Answer:** A, D
+
+**Explanation:** Layered retries multiply attempts, so retry ownership should be coordinated (B, D). More retry layers increase load (B), and independent budgets do not automatically prevent multiplication (C).
+
+---
+
+### Q25
+
+**Answer:** C, D
+
+**Explanation:** Breakers stop calls during sustained failure, while retries may recover brief transient failures (C, D). Timeouts remain distinct and necessary (A), and an OPEN circuit should fail fast rather than permit retries through it (B).
+
+---
+
+### Q26
 
 **Answer:** A, C, D
 
-**Explanation:** Miss coalescing saves DB load. Duplicate SET with same value wastes work but need not corrupt (B).
+**Explanation:** OPEN circuits reject calls quickly; HALF-OPEN permits controlled probes after cooldown. Successful probes indicate recovery and can return the circuit to normal operation.
 
 ---
 
-### Q36 [Easy] — CDN Purge and Versioned Assets
+### Q27
+
+**Answer:** A, B, C
+
+**Explanation:** Breakers should react to dependency failures such as timeouts and relevant 5xx rates over a window. Valid client errors usually do not indicate dependency unhealthiness.
+
+---
+
+### Q28
 
 **Answer:** A, B, D
 
-**Explanation:** Purge plus fingerprinted URLs. Global purge is not always instant (C).
+**Explanation:** Recommendations are optional, so the core page can use an omitted or static fallback while degraded behavior is measured. Failing the whole page needlessly expands blast radius.
 
 ---
 
-### Q37 [Medium] [Case Study] — RetailHub Mixed Personalization
-
-**Answer:** A, B, D
-
-**Explanation:** Split shared vs per-user caching. One key for full personalized page kills hit rate (C).
-
----
-
-### Q38 [Medium] — Redis Persistence Trade-offs
-
-**Answer:** A, B, D
-
-**Explanation:** RDB/AOF durability trade-offs. Redis is not financial ledger (C).
-
----
-
-### Q39 [Medium] [Case Study] — RetailHub Cross-Region Latency
+### Q29
 
 **Answer:** B, C, D
 
-**Explanation:** Geo placement matters. US-only cache cannot equalize EU latency (A).
+**Explanation:** Dependencies have independent health, criticality, thresholds, and fallbacks. A global circuit lets one failure disable unrelated paths.
 
 ---
 
-### Q40 [Medium] — L1 Cache Coherency Across Pods
+### Q30
 
-**Answer:** A, B, C
+**Answer:** A, C, D
 
-**Explanation:** L1 needs invalidation, pub/sub, or short TTL. No automatic cross-pod coherence (D).
+**Explanation:** Separate bounded pools preserve checkout capacity when reporting overloads its allocation. An unbounded queue merely moves resource exhaustion into waiting work.
 
 ---
 
-### Q41 [Medium] [Case Study] — RetailHub Flash Sale Oversell
+### Q31
+
+**Answer:** A, B, D
+
+**Explanation:** Bulkheads contain resource use before or during failure, while breakers stop repeated calls based on observed failure. Both still require per-call timeouts.
+
+---
+
+### Q32
+
+**Answer:** A, B, D
+
+**Explanation:** A semaphore bulkhead bounds concurrency with less overhead than a dedicated thread pool. It limits caller exposure but cannot guarantee downstream health.
+
+---
+
+### Q33
 
 **Answer:** B, C, D
 
-**Explanation:** Authorize stock from DB with atomic update. TTL alone does not prevent oversell (A).
+**Explanation:** A queue decouples intake from fixed consumer capacity and smooths temporary bursts. Queue depth and admission limits still matter because backlog cannot grow safely forever.
 
 ---
 
-### Q42 [Medium] — HTTP Vary Header
-
-**Answer:** A, B, D
-
-**Explanation:** Vary manages cache variants. Authenticated responses often still need `private` (C).
-
----
-
-### Q43 [Medium] [Case Study] — RetailHub Marketing Banner SWR
+### Q34
 
 **Answer:** B, C, D
 
-**Explanation:** SWR OK for low-risk visuals; purge/version critical content. SWR allows staleness (A).
+**Explanation:** Capacity exhaustion should trigger bounded waiting, fast failure, or prioritized shedding. Unbounded blocking recreates system-wide starvation.
 
 ---
 
-### Q44 [Medium] — Read-Through vs Cache-Aside Operations
+### Q35
+
+**Answer:** A, B, C
+
+**Explanation:** Optional features can be removed or replaced while the core purchase flow continues. Turning an optional dependency failure into a site-wide 500 is not graceful degradation.
+
+---
+
+### Q36
+
+**Answer:** A, B, C
+
+**Explanation:** Read-only service preserves safe functionality while writes are unavailable, with clear communication and monitoring. Silently accepting writes that cannot be preserved violates correctness.
+
+---
+
+### Q37
+
+**Answer:** B, C, D
+
+**Explanation:** Predefined priorities let the system shed low-value work before core traffic, and Retry-After communicates temporary rejection. Unbounded retention converts overload into memory or latency failure.
+
+---
+
+### Q38
+
+**Answer:** A, C, D
+
+**Explanation:** A breaker is the technical mechanism that skips unhealthy calls; degradation is the business and UX policy for the resulting response. Breakers cannot infer acceptable product behavior on their own.
+
+---
+
+### Q39
+
+**Answer:** B, C, D
+
+**Explanation:** Two writable primaries create split-brain and divergent histories. Majority decisions and fencing ensure the old primary cannot continue accepting writes after promotion.
+
+---
+
+### Q40
 
 **Answer:** A, B, D
 
-**Explanation:** Pattern choice is ops and control trade-off. App still owns writes (C).
+**Explanation:** Safe automation can shorten RTO, but promotion must consider health, lag, and split-brain risk. Asynchronous replication can still lose recent writes during automatic failover.
 
 ---
 
-### Q45 [Hard] [Case Study] — RetailHub Simultaneous L1 Cold Start
+### Q41
 
-**Answer:** A, B, C
+**Answer:** B, C, D
 
-**Explanation:** Stagger warm-up/canary; L2 singleflight helps. TTL jitter does not fix simultaneous deploy cold start (D).
-
----
-
-### Q46 [Hard] — Redis Cluster Behavior
-
-**Answer:** A, B, C
-
-**Explanation:** Cluster slot redirects and hot-key limits. One logical key does not auto-split (D).
+**Explanation:** A usable backup must restore successfully, contain valid data, and meet the measured recovery objective. Backup-job success alone proves none of those outcomes.
 
 ---
 
-### Q47 [Hard] [Case Study] — RetailHub Session PII in Redis
+### Q42
 
 **Answer:** A, B, D
 
-**Explanation:** TLS, minimize PII, managed at-rest encryption. Caching does not remove compliance duties (C).
+**Explanation:** More ready capacity generally costs more and reduces recovery time. Active-active is fastest to shift traffic but introduces the greatest data and operational complexity.
 
 ---
 
-### Q48 [Hard] — Negative Caching Limits
+### Q43
+
+**Answer:** A, B, C
+
+**Explanation:** Documented procedures and practiced simulations improve execution, communication, and recovery speed. Untested runbooks can be incomplete or obsolete.
+
+---
+
+### Q44
+
+**Answer:** A, B, C
+
+**Explanation:** The SLI is the observed result, the SLO is the internal target, and the SLA is the customer agreement with consequences. The internal SLO is normally stricter than the SLA to provide a buffer.
+
+---
+
+### Q45
+
+**Answer:** B, C, D
+
+**Explanation:** Useful SLIs measure user-visible success, latency, freshness, and correctness. Process existence is an implementation signal, not proof that a user journey works.
+
+---
+
+### Q46
 
 **Answer:** A, B, D
 
-**Explanation:** Short TTL on null cache; tune Bloom filters. Infinite TTL blocks new records (C).
+**Explanation:** Exhausting the budget should shift effort toward reducing risk and correcting major burn sources. Waiting for an SLA breach discards the SLO's early-warning purpose.
 
 ---
 
-### Q49 [Hard] [Case Study] — RetailHub Tenant Cache Isolation
+### Q47
 
-**Answer:** A, B, C
+**Answer:** A, B, D
 
-**Explanation:** Tenant namespacing and isolation. Flat shared keyspace is unsafe (D).
+**Explanation:** Burn rate expresses how quickly current failures consume allowed unreliability, and multiple windows catch both acute and sustained problems. This pages on material SLO risk rather than isolated noise.
 
 ---
 
-### Q50 [Hard] — When Not to Add Cache
+### Q48
 
 **Answer:** A, B, C
 
-**Explanation:** Cache when read-heavy with staleness budget. Not universal for every endpoint (D).
+**Explanation:** Canary signals should gate rollout and trigger rollback before broad impact. Feature flags can disable the defective path without requiring a full deployment.
+
+---
+
+### Q49
+
+**Answer:** A, B, C
+
+**Explanation:** Controlled chaos starts with a steady state and hypothesis, then injects a bounded failure and observes the result. Unbounded experiments create incidents rather than useful evidence.
+
+---
+
+### Q50
+
+**Answer:** A, C, D
+
+**Explanation:** Action items should repair missing defenses, operational guidance, and duplicate-processing safety. Blame does not prevent recurrence or improve the architecture.

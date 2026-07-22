@@ -1,810 +1,916 @@
-# Caching Deep Dive — MCQ Questions (50)
-
-Multi-select format: each question has **two or more** correct answers. Questions tagged **[Case Study]** include a business context block.
+# Reliability & Fault Tolerance — MCQ Questions (50)
 
 > **Answers and explanations:** see [answer-key/day-07-answers.md](./answer-key/day-07-answers.md)
 
 
+
+
 ---
 
-### Q01 [Easy] [Case Study] — RetailHub Product Page Load
+### Q01
 
 
 
-**Context:** RetailHub serves 50,000 product page reads per second. Each uncached read hits PostgreSQL (~15 ms). P95 user-facing latency target is under 50 ms.
+
+
+**Context:** A payment API slows to 30 seconds, exhausting checkout threads and making unrelated pages unavailable.
 
 **Select all that apply.**
 
-Why is application-level caching appropriate here?
+Which changes directly reduce this failure's blast radius?
 
-- [ ] A. A 95% cache hit rate reduces DB read load to roughly 5% of request volume
-- [ ] B. Product catalog data is read far more often than it is updated
-- [ ] C. Caching replaces PostgreSQL as the source of truth for orders and payments
-- [ ] D. RAM access (~microseconds to low milliseconds for Redis) is orders of magnitude faster than a DB round trip
-
----
-
-### Q02 [Easy] — Cache vs Database
-
-
-
-**Select all that apply.**
-
-Which distinguish a cache from a database?
-
-- [ ] A. Cache is a temporary copy optimized for speed — not the authoritative store
-- [ ] B. Cache entries may be evicted; data loss on Redis restart is acceptable if refillable from DB
-- [ ] C. Cache guarantees durable ACID transactions like PostgreSQL
-- [ ] D. A cache miss is normal — the system refills from the source of truth
+- [ ] A. Isolate payment calls in a bulkhead
+- [ ] B. Add a bounded payment timeout
+- [ ] C. Keep sending normal traffic after sustained failures and only record the errors
+- [ ] D. Retry every timeout immediately until it succeeds
 
 ---
 
-### Q03 [Easy] [Case Study] — RetailHub Static Assets
+### Q02
 
 
-
-**Context:** RetailHub's `app.js` (2 MB) is served from origin on every visit. CDN hit ratio is 0%. Browser cache headers are missing.
-
-**Select all that apply.**
-
-Which layers should catch static asset traffic?
-
-- [ ] A. CDN edge cache closer to users than the origin datacenter
-- [ ] B. Load balancer internal pass-through replaces browser and CDN caching
-- [ ] C. Answer as close to the user as possible — browser and CDN before origin
-- [ ] D. Browser cache with long `Cache-Control: max-age` for versioned static files
-
----
-
-### Q04 [Easy] — What Not to Cache
 
 
 
 **Select all that apply.**
 
-Which data should NOT be served from cache for the authoritative write path?
+Which statements correctly distinguish reliability from performance and scalability?
 
-- [ ] A. Live bank balance used to authorize a $500 transfer
-- [ ] B. One-time OTP codes
-- [ ] C. Product catalog metadata updated hourly by admins (with TTL + invalidation)
-- [ ] D. Real-time flash-sale inventory where stale stock causes overselling
+- [ ] A. Reliability asks whether service continues when components fail
+- [ ] B. A fast system can still be unreliable during dependency failure
+- [ ] C. Performance measures only whether the service survives component failure
+- [ ] D. Scalability alone eliminates single points of failure
 
 ---
 
-### Q05 [Easy] [Case Study] — RetailHub Session Store
+### Q03
 
 
 
-**Context:** RetailHub runs 40 stateless API pods behind a load balancer. Sessions were stored in pod memory — users lose login when routed to another pod.
+
+
+**Context:** A non-critical internal tool and a payment platform request the same five-nines target.
 
 **Select all that apply.**
 
-What fixes session stickiness across instances?
+Which considerations should influence their reliability targets?
 
-- [ ] A. In-process cache on each pod without shared invalidation
-- [ ] B. Same Redis key namespace across all app servers (`session:{id}`)
-- [ ] C. Centralized Redis for shared session storage
-- [ ] D. JWT in client cookie (stateless auth) instead of server memory
-
----
-
-### Q06 [Easy] — Cache Key Design
-
-
-
-**Select all that apply.**
-
-Which cache key practices improve hit rate and operability?
-
-- [ ] A. Namespace keys: `{service}:{entity}:{id}:{variant}`
-- [ ] B. Unbounded unique keys for every request maximize hit rate
-- [ ] C. Shared keys for shared data (`product:12345`) serve all users with one entry
-- [ ] D. Per-user keys for fully personalized feeds (`feed:user:789`) usually have poor reuse
+- [ ] A. Every production system requires exactly the same target
+- [ ] B. Safety, contractual, and data-loss consequences
+- [ ] C. Business impact of downtime
+- [ ] D. Redundant infrastructure always lowers both cost and operational complexity
 
 ---
 
-### Q07 [Medium] [Case Study] — RetailHub Cache-Aside Read Path
+### Q04
 
 
-
-**Context:** RetailHub uses cache-aside for product pages: check Redis → on miss query PostgreSQL → populate Redis → return. Hit rate is 94%.
-
-**Select all that apply.**
-
-Which statements about this pattern are correct?
-
-- [ ] A. On cache miss the application loads DB and writes the cache entry
-- [ ] B. The cache does not automatically sync when the DB is updated — app must invalidate on write
-- [ ] C. If Redis is down, the app can bypass cache and read DB (degraded but functional)
-- [ ] D. Cache-aside means the cache library auto-updates on every DB write without app code
-
----
-
-### Q08 [Medium] — Cache-Aside Write Path
 
 
 
 **Select all that apply.**
 
-An admin updates a product price in PostgreSQL. RetailHub uses cache-aside. What should happen?
+Which statements about availability metrics are correct?
 
-- [ ] A. Update DB first, then delete (invalidate) the cache key — not update cache with stale partial data
-- [ ] B. Delete cache before DB commit to guarantee freshness
-- [ ] C. Do nothing and rely on a 24-hour TTL only — acceptable for price changes
-- [ ] D. On create, no cache entry exists until first read populates it (lazy load)
+- [ ] A. Lowering MTTR can improve availability without changing failure frequency
+- [ ] B. MTBF measures average time between failures
+- [ ] C. A server returning incorrect 500 responses is available because its process is running
+- [ ] D. Correctness and timeliness are excluded from every meaningful availability measure
 
 ---
 
-### Q09 [Medium] [Case Study] — RetailHub Profile Settings
+### Q05
 
 
 
-**Context:** Users edit profile settings and immediately reload the page. Stale names appear for up to 5 minutes when only TTL is used without invalidation.
+
+
+**Context:** A service has a 99.9% monthly availability target.
 
 **Select all that apply.**
 
-When is write-through caching a better fit than cache-aside?
+Which statements follow from this target?
 
-- [ ] A. Every write to cold keys that are never read — write-through is most efficient
-- [ ] B. Write-through synchronously updates cache and DB on each write
-- [ ] C. Post-write reads must see fresh data immediately with simple read path
-- [ ] D. Write volume is low and keys are hot after update
+- [ ] A. Planned maintenance never consumes error budget, regardless of the measurement policy
+- [ ] B. Its monthly error budget is about 43.8 minutes
+- [ ] C. Moving to 99.99% leaves roughly one-tenth as much downtime
+- [ ] D. It permits about 4.4 minutes of downtime per month
 
 ---
 
-### Q10 [Medium] — Write-Back Cache Risks
+### Q06
 
 
+
+
+
+**Context:** Backups run hourly, and the business requires service restoration within four hours.
 
 **Select all that apply.**
 
-RetailHub considers write-back for like counters on product pages. Which are valid?
+Which interpretations are correct?
 
-- [ ] A. Writes go to cache first; DB flush is asynchronous — fastest write path
-- [ ] B. Write-back provides the weakest consistency of the three main write patterns
-- [ ] C. Suitable for non-critical counters where brief loss on crash is acceptable with durable queue/WAL
-- [ ] D. Write-back is ideal for payment authorization and inventory deduction without durable flush
-
----
-
-### Q11 [Medium] [Case Study] — RetailHub Admin Price Update
-
-
-
-**Context:** Admin changes product price from $29.99 to $19.99. Redis key is deleted after DB commit. CDN still shows $29.99 for 10 minutes. Users complain checkout charges $19.99 but listing shows old price.
-
-**Select all that apply.**
-
-What does this incident reveal about invalidation?
-
-- [ ] A. Invalidating Redis alone is insufficient — CDN and browser may still serve stale content
-- [ ] B. TTL alone leaves a stale window; production uses TTL plus explicit invalidation on write
-- [ ] C. Delete cache before DB commit prevents all races
-- [ ] D. Version bump keys (`product:v2:123`) let old keys expire without hunting every variant
+- [ ] A. The intended RPO is approximately one hour
+- [ ] B. A documented four-hour target proves recovery will finish on time without restore drills
+- [ ] C. The intended RTO is four hours
+- [ ] D. RPO defines how quickly traffic must fail over
 
 ---
 
-### Q12 [Medium] — TTL Best Practices
+### Q07
+
+
 
 
 
 **Select all that apply.**
 
-Which TTL practices reduce stampedes and stale data risk?
+How does dependency topology affect end-to-end availability?
 
-- [ ] A. Add jitter to TTLs so keys do not all expire at the same instant
-- [ ] B. Long TTL on stable catalog data paired with delete-on-write invalidation
-- [ ] C. Identical TTL on all 1 million keys is safest for hit rate
-- [ ] D. Short TTL (10–30 s) for volatile scores; OTP should not be cached at all
+- [ ] A. Sequential critical dependencies generally multiply their availabilities
+- [ ] B. Adding unnecessary synchronous hops can lower end-to-end availability
+- [ ] C. Two independent redundant copies always reduce availability below either copy alone
+- [ ] D. Parallel replicas always fail together by definition
 
 ---
 
-### Q13 [Medium] [Case Study] — RetailHub Black Friday Stampede
+### Q08
 
 
 
-**Context:** RetailHub's `#1 deal` product key expires at midnight. At expiry, 80,000 concurrent requests miss Redis simultaneously. PostgreSQL CPU hits 100% for 90 seconds.
+
+
+**Context:** An architecture has one load balancer, one application server, and one database without a replica.
 
 **Select all that apply.**
 
-What describes this failure and valid fixes?
+Which findings are valid?
 
-- [ ] A. TTL jitter, singleflight/lock on miss, or refresh-ahead before expiry reduce stampede
-- [ ] B. Cache stampede (thundering herd) — hot key expiry triggers mass DB load
-- [ ] C. Probabilistic early refresh or stale-while-revalidate can smooth hot-key expiry
-- [ ] D. This is cache penetration — attackers querying non-existent keys
+- [ ] A. Auto-scaling the single app process makes the database redundant
+- [ ] B. Database replication with tested failover reduces database SPOF risk
+- [ ] C. Each listed component is a potential single point of failure
+- [ ] D. Multiple app processes on the same single host eliminate that host as a SPOF
 
 ---
 
-### Q14 [Medium] — Cache Penetration
+### Q09
 
 
 
-An attacker scans `/product/-1` through `/product/-999999`. Every ID misses cache and hits DB.
+
+
+**Context:** A dependency sometimes responds slowly but rarely goes completely offline.
 
 **Select all that apply.**
 
-Which mitigations apply?
+Which responses fit this partial failure?
 
-- [ ] A. Cache null/negative results with short TTL for known-missing keys
-- [ ] B. Bloom filter in front of cache to skip DB for definitely-absent keys
-- [ ] C. TTL jitter alone fixes penetration from invalid key scans
-- [ ] D. Input validation and rate limiting at the API edge
-
----
-
-### Q15 [Hard] [Case Study] — RetailHub Redis Restart
-
-
-
-**Context:** RetailHub deploys Redis with no persistence. After restart the cache is empty. DB QPS jumps 20× and checkout errors spike for 3 minutes.
-
-**Select all that apply.**
-
-What failure mode is this and how to prevent it?
-
-- [ ] A. Redis restart never affects DB load if cache-aside is used correctly
-- [ ] B. Circuit breaker on DB path and graceful degradation during warm-up
-- [ ] C. Cache warming before enabling traffic and HA Redis (replicas, Sentinel) reduce blast radius
-- [ ] D. Cache avalanche — entire cache layer empty causes DB overload
+- [ ] A. Open the circuit permanently after the first isolated slow response
+- [ ] B. Monitor latency and error rate, not only up/down health
+- [ ] C. Use bounded timeouts
+- [ ] D. Treat a successful TCP connection as proof of healthy behavior
 
 ---
 
-### Q16 [Hard] — Distributed Cache Architecture
+### Q10
+
+
 
 
 
 **Select all that apply.**
 
-RetailHub scales Redis beyond one node's RAM. Which statements are correct?
+Which controls reduce incidents caused by human error?
 
-- [ ] A. Redis Cluster shards keys horizontally across nodes
-- [ ] B. `noeviction` policy returns errors when memory is full — dangerous default in production
-- [ ] C. Local in-process L1 cache shared automatically across all pods without TTL coordination
-- [ ] D. Two-level cache (L1 in-process + L2 Redis): invalidate both or keep L1 TTL very short
+- [ ] A. Least privilege and tested backups
+- [ ] B. Prefer unreviewed manual configuration because it is safer than validated infrastructure as code
+- [ ] C. Blaming the operator so future systems need no safeguards
+- [ ] D. Canary deployment with automated rollback
 
 ---
 
-### Q17 [Hard] [Case Study] — RetailHub Hot Celebrity Product
+### Q11
 
 
 
-**Context:** A celebrity tweet drives 120,000 req/s to one product ID. Single Redis node CPU saturates on that key.
+
+
+**Context:** Three application instances run in one availability zone.
 
 **Select all that apply.**
 
-Which techniques address hot-key saturation?
+What does this design tolerate?
 
-- [ ] A. Adding more Redis shards without changing key design always splits one hot key automatically
-- [ ] B. Local in-process cache for the hot key on each app server
-- [ ] C. CDN cache for public product page HTML/JSON at the edge
-- [ ] D. Read replicas for Redis or key splitting / random suffix read aggregation
-
----
-
-### Q18 [Hard] — Read-Through vs Cache-Aside
-
-
-
-**Select all that apply.**
-
-Which compare read-through and cache-aside?
-
-- [ ] A. Read-through: cache library loads DB on miss; app calls `cache.get()` only
-- [ ] B. Cache-aside: application explicitly checks cache, loads DB on miss, populates cache
-- [ ] C. Read-through means the application never writes to the database
-- [ ] D. CDN origin fetch on miss is analogous to read-through behavior
+- [ ] A. Three instances in one zone already tolerate a complete outage of that zone
+- [ ] B. Failure of one application instance
+- [ ] C. Complete regional loss
+- [ ] D. Some rolling-deploy capacity loss when spare capacity exists
 
 ---
 
-### Q19 [Easy] — Multi-Layer Cache Stack
+### Q12
+
+
 
 
 
 **Select all that apply.**
 
-For `GET /api/public/categories`, which layers may participate?
+Which statements compare active-active and active-passive designs correctly?
 
-- [ ] A. Redis application cache for category tree
-- [ ] B. MySQL 8.0 built-in query cache replaces Redis
-- [ ] C. Browser cache (if Cache-Control allows)
-- [ ] D. CDN edge cache for cacheable public JSON
+- [ ] A. Active-active nodes already serve traffic
+- [ ] B. Active-passive promotion is always instantaneous and requires no health decision
+- [ ] C. Active-active removes all data-conflict and synchronization concerns
+- [ ] D. Active-passive pays for standby capacity that may be idle
 
 ---
 
-### Q20 [Easy] [Case Study] — RetailHub Rate Limit Counter
+### Q13
 
 
 
-**Context:** RetailHub tracks API rate limits per API key in Redis with 60-second TTL counters. Keys are `ratelimit:{key}:{minute}`.
+
+
+**Context:** A load balancer's health endpoint returns 200 whenever the process is alive, even when the process cannot reach its database.
 
 **Select all that apply.**
 
-Why is Redis appropriate here?
+Which changes improve traffic routing?
 
-- [ ] A. Fast increments and TTL expiry suit ephemeral counters
-- [ ] B. Shared across all API pods for consistent limits
-- [ ] C. Rate limit state must be the permanent financial ledger of record
-- [ ] D. Loss on Redis failover may briefly allow extra requests — usually acceptable for rate limits
-
----
-
-### Q21 [Medium] — Write-Through vs Cache-Aside Writes
-
-
-
-**Select all that apply.**
-
-Compare write paths for a low-write, high-read product catalog.
-
-- [ ] A. Write-through is the default pattern for all workloads worldwide
-- [ ] B. Cache-aside write: DB update + DELETE cache key — fewer writes to cache for cold keys
-- [ ] C. Write-through adds write latency but simplifies post-update read consistency
-- [ ] D. Write-through write: DB update + SET cache key — every write updates cache synchronously
+- [ ] A. Keep routing to it because process liveness guarantees request success
+- [ ] B. Use the deep database readiness check as liveness and restart the process whenever the database is unreachable
+- [ ] C. Add an appropriate deep readiness check for critical dependencies
+- [ ] D. Remove an instance from rotation after repeated failed checks
 
 ---
 
-### Q22 [Medium] [Case Study] — RetailHub Display Balance
+### Q14
 
 
-
-**Context:** RetailHub shows approximate account balance on the dashboard with 30-second Redis TTL. Actual transfers always read balance from PostgreSQL with row lock.
-
-**Select all that apply.**
-
-When is display-only caching acceptable?
-
-- [ ] A. Stale display within TTL does not authorize financial actions
-- [ ] B. Authoritative debit/credit always reads current DB state with lock
-- [ ] C. Cache the balance used to authorize transfers for speed
-- [ ] D. Short TTL + clear UX that balance is approximate can be acceptable for display
-
----
-
-### Q23 [Medium] — HTTP Cache Headers
 
 
 
 **Select all that apply.**
 
-Which Cache-Control directives are correct?
+Why do stateless application servers improve high availability?
 
-- [ ] A. `s-maxage=300` overrides shared cache TTL for CDN while browser may revalidate sooner
-- [ ] B. `no-store` for sensitive responses that must not persist in any cache
-- [ ] C. `public, max-age=31536000` for fingerprinted static assets
-- [ ] D. `private` — browser only, not shared CDN cache
+- [ ] A. Any healthy instance can handle a user's next request
+- [ ] B. Instance replacement need not preserve unique in-memory sessions
+- [ ] C. Keep each user's only session copy in one instance's memory
+- [ ] D. Sticky sessions in one server's memory guarantee seamless failover
 
 ---
 
-### Q24 [Medium] [Case Study] — RetailHub Deploy Cold Start
+### Q15
 
 
 
-**Context:** After each deploy Redis is empty. SRE wants to preload top 5,000 product keys before shifting traffic.
+
+
+**Context:** Peak load needs four servers, and one server may be unavailable during a rolling deploy.
 
 **Select all that apply.**
 
-What practice is this and why?
+Which capacity statements are correct?
 
-- [ ] A. Cache warming — reduces cold-start miss storm and avalanche risk
-- [ ] B. Refresh-ahead — proactively reload keys before TTL expiry on hot paths
-- [ ] C. Warm from DB or backup snapshot before enabling load balancer traffic
-- [ ] D. Warming guarantees 100% hit rate forever without ongoing invalidation
+- [ ] A. N+1 guarantees survival of an entire region outage
+- [ ] B. 2N means running five servers when peak demand requires four
+- [ ] C. N+1 can tolerate one server failure at peak
+- [ ] D. N+1 means running five servers
 
 ---
 
-### Q25 [Hard] — Refresh-Ahead Pattern
+### Q16
 
 
 
-RetailHub's homepage hero product uses 60-minute TTL. At 54 minutes a background job refreshes the key.
+
+
+**Context:** DNS directs traffic to a secondary region after the primary fails, but many clients keep using cached records.
+
+**Select all that apply.**
+
+Which conclusions are valid?
+
+- [ ] A. Health-checked DNS bypasses resolver and client caches during every failover
+- [ ] B. A low TTL guarantees every client switches instantly
+- [ ] C. DNS caching can delay failover
+- [ ] D. TTL must be chosen with the failover objective in mind
+
+---
+
+### Q17
+
+
+
+
+
+**Context:** A user-facing request has a three-second total deadline and calls three downstream services.
+
+**Select all that apply.**
+
+Which timeout practices are sound?
+
+- [ ] A. Let retries and backoff exceed the caller's total deadline
+- [ ] B. Allocate downstream timeouts within the total deadline
+- [ ] C. Give every downstream call a three-second timeout independently
+- [ ] D. Keep inner timeouts short enough for the caller to handle failure
+
+---
+
+### Q18
+
+
+
+
+
+**Select all that apply.**
+
+Which timeout types are correctly described?
+
+- [ ] A. Read timeout limits waiting for a response after connection
+- [ ] B. Connect timeout limits time establishing a connection
+- [ ] C. Read timeout replaces the need for a connect timeout
+- [ ] D. Write timeout limits only how long the client waits to read the response
+
+---
+
+### Q19
+
+
+
+
+
+**Context:** The HTTP client times out after two seconds, but the server continues processing for ten seconds.
+
+**Select all that apply.**
+
+What risks or remedies apply?
+
+- [ ] A. Abandoned server work can continue consuming resources
+- [ ] B. The client timeout proves the server stopped the operation
+- [ ] C. Retrying a non-idempotent operation may duplicate effects
+- [ ] D. Propagating cancellation cannot reduce abandoned server work
+
+---
+
+### Q20
+
+
+
+
+
+**Select all that apply.**
+
+What should normally happen when a downstream timeout fires?
+
+- [ ] A. Cancel the in-flight operation when supported
+- [ ] B. Suppress timeout diagnostics so callers cannot correlate the failure
+- [ ] C. Choose a bounded retry, fallback, or upstream failure
+- [ ] D. Swallow the timeout and wait indefinitely on the same resource
+
+---
+
+### Q21
+
+
+
+
+
+**Context:** A service receives 400, 401, 429, and 503 responses from a dependency.
+
+**Select all that apply.**
+
+Which retry choices are generally appropriate?
+
+- [ ] A. Retry 503 with bounded backoff
+- [ ] B. Retry malformed 400 requests unchanged
+- [ ] C. Do not blindly retry 401 without correcting authorization
+- [ ] D. Ignore `Retry-After` and retry every 429 immediately
+
+---
+
+### Q22
+
+
+
+
+
+**Context:** Ten thousand clients fail simultaneously and all retry exactly one second later.
+
+**Select all that apply.**
+
+Which measures reduce the resulting retry storm?
+
+- [ ] A. Allow unlimited retry attempts so every client keeps pressure on the dependency
+- [ ] B. Synchronizing every client's retry schedule
+- [ ] C. Exponential backoff
+- [ ] D. Random jitter
+
+---
+
+### Q23
+
+
+
+
+
+**Context:** A payment request times out after the provider may already have charged the card.
+
+**Select all that apply.**
+
+Which design choices make a retry safer?
+
+- [ ] A. Discard prior results so every retry repeats the external charge
+- [ ] B. Enforce a uniqueness constraint for the business operation
+- [ ] C. Issue a new operation identifier on every retry
+- [ ] D. Send a stable idempotency key
+
+---
+
+### Q24
+
+
+
+
+
+**Context:** A gateway retries three times, a service retries three times, and its database driver retries three times.
 
 **Select all that apply.**
 
 Which statements are correct?
 
-- [ ] A. Refresh-ahead and cache warming are identical operations
-- [ ] B. Users never see stale data during refresh-ahead — always zero staleness
-- [ ] C. Refresh-ahead prevents expiry-time stampede on hot keys
-- [ ] D. Refresh-ahead is ongoing proactive refresh; cache warming is typically one-time at startup/deploy
+- [ ] A. Retry ownership should be coordinated across layers
+- [ ] B. More retry layers always reduce dependency load
+- [ ] C. Independent retry budgets at every layer prevent attempt multiplication automatically
+- [ ] D. Layered retries can multiply attempts dramatically
 
 ---
 
-### Q26 [Hard] — Consistency Spectrum
+### Q25
+
+
 
 
 
 **Select all that apply.**
 
-Which statements about cache write patterns are correct?
+Which statements distinguish retries from circuit breakers?
 
-- [ ] A. Write-through synchronously updates cache and DB — strongest typical app-level consistency
-- [ ] B. Write-back flushes to DB asynchronously — weakest consistency, highest write speed
-- [ ] C. Cache-aside with delete-on-write plus TTL is the common production default
-- [ ] D. TTL-only without invalidation on write is the strongest consistency approach
+- [ ] A. A timeout and a breaker are interchangeable controls
+- [ ] B. Retries should continue through an OPEN circuit instead of failing fast
+- [ ] C. Retries can recover from brief transient failures
+- [ ] D. A breaker stops calls during a sustained failure
 
 ---
 
-### Q27 [Easy] — Monitoring Cache Health
+### Q26
+
+
+
+
+
+**Context:** A payment circuit is OPEN after repeated timeouts.
+
+**Select all that apply.**
+
+What behavior is expected?
+
+- [ ] A. Calls fail fast without reaching payment
+- [ ] B. OPEN means requests continue normally while failures are only logged
+- [ ] C. After a cooldown, limited probe calls may enter HALF-OPEN
+- [ ] D. A successful recovery probe can move the circuit toward CLOSED
+
+---
+
+### Q27
+
+
 
 
 
 **Select all that apply.**
 
-Which signals indicate a broken cache layer?
+Which events should usually count toward opening a dependency circuit?
 
-- [ ] A. Hit rate drops >10% while traffic is unchanged
-- [ ] B. DB QPS rises sharply while hit rate falls
-- [ ] C. Redis memory above ~85% of maxmemory — eviction or errors imminent
-- [ ] D. Hit rate of 50% on intentionally cached hot endpoints suggests misconfiguration
+- [ ] A. Relevant 5xx responses
+- [ ] B. Repeated timeouts
+- [ ] C. Failure rate over a configured window
+- [ ] D. Every valid 4xx client error
 
 ---
 
-### Q28 [Medium] [Case Study] — RetailHub Big Product JSON
+### Q28
 
 
 
-**Context:** One Redis key stores 8 MB JSON for a product with 10,000 SKUs. Redis latency spikes block other commands on the single-threaded primary.
+
+
+**Context:** The recommendation dependency's circuit opens while the product service remains healthy.
 
 **Select all that apply.**
 
-What fixes apply?
+Which responses are appropriate?
 
-- [ ] A. Split large values into smaller keys or store reference + lazy load chunks
-- [ ] B. Compress values or avoid caching huge blobs — store S3 URL reference instead
-- [ ] C. Bigger single keys always improve hit rate without operational cost
-- [ ] D. Big key problem — blocks Redis single-threaded event loop on large payloads
-
----
-
-### Q29 [Hard] [Case Study] — RetailHub Invalidation Race
-
-
-
-**Context:** Thread A commits price update and deletes cache. Thread B misses cache, reads stale value from read replica with 200 ms lag, writes old price back to Redis.
-
-**Select all that apply.**
-
-How to reduce stale repopulation races?
-
-- [ ] A. Read from primary on cache miss for recently updated keys, or use version in cache value
-- [ ] B. Delete cache after DB commit on primary, not before
-- [ ] C. Event-based invalidation across services still has small eventual lag to design for
-- [ ] D. Delete cache before DB commit — always safe
+- [ ] A. Return the product without recommendations
+- [ ] B. Show a static popular-items fallback
+- [ ] C. Return 500 for the entire product page
+- [ ] D. Track circuit state and degraded-response metrics
 
 ---
 
-### Q30 [Hard] — Circuit Breaker During Cache Outage
+### Q29
 
 
-
-Redis fails during Black Friday. RetailHub's DB cannot absorb full read load.
-
-**Select all that apply.**
-
-Which degradation strategies apply?
-
-- [ ] A. Circuit breaker stops hammering DB when error rate exceeds threshold
-- [ ] B. Return 503 or serve stale cached copy at CDN/browser if acceptable
-- [ ] C. Unlimited retries to DB without backoff — always recovers fastest
-- [ ] D. Multi-layer L1 in-process cache extends partial availability briefly
-
----
-
-### Q31 [Easy] [Case Study] — RetailHub ETag Revalidation
-
-
-
-**Context:** RetailHub's category API returns 500 KB JSON. Clients re-fetch the full body on every visit even though categories change rarely.
-
-**Select all that apply.**
-
-Which caching techniques reduce bandwidth and origin load?
-
-- [ ] A. `ETag` / `If-None-Match` enables `304 Not Modified` when content is unchanged
-- [ ] B. Conditional requests reduce origin work when the representation has not changed
-- [ ] C. ETags eliminate the need for any write-path invalidation on admin updates
-- [ ] D. Strong ETags support validators at CDN and browser layers
-
----
-
-### Q32 [Easy] — Stale-While-Revalidate
 
 
 
 **Select all that apply.**
 
-Which statements about stale-while-revalidate (SWR) are correct?
+Why should circuits usually be isolated per dependency?
 
-- [ ] A. SWR can serve stale content while refreshing in the background
-- [ ] B. SWR improves perceived latency during revalidation windows
-- [ ] C. SWR guarantees zero staleness for financial authorization decisions
-- [ ] D. SWR appears in HTTP `Cache-Control` extensions and CDN configurations
+- [ ] A. A single global circuit minimizes unrelated blast radius
+- [ ] B. Per-dependency metrics make failure symptoms easier to interpret
+- [ ] C. Payment failures should not automatically trip inventory's circuit
+- [ ] D. Different dependencies may need different thresholds and fallbacks
 
 ---
 
-### Q33 [Easy] [Case Study] — RetailHub Eviction Under Memory Pressure
+### Q30
 
 
 
-**Context:** Redis hits `maxmemory` with `allkeys-lru`. Hit rate drops from 92% to 61% as popular product keys are evicted alongside cold keys.
+
+
+**Context:** Slow reporting queries consume every database connection, blocking checkout.
 
 **Select all that apply.**
 
-What explains this and what should ops do?
+Which bulkhead changes address this failure?
 
-- [ ] A. Monitor memory usage, eviction rate, and choose an appropriate `maxmemory-policy`
-- [ ] B. Memory pressure triggers eviction — hot keys can be evicted under `allkeys-lru`
-- [ ] C. Separate tiers, reserved memory, or key design may be needed for hot data
-- [ ] D. `allkeys-lru` perfectly preserves every hot key regardless of memory pressure
-
----
-
-### Q34 [Easy] — Memcached vs Redis
-
-
-
-**Select all that apply.**
-
-When choosing a distributed cache technology, which comparisons are correct?
-
-- [ ] A. Redis offers richer data structures and optional persistence features
-- [ ] B. Memcached is a simpler multi-threaded cache for pure key-value TTL workloads
-- [ ] C. Memcached automatically stays strongly consistent with PostgreSQL on every read
-- [ ] D. Both can serve as L2 application cache — choice depends on required features
+- [ ] A. Reserve capacity for the critical checkout path
+- [ ] B. Give reporting an unbounded wait queue
+- [ ] C. Bound reporting concurrency
+- [ ] D. Separate connection pools for reporting and checkout
 
 ---
 
-### Q35 [Easy] [Case Study] — RetailHub Double Cache Populate
+### Q31
 
 
-
-**Context:** Two threads miss the same product key simultaneously. Both query PostgreSQL and both `SET` Redis with the same value.
-
-**Select all that apply.**
-
-What describes this race and valid mitigations?
-
-- [ ] A. Lock-based miss coalescing is a standard stampede mitigation technique
-- [ ] B. Double populate always corrupts cache values with conflicting data
-- [ ] C. The race may not corrupt data but still wastes DB capacity under load
-- [ ] D. Singleflight / miss coalescing prevents duplicate DB loads for the same key
-
----
-
-### Q36 [Easy] — CDN Purge and Versioned Assets
 
 
 
 **Select all that apply.**
 
-Which practices keep CDN content fresh after deploys?
+Which statements correctly compare bulkheads and circuit breakers?
 
-- [ ] A. Purge API invalidates edge copies when content changes
-- [ ] B. Fingerprinted asset URLs (`app.a1b2c3.js`) reduce need for broad purges
-- [ ] C. CDN purge is always instantaneous globally with zero propagation delay
-- [ ] D. Multi-layer caching requires invalidating every layer that may serve stale content
+- [ ] A. Bulkheads limit shared-resource exhaustion
+- [ ] B. Bulkheads are proactive isolation; breakers react to failure signals
+- [ ] C. Either pattern alone makes timeouts unnecessary
+- [ ] D. Circuit breakers stop calls after observed failures
 
 ---
 
-### Q37 [Medium] [Case Study] — RetailHub Mixed Personalization
+### Q32
 
 
 
-**Context:** RetailHub's homepage combines a public hero banner (shared) with per-user recommendations. One cache key for the full HTML minimizes code complexity.
+
+
+**Context:** A semaphore allows at most ten concurrent recommendation calls.
 
 **Select all that apply.**
 
-What is sound cache design here?
+What does this design accomplish?
 
-- [ ] A. Split cacheable vs non-cacheable fragments — not all-or-nothing page caching
-- [ ] B. Cache public fragments at CDN/Redis with shared keys
-- [ ] C. One shared cache key for the full personalized page maximizes hit rate
-- [ ] D. Per-user sections need short TTL, separate API calls, or edge-side composition
+- [ ] A. It caps the number of callers tied up by that dependency
+- [ ] B. Excess calls can fail fast or wait in a bounded queue
+- [ ] C. It guarantees the dependency itself never fails
+- [ ] D. It is a lighter-weight bulkhead than a dedicated thread pool
 
 ---
 
-### Q38 [Medium] — Redis Persistence Trade-offs
+### Q33
 
 
+
+
+
+**Context:** A queue absorbs a sudden burst while workers process at a fixed rate.
 
 **Select all that apply.**
 
-Which statements about Redis persistence are correct?
+How can the queue act as a bulkhead?
 
-- [ ] A. RDB snapshots are point-in-time — data since last snapshot may be lost on crash
-- [ ] B. AOF `fsync` policy trades durability for write throughput
-- [ ] C. Redis persistence makes it a full replacement for PostgreSQL as financial ledger
-- [ ] D. Pure cache workloads often tolerate empty restart with warm-up rather than heavy persistence
-
----
-
-### Q39 [Medium] [Case Study] — RetailHub Cross-Region Latency
-
-
-
-**Context:** EU users hit RetailHub's US-origin product API. P95 latency is 280 ms despite Redis at the US origin. US users see 35 ms.
-
-**Select all that apply.**
-
-What architectural responses apply?
-
-- [ ] A. A single US Redis cluster gives identical latency to EU and US users
-- [ ] B. Geo-routed endpoints or multi-region deployment may be required at scale
-- [ ] C. Regional Redis or CDN edge caching closer to users reduces round-trip time
-- [ ] D. Cross-region cache replication adds complexity — geographic placement matters
+- [ ] A. It makes queue depth and overload limits unnecessary
+- [ ] B. It bounds worker concurrency against the downstream service
+- [ ] C. It can smooth a temporary traffic spike
+- [ ] D. It decouples producer request threads from consumer processing time
 
 ---
 
-### Q40 [Medium] — L1 Cache Coherency Across Pods
+### Q34
+
+
 
 
 
 **Select all that apply.**
 
-RetailHub uses in-process L1 cache in front of Redis L2. Which statements are correct?
+What should happen when a bulkhead reaches capacity?
 
-- [ ] A. Uncoordinated L1 across pods can serve stale data after a write on another pod
-- [ ] B. Pub/sub invalidation channel can clear L1 entries on writes
-- [ ] C. Very short L1 TTL reduces the stale window without explicit invalidation
-- [ ] D. L1 caches are automatically coherent across JVMs/processes without design
+- [ ] A. Block an unlimited number of callers
+- [ ] B. Use only a bounded short queue
+- [ ] C. Fail fast for work that cannot wait
+- [ ] D. Shed lower-priority load when appropriate
 
 ---
 
-### Q41 [Medium] [Case Study] — RetailHub Flash Sale Oversell
+### Q35
 
 
 
-**Context:** Redis shows 5 units in stock. PostgreSQL already sold out during a race. Checkout authorized from stale cache.
+
+
+**Context:** Reviews and recommendations fail, but catalog and checkout remain healthy.
 
 **Select all that apply.**
 
-What went wrong and what is correct design?
+Which choices represent graceful degradation?
 
-- [ ] A. Short TTL alone guarantees no oversell during flash sales
-- [ ] B. Display stock may be approximate; the purchase path must use DB truth
-- [ ] C. Authoritative inventory deduction must read/write DB with lock or atomic conditional `UPDATE`
-- [ ] D. Cache-aside stock counts used to authorize purchases are dangerous on hot inventory
+- [ ] A. Substitute static popular items for recommendations
+- [ ] B. Omit reviews temporarily
+- [ ] C. Keep the core purchase journey available
+- [ ] D. Fail the entire site because the full experience is unavailable
 
 ---
 
-### Q42 [Medium] — HTTP Vary Header
+### Q36
 
 
+
+
+
+**Context:** The primary database is failing over and writes are temporarily unsafe.
 
 **Select all that apply.**
 
-Which statements about the `Vary` response header are correct?
+Which degraded-mode decisions are reasonable?
 
-- [ ] A. `Vary: Accept-Encoding` helps caches store gzip vs brotli variants separately
-- [ ] B. `Vary: Authorization` matters when responses differ by authenticated user
-- [ ] C. `Vary` alone eliminates the need for `private` cache on authenticated responses
-- [ ] D. Misconfigured `Vary` can fragment cache keys and lower hit rate
+- [ ] A. Disable checkout with a clear user message
+- [ ] B. Allow read-only browsing when reads remain safe
+- [ ] C. Monitor how long the service remains degraded
+- [ ] D. Accept writes silently and discard them
 
 ---
 
-### Q43 [Medium] [Case Study] — RetailHub Marketing Banner SWR
+### Q37
 
 
 
-**Context:** Marketing updates a banner image. CDN uses `stale-while-revalidate` for one hour. Some users see the old banner briefly while a background fetch updates the edge.
+
+
+**Context:** Extreme overload threatens checkout, search, analytics, and anonymous browsing.
 
 **Select all that apply.**
 
-When is this trade-off acceptable?
+Which load-shedding policies protect core service?
 
-- [ ] A. SWR guarantees users never see any stale marketing content
-- [ ] B. Pair SWR with purge or versioned URLs for important updates
-- [ ] C. Acceptable for non-critical marketing visuals with known staleness window
-- [ ] D. Price, legal, or checkout-critical text should not rely on long SWR without purge
-
----
-
-### Q44 [Medium] — Read-Through vs Cache-Aside Operations
-
-
-
-**Select all that apply.**
-
-Which compare operational ownership of read-through vs cache-aside?
-
-- [ ] A. Read-through delegates miss handling to the cache client/library
-- [ ] B. Cache-aside gives the application explicit control over invalidation and miss path
-- [ ] C. Read-through removes all application responsibility for cache and database writes
-- [ ] D. Team familiarity and framework support influence which pattern to adopt
+- [ ] A. Preserve unlimited low-priority work in memory
+- [ ] B. Return 503 with Retry-After where appropriate
+- [ ] C. Define priorities before the incident
+- [ ] D. Drop low-priority analytics before payment traffic
 
 ---
 
-### Q45 [Hard] [Case Study] — RetailHub Simultaneous L1 Cold Start
+### Q38
 
 
-
-**Context:** Deploy clears L1 on all 80 API pods at once. Each pod cold-misses the top 100 keys — 8,000 concurrent PostgreSQL queries in 2 seconds.
-
-**Select all that apply.**
-
-What mitigations apply?
-
-- [ ] A. Singleflight at L2 Redis reduces duplicate DB load for shared hot keys
-- [ ] B. Canary deploy limits the fraction of pods going cold at once
-- [ ] C. Coordinate cache warm-up or staggered traffic shift after deploy
-- [ ] D. TTL jitter on L1 prevents simultaneous cold start after every deploy
-
----
-
-### Q46 [Hard] — Redis Cluster Behavior
 
 
 
 **Select all that apply.**
 
-Which statements about Redis Cluster are correct?
+Which statements distinguish graceful degradation from a circuit breaker?
 
-- [ ] A. Cluster moves hash slots on failover — clients must handle `MOVED`/`ASK` redirects
-- [ ] B. Hot-key problems remain a design concern even with horizontal sharding
-- [ ] C. Cross-slot multi-key transactions are limited compared to single-node Redis
-- [ ] D. Cluster automatically splits one logical hot key across nodes without key redesign
+- [ ] A. The breaker decides when to stop calling a failing dependency
+- [ ] B. A breaker automatically determines every acceptable business fallback
+- [ ] C. Degradation defines the product behavior after functionality is unavailable
+- [ ] D. An open breaker can trigger a cached or static fallback
 
 ---
 
-### Q47 [Hard] [Case Study] — RetailHub Session PII in Redis
+### Q39
 
 
 
-**Context:** Redis stores session blobs containing PII. Compliance requires encryption in transit and minimal sensitive data retention.
+
+
+**Context:** During a network partition, an isolated old primary and a promoted replica both accept writes.
 
 **Select all that apply.**
 
-Which practices apply?
+Which statements apply?
 
-- [ ] A. TLS to Redis addresses encryption in transit
-- [ ] B. Store minimal fields in session cache — reduce exposure surface
-- [ ] C. Caching PII eliminates GDPR data-location and retention obligations
-- [ ] D. At-rest encryption depends on managed Redis/cloud disk encryption configuration
-
----
-
-### Q48 [Hard] — Negative Caching Limits
-
-
-
-**Select all that apply.**
-
-Which statements about negative (null) caching are correct?
-
-- [ ] A. Caching known-missing keys with short TTL stops repeated DB hits from scans
-- [ ] B. Short TTL limits harm if the entity is created soon after a cache-miss scan
-- [ ] C. Negative cache with infinite TTL always eventually shows newly created records
-- [ ] D. Bloom filter false positives may rarely skip DB for existent keys — tune size and hash count
+- [ ] A. Promoting every reachable replica avoids the problem
+- [ ] B. Quorum and fencing can reduce the risk
+- [ ] C. Writes can diverge and conflict when the network heals
+- [ ] D. This is split-brain
 
 ---
 
-### Q49 [Hard] [Case Study] — RetailHub Tenant Cache Isolation
+### Q40
 
 
-
-**Context:** RetailHub SaaS runs multi-tenant on one Redis cluster. A bad admin script deletes keys matching `product:*` and wipes another tenant's catalog.
-
-**Select all that apply.**
-
-How should multi-tenant cache isolation work?
-
-- [ ] A. ACLs or separate Redis instances/clusters for large or regulated tenants
-- [ ] B. Namespace keys per tenant: `{tenant_id}:product:{id}`
-- [ ] C. Test invalidation scripts against tenant prefix boundaries in staging
-- [ ] D. Shared flat keyspace without tenant prefix is safest at scale
-
----
-
-### Q50 [Hard] — When Not to Add Cache
 
 
 
 **Select all that apply.**
 
-When is adding a cache layer a poor investment?
+Which statements about automatic and manual failover are correct?
 
-- [ ] A. Data changes constantly and is rarely re-read — cache adds little value
-- [ ] B. Every read requires strong consistency with zero staleness budget
-- [ ] C. Working set already fits in DB buffer pool with acceptable latency — cache may be premature
-- [ ] D. Every API endpoint benefits from Redis regardless of access pattern
+- [ ] A. Health checks and replication state should inform promotion
+- [ ] B. Manual failover may be safer when promotion risks data loss or split-brain
+- [ ] C. Automatic failover guarantees zero RPO in every replication mode
+- [ ] D. Automatic failover can reduce RTO
+
+---
+
+### Q41
+
+
+
+
+
+**Context:** A team has daily backups but has never restored one.
+
+**Select all that apply.**
+
+Which actions make the disaster-recovery plan credible?
+
+- [ ] A. Assume a successful backup job proves recovery
+- [ ] B. Verify data integrity after restoration
+- [ ] C. Restore into an isolated environment
+- [ ] D. Measure actual recovery time against RTO
+
+---
+
+### Q42
+
+
+
+
+
+**Select all that apply.**
+
+Which DR topology trade-offs are correct?
+
+- [ ] A. Backup-and-restore is relatively cheap but usually has a long RTO
+- [ ] B. Active-active adds data synchronization and conflict complexity
+- [ ] C. Hot standby is cheaper than storing backups only
+- [ ] D. Warm standby costs more but can recover faster than cold restore
+
+---
+
+### Q43
+
+
+
+
+
+**Select all that apply.**
+
+How do runbooks and game days improve recovery?
+
+- [ ] A. Game days exercise dashboards, escalation, and communication
+- [ ] B. Repeated practice can lower MTTR
+- [ ] C. Runbooks reduce improvisation during incidents
+- [ ] D. Written runbooks eliminate the need to test failover
+
+---
+
+### Q44
+
+
+
+
+
+**Context:** Engineering measures 99.94% successful requests, targets 99.95%, and promises customers 99.9% with service credits.
+
+**Select all that apply.**
+
+Which labels are correct?
+
+- [ ] A. 99.94% is an SLI result
+- [ ] B. 99.95% is an internal SLO
+- [ ] C. 99.9% with credits is an SLA
+- [ ] D. The SLA should always be stricter than the SLO
+
+---
+
+### Q45
+
+
+
+
+
+**Select all that apply.**
+
+Which are useful user-oriented SLIs?
+
+- [ ] A. Whether the API process PID exists
+- [ ] B. Percentage of valid requests returning correct, timely responses
+- [ ] C. Percentage of checkout attempts completed successfully within 30 seconds
+- [ ] D. Percentage of reads meeting a freshness threshold
+
+---
+
+### Q46
+
+
+
+
+
+**Context:** A service has exhausted its monthly error budget after several risky deployments.
+
+**Select all that apply.**
+
+Which responses align with error-budget policy?
+
+- [ ] A. Prioritize reliability work
+- [ ] B. Slow or freeze risky feature releases
+- [ ] C. Ignore the budget because the contractual SLA has not yet been breached
+- [ ] D. Investigate the largest sources of budget burn
+
+---
+
+### Q47
+
+
+
+
+
+**Select all that apply.**
+
+Why are burn-rate alerts often better than paging on each raw error?
+
+- [ ] A. They relate failures to the SLO's allowed unreliability
+- [ ] B. Multi-window alerts can distinguish fast burns from slow burns
+- [ ] C. One isolated 500 always consumes the full monthly budget
+- [ ] D. They reduce noise while detecting sustained harmful failure rates
+
+---
+
+### Q48
+
+
+
+
+
+**Context:** A canary receives 5% of traffic and its error rate rises sharply.
+
+**Select all that apply.**
+
+Which safe-deployment actions are appropriate?
+
+- [ ] A. Automatically roll back when the defined SLI threshold is breached
+- [ ] B. Stop the rollout
+- [ ] C. Use feature flags when possible to disable the faulty path quickly
+- [ ] D. Continue to 100% so the sample becomes larger
+
+---
+
+### Q49
+
+
+
+
+
+**Select all that apply.**
+
+Which practices make a chaos experiment responsible and useful?
+
+- [ ] A. Control blast radius and start in staging
+- [ ] B. Define normal steady-state metrics first
+- [ ] C. State a falsifiable hypothesis
+- [ ] D. Inject an unbounded production failure without rollback controls
+
+---
+
+### Q50
+
+
+
+
+
+**Context:** An incident review finds a missing timeout, an unclear failover step, and retry-driven duplicate orders.
+
+**Select all that apply.**
+
+Which post-incident actions address the systemic causes?
+
+- [ ] A. Update and rehearse the failover runbook
+- [ ] B. Close the review after identifying the individual who was on call
+- [ ] C. Add idempotency controls to order processing
+- [ ] D. Add and test the timeout

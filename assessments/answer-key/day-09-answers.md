@@ -1,221 +1,219 @@
 # Observability Deep Dive — Answer Key & Explanations (50)
 
-Answer key for [day-09-questions.md](../day-09-questions.md)
-
 
 
 
 ---
 
-### Q01 [Easy] [Case Study] — SignalOps Checkout Error Spike
+### Q01
 
-**Answer:** B, C, D
+**Answer:** A, B
 
-**Explanation:** Traces, logs with trace_id, and metric timestamps pinpoint root cause. Restart-everything guessing prolongs MTTR (A).
-
----
-
-### Q02 [Easy] — Defining Observability
-
-**Answer:** A, B, C
-
-**Explanation:** Observability is external signals and cross-service visibility, not binary uptime alone (D).
+**Explanation:** Trace latency and metric timing quickly narrow the incident. Deleting diagnostic evidence (C) or restarting everything blindly (D) prolongs MTTR.
 
 ---
 
-### Q03 [Easy] [Case Study] — SignalOps Silent Latency Creep
+### Q02
 
-**Answer:** A, B, C
+**Answer:** A, B
 
-**Explanation:** Blind spots cause silent degradation, longer MTTR, and churn. Observability does not guarantee zero timeouts (D).
-
----
-
-### Q04 [Easy] — Observability vs Reliability
-
-**Answer:** A, B, D
-
-**Explanation:** Reliability survives failures; observability detects/diagnoses and validates breaker behavior. Metrics do not replace breakers (C).
+**Explanation:** Observability infers internal state from signals across components. It is broader than binary uptime (D), and pod-local telemetry is lost or fragmented at scale (C).
 
 ---
 
-### Q05 [Easy] [Case Study] — SignalOps Architecture Growth
+### Q03
 
-**Answer:** B, C, D
+**Answer:** A, B
 
-**Explanation:** Distributed, async, and on-call production need correlation. Single-server local logs only does not scale (A).
-
----
-
-### Q06 [Easy] — Design Mindset
-
-**Answer:** A, C, D
-
-**Explanation:** Instrument early, symptom alerts, debuggable logs. Deferring all instrumentation flies blind at launch (B).
+**Explanation:** Blind spots allow degradation to remain silent and increase MTTR. Slow checkout can hurt retention (D), and observability cannot guarantee zero dependency timeouts (C).
 
 ---
 
-### Q07 [Easy] — Monitoring vs Observability
+### Q04
 
-**Answer:** A, B, D
+**Answer:** A, D
 
-**Explanation:** Monitoring thresholds vs exploratory diagnosis of novel failures. You still need monitoring to notify (C).
+**Explanation:** Reliability mechanisms survive failures while observability detects impact and verifies fallbacks. Breakers still need measurement (C), and telemetry does not replace them (B).
 
 ---
 
-### Q08 [Easy] [Case Study] — SignalOps Alert With No Data
+### Q05
 
-**Answer:** A, C
+**Answer:** A, D
+
+**Explanation:** Distributed request paths and asynchronous work require correlation. Local-only logs do not scale (B), and an SLO states a target but does not diagnose violations (C).
+
+---
+
+### Q06
+
+**Answer:** A, D
+
+**Explanation:** Instrumenting before launch and alerting on user symptoms support production diagnosis. Deferring telemetry (C) or omitting request and service context (B) leaves responders blind.
+
+---
+
+### Q07
+
+**Answer:** B, C
+
+**Explanation:** Monitoring detects known conditions; observability supports novel exploratory diagnosis beyond fixed checks. Observability does not eliminate paging (D) and is not limited to binary health checks (A).
+
+---
+
+### Q08
+
+**Answer:** A, D
 
 **Explanation:** Page without drill-down data is monitoring-only gap; production needs both detection and observability (B, D wrong).
 
 ---
 
-### Q09 [Easy] [Case Study] — SignalOps Post-Deploy Latency
+### Q09
 
-**Answer:** A, B, C
+**Answer:** A, C
 
-**Explanation:** Unknown-unknown debugging — dependency, client slice, shard. Disk >90% is a known monitored threshold (D).
-
----
-
-### Q10 [Easy] — Health Checks vs Deep Visibility
-
-**Answer:** A, B, D
-
-**Explanation:** Health is binary; slow DB/GC/retry can hide behind 200. Health alone is insufficient (C).
+**Explanation:** Correlating failures with a shard or client platform explores dimensions not anticipated by a fixed alert. Disk threshold checks are known monitoring (D), and assuming causality without telemetry (B) is not diagnosis.
 
 ---
 
-### Q11 [Easy] [Case Study] — SignalOps Incident Workflow
+### Q10
 
-**Answer:** B, D
+**Answer:** A, C
+
+**Explanation:** A process can be healthy while users experience slow queries, GC, or retries. Health alone does not replace RED and tracing (D), nor does a 200 prove journey SLO compliance (B).
+
+---
+
+### Q11
+
+**Answer:** A, B
 
 **Explanation:** Metrics → logs → traces workflow uses pillars together. Logs-only or traces-only are anti-patterns (B, D).
 
 ---
 
-### Q12 [Easy] — Logs Pillar
+### Q12
 
-**Answer:** A, B, D
+**Answer:** C, D
 
-**Explanation:** Logs are event-level with context and cost. Fleet-wide per-request alerting belongs on metrics (C).
+**Explanation:** Logs preserve contextual, per-event detail for individual requests. Exact fleet percentiles require aggregation (B), while efficient fleet-wide alerting generally belongs on metrics (A).
 
 ---
 
-### Q13 [Easy] — Metrics Pillar
+### Q13
+
+**Answer:** C, D
+
+**Explanation:** Counters increase monotonically and histograms capture distributions. Counters do not reset each minute (B), and gauges may move both up and down (A).
+
+---
+
+### Q14
+
+**Answer:** A, D
+
+**Explanation:** Traces show a request's service path and dependency timing. Missing instrumentation limits diagnosis (B), and retaining every trace at extreme traffic has a cost tradeoff (C).
+
+---
+
+### Q15
+
+**Answer:** A, B
+
+**Explanation:** Logs-only and traces-only approaches each miss important aggregate capabilities. Using correlated pillars is the fix (C); metrics alone do not retain every payload and stack trace (D).
+
+---
+
+### Q16
+
+**Answer:** A, D
+
+**Explanation:** Modern stacks combine specialized backends, with tooling choices varying by organization. Pod-by-pod SSH (B) and streaming request telemetry to personal laptops (C) are not scalable collection designs.
+
+---
+
+### Q17
+
+**Answer:** A, C
+
+**Explanation:** Intentional structured fields enable reliable filtering and aggregation. Plain text is harder to query at scale (D), and JSON syntax does not prevent high-cardinality values (B).
+
+---
+
+### Q18
+
+**Answer:** A, C
+
+**Explanation:** Sampling debug detail and reserving ERROR for failed operations reduce fatigue. Secrets are unsafe (B), and marking successful health checks as errors creates noise (D).
+
+---
+
+### Q19
+
+**Answer:** A, B
+
+**Explanation:** The gateway should generate or forward IDs and every log should carry aligned correlation fields. Regenerating IDs (C) or stripping headers (D) breaks end-to-end searches.
+
+---
+
+### Q20
+
+**Answer:** A, D
+
+**Explanation:** Production logs should capture outcomes, durations, errors, and useful business IDs while limiting PII and payload size. Card data (C) and provider keys (B) must not be logged.
+
+---
+
+### Q21
+
+**Answer:** B, C
+
+**Explanation:** RED includes request rate and error rate. CPU-only utilization is a resource signal (A), and an arithmetic mean alone does not represent the duration distribution or tail (D).
+
+---
+
+### Q22
+
+**Answer:** B, C
+
+**Explanation:** Request rate and histogram quantiles are valid RED queries. Status must be recorded to calculate errors (A), while unbounded user IDs create cardinality problems (D).
+
+---
+
+### Q23
+
+**Answer:** A, C
+
+**Explanation:** Connection utilization and waiting work represent USE utilization and saturation. HTTP rate is RED (B), and requests per second is not a resource error measure (D).
+
+---
+
+### Q24
+
+**Answer:** A, D
+
+**Explanation:** Processing duration or lag histograms and monotonically increasing processed counters fit workers. Counters do not decrease (C), so a decrementing queue-depth counter is invalid (B).
+
+---
+
+### Q25
 
 **Answer:** B, C, D
 
-**Explanation:** Counter, gauge, histogram behaviors as documented. Counters are monotonic until process restart, not minutely reset (A).
+**Explanation:** Bounded labels good; unbounded IDs belong in logs/traces. Putting IDs in metrics is the anti-pattern (A).
 
 ---
 
-### Q14 [Easy] — Traces Pillar
-
-**Answer:** A, B, D
-
-**Explanation:** Traces show path, timing, dependencies. Full unsampled 100K RPS ignores sampling cost (C).
-
----
-
-### Q15 [Medium] [Case Study] — SignalOps Metrics-Only Stack
-
-**Answer:** A, C, D
-
-**Explanation:** Single-pillar gaps: metrics lack context, logs-only can't alert efficiently, traces-only miss aggregates. All three together is the fix (B).
-
----
-
-### Q16 [Medium] [Case Study] — SignalOps Telemetry Pipeline
-
-**Answer:** A, B, D
-
-**Explanation:** OTel collector pattern and multi-backend stacks are standard. SSH grep per pod does not scale (C).
-
----
-
-### Q17 [Medium] — Structured Logging
-
-**Answer:** A, B, D
-
-**Explanation:** JSON fields enable platform queries. Plain text grep at scale is slow (C).
-
----
-
-### Q18 [Medium] [Case Study] — SignalOps Alert Fatigue
-
-**Answer:** A, B, C
-
-**Explanation:** Level discipline and sampling reduce noise. Secrets in logs are unsafe (D).
-
----
-
-### Q19 [Medium] — Correlation IDs
+### Q26
 
 **Answer:** B, C, D
 
-**Explanation:** Single ID from gateway with trace alignment. Regenerating per service breaks correlation (A).
+**Explanation:** user_id label caused cardinality; use status labels and logs for per-user drill-down. order_id labels repeat the mistake (A).
 
 ---
 
-### Q20 [Medium] — Safe Logging Content
-
-**Answer:** A, B, D
-
-**Explanation:** Log outcomes and IDs, not secrets or huge bodies. PAN/keys must not appear (C).
-
----
-
-### Q21 [Medium] [Case Study] — SignalOps Order Service SLOs
-
-**Answer:** A, C, D
-
-**Explanation:** RED is rate, errors, duration for request services. CPU utilization alone is USE-style (B).
-
----
-
-### Q22 [Medium] [Case Study] — SignalOps Payment Latency
-
-**Answer:** A, C, D
-
-**Explanation:** rate, error ratio, histogram quantiles match RED. user_id labels explode cardinality (B).
-
----
-
-### Q23 [Medium] — USE Method
-
-**Answer:** A, B, C
-
-**Explanation:** USE targets resources: utilization, saturation, errors. HTTP RPS is RED on services (D).
-
----
-
-### Q24 [Medium] [Case Study] — SignalOps Queue Backlog
-
-**Answer:** A, B, C
-
-**Explanation:** Queue depth gauge, processed counter, lag/duration histogram fit workers. Counters do not decrease (D).
-
----
-
-### Q25 [Medium] — Label Cardinality
-
-**Answer:** A, B, D
-
-**Explanation:** Bounded labels good; unbounded IDs belong in logs/traces. Putting IDs in metrics is the anti-pattern (C).
-
----
-
-### Q26 [Medium] [Case Study] — SignalOps Metric Cost Explosion
-
-**Answer:** A, B, C
-
-**Explanation:** user_id label caused cardinality; use status labels and logs for per-user drill-down. order_id labels repeat the mistake (D).
-
----
-
-### Q27 [Medium] — Golden Signals
+### Q27
 
 **Answer:** A, B, D
 
@@ -223,7 +221,7 @@ Answer key for [day-09-questions.md](../day-09-questions.md)
 
 ---
 
-### Q28 [Medium] — Trace Structure
+### Q28
 
 **Answer:** A, B, C
 
@@ -231,95 +229,95 @@ Answer key for [day-09-questions.md](../day-09-questions.md)
 
 ---
 
-### Q29 [Medium] [Case Study] — SignalOps Missing Payment Span
-
-**Answer:** A, B, D
-
-**Explanation:** Missing hops mean broken header propagation/instrumentation. Traces require propagation (C).
-
----
-
-### Q30 [Medium] [Case Study] — SignalOps Async Notification
-
-**Answer:** A, B, D
-
-**Explanation:** Carry trace_id in messages and search across producer/consumer. HTTP trace does not auto-link async work (C).
-
----
-
-### Q31 [Medium] — OpenTelemetry and Instrumentation
+### Q29
 
 **Answer:** B, C, D
 
-**Explanation:** OTel pipeline and auto+manual spans. Logs remain essential alongside OTel (A).
+**Explanation:** Missing hops mean broken header propagation/instrumentation. Traces require propagation (A).
 
 ---
 
-### Q32 [Medium] — Trace Sampling
+### Q30
+
+**Answer:** B, C, D
+
+**Explanation:** Carry trace_id in messages and search across producer/consumer. HTTP trace does not auto-link async work (A).
+
+---
+
+### Q31
+
+**Answer:** A, C, D
+
+**Explanation:** OTel pipeline and auto+manual spans. Logs remain essential alongside OTel (B).
+
+---
+
+### Q32
+
+**Answer:** A, B, D
+
+**Explanation:** Head/tail sampling and keeping error traces. 100% at extreme RPS is not production-viable (C).
+
+---
+
+### Q33
 
 **Answer:** A, B, C
 
-**Explanation:** Head/tail sampling and keeping error traces. 100% at extreme RPS is not production-viable (D).
+**Explanation:** Repeated spans, dominant span, retries visible in traces. Timelines show parallel vs serial (D).
 
 ---
 
-### Q33 [Medium] [Case Study] — SignalOps N+1 in Inventory
-
-**Answer:** B, C, D
-
-**Explanation:** Repeated spans, dominant span, retries visible in traces. Timelines show parallel vs serial (A).
-
----
-
-### Q34 [Medium] [Case Study] — SignalOps Service Launch Checklist
-
-**Answer:** A, B, D
-
-**Explanation:** Health, RED, stdout JSON, propagation, metrics endpoint. Tracing with sampling belongs at prod launch (C).
-
----
-
-### Q35 [Medium] — Gateway and Auto Instrumentation
-
-**Answer:** B, C, D
-
-**Explanation:** Auto for plumbing, manual for business steps, gateway per-route RED. Auto does not replace domain metrics (A).
-
----
-
-### Q36 [Hard] [Case Study] — SignalOps Gateway Access Logs
+### Q34
 
 **Answer:** A, B, C
 
-**Explanation:** Gateway generates IDs, rich access logs, route RED. Regenerating trace IDs mid-chain breaks traces (D).
+**Explanation:** Health, RED, stdout JSON, propagation, metrics endpoint. Tracing with sampling belongs at prod launch (D).
 
 ---
 
-### Q37 [Hard] — Dashboard Design
+### Q35
+
+**Answer:** A, C, D
+
+**Explanation:** Auto for plumbing, manual for business steps, gateway per-route RED. Auto does not replace domain metrics (B).
+
+---
+
+### Q36
 
 **Answer:** B, C, D
 
-**Explanation:** Tiered RED/USE dashboards with deploy markers. Vanity/chart spam wastes on-call time (A).
+**Explanation:** Gateway generates IDs, rich access logs, route RED. Regenerating trace IDs mid-chain breaks traces (A).
 
 ---
 
-### Q38 [Hard] [Case Study] — SignalOps On-Call Dashboard
+### Q37
 
-**Answer:** A, B, D
+**Answer:** A, C, D
 
-**Explanation:** System → service → dependency drill-down with percentiles. CPU alone without symptoms is weak paging (C).
+**Explanation:** Tiered RED/USE dashboards with deploy markers. Vanity/chart spam wastes on-call time (B).
 
 ---
 
-### Q39 [Hard] — Alerting on Symptoms
+### Q38
 
 **Answer:** B, C, D
 
-**Explanation:** User-visible error rate and latency; CPU with latency for context. Single 500 pages create fatigue (A).
+**Explanation:** Layered service and dependency panels plus latency percentiles support drill-down; an average alone can hide severe tail latency.
 
 ---
 
-### Q40 [Hard] [Case Study] — SignalOps CPU Pages
+### Q39
+
+**Answer:** A, B, C
+
+**Explanation:** User-visible error rate and latency; CPU with latency for context. Single 500 pages create fatigue (D).
+
+---
+
+### Q40
 
 **Answer:** A, B, C
 
@@ -327,79 +325,79 @@ Answer key for [day-09-questions.md](../day-09-questions.md)
 
 ---
 
-### Q41 [Hard] — Severity and Runbooks
+### Q41
 
-**Answer:** A, C, D
+**Answer:** B, C, D
 
-**Explanation:** P1/P2/P3 discipline with linked runbooks. One-off pod restart is not page-worthy alone (B).
-
----
-
-### Q42 [Hard] — Alert Routing and Noise
-
-**Answer:** A, C, D
-
-**Explanation:** Route by severity, dedupe, prune quarterly. Runbooks are required for actionable pages (B).
+**Explanation:** P1/P2/P3 discipline with linked runbooks. One-off pod restart is not page-worthy alone (A).
 
 ---
 
-### Q43 [Hard] [Case Study] — SignalOps SLO Burn Page
-
-**Answer:** A, C, D
-
-**Explanation:** Fast/slow burn rate on budget consumption beats paging every 500 (B).
-
----
-
-### Q44 [Hard] [Case Study] — SignalOps Checkout SLI
-
-**Answer:** A, B, D
-
-**Explanation:** Journey-based checkout SLI with metrics and failure logs. process_running ignores user outcomes (C).
-
----
-
-### Q45 [Hard] — Error Budgets
-
-**Answer:** A, B, D
-
-**Explanation:** Shared budget drives deploy risk decisions. Engineering must respect budget, not only finance (C).
-
----
-
-### Q46 [Hard] — SLO Dashboards and SLA
+### Q42
 
 **Answer:** A, B, C
 
-**Explanation:** Show SLI, budget, burn; alert on stricter internal SLO. Hiding budget blocks deploy decisions (D).
+**Explanation:** Route by severity, dedupe, prune quarterly. Runbooks are required for actionable pages (D).
 
 ---
 
-### Q47 [Hard] [Case Study] — SignalOps Deploy Freeze
+### Q43
 
-**Answer:** B, D
+**Answer:** A, B, C
 
-**Explanation:** Low budget triggers freeze/discussion; dashboards answer deploy safety. Ignoring budget or shipping blindly (B, D) violates SRE practice.
-
----
-
-### Q48 [Hard] — Log Aggregation
-
-**Answer:** A, B, D
-
-**Explanation:** stdout → agent → central store with tiered retention and query by IDs. Local container files are lost on reschedule (C).
+**Explanation:** Fast/slow burn rate on budget consumption beats paging every 500 (D).
 
 ---
 
-### Q49 [Hard] [Case Study] — SignalOps Lost Pod Logs
+### Q44
 
-**Answer:** A, B, D
+**Answer:** A, C, D
 
-**Explanation:** Central shipping and volume control prevent evidence loss. DEBUG forever in hot tier is costly (C).
+**Explanation:** Journey-based checkout SLI with metrics and failure logs. process_running ignores user outcomes (B).
 
 ---
 
-### Q50 [Hard] [Case Study] — SignalOps Mesh and East-West
+### Q45
+
+**Answer:** B, C, D
+
+**Explanation:** Shared budget drives deploy risk decisions. Engineering must respect budget, not only finance (A).
+
+---
+
+### Q46
+
+**Answer:** A, C, D
+
+**Explanation:** Show SLI, budget, burn; alert on stricter internal SLO. Hiding budget blocks deploy decisions (B).
+
+---
+
+### Q47
+
+**Answer:** A, B
+
+**Explanation:** A nearly exhausted error budget should inform deployment risk and may trigger a freeze or reduced-risk release policy until reliability recovers.
+
+---
+
+### Q48
+
+**Answer:** B, C, D
+
+**Explanation:** stdout → agent → central store with tiered retention and query by IDs. Local container files are lost on reschedule (A).
+
+---
+
+### Q49
+
+**Answer:** B, C, D
+
+**Explanation:** Central shipping and volume control prevent evidence loss. DEBUG forever in hot tier is costly (A).
+
+---
+
+### Q50
 
 **Answer:** A, B, C
 

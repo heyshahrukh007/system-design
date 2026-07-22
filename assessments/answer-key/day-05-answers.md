@@ -1,244 +1,407 @@
-# Infrastructure Components — Answer Key & Explanations (30)
+# Caching Deep Dive — Answer Key & Explanations (50)
 
 Answer key for [day-05-questions.md](../day-05-questions.md)
 
 
----
 
-### Q01 [Easy] [Case Study] — DNS Cutover for a Replatform
 
-**Answer:** A, C, D
-
-**Explanation:** DNS is the naming layer for migrations and can return multiple IPs. It does not replace LBs that actively health-check backends (B).
 
 ---
 
-### Q02 [Easy] — DNS Record Types for Dual-Stack Hosting
+### Q01
 
-**Answer:** A, B, C, D
+**Answer:** A, D
 
-**Explanation:** A and AAAA handle dual-stack web traffic; CNAME aliases hosts; MX routes email. All are standard record types operators configure in production DNS.
-
----
-
-### Q03 [Easy] [Case Study] — Black Friday at RetailHub
-
-**Answer:** A, C, D
-
-**Explanation:** LBs distribute, health-check, and enable rolling maintenance. You still need multiple backends for redundancy and capacity (B).
+**Explanation:** Redis speed and a high hit rate reduce latency and database load (B, C). A cache is not the source of truth (C), and data updated on every request would not remain current merely because it was cached (B).
 
 ---
 
-### Q04 [Easy] — Choosing L4 vs L7 for an API Gateway
+### Q02
+
+**Answer:** C, D
+
+**Explanation:** A cache is an ephemeral, refillable copy rather than the authoritative store (B, C). ACID durability belongs to the database (A), and a normal miss can be refilled rather than making data unavailable (B).
+
+---
+
+### Q03
+
+**Answer:** A, D
+
+**Explanation:** Browser and CDN caches should serve versioned assets before the origin (A, B). A load balancer does not replace those caches (B), and fetching the full asset from origin on every visit defeats caching (C).
+
+---
+
+### Q04
+
+**Answer:** A, C
+
+**Explanation:** Authoritative money movement and one-time secrets should not use stale cached values (A, B). Catalog metadata is cacheable with TTL and invalidation (B), while stale flash-sale stock must not authorize purchases (D).
+
+---
+
+### Q05
+
+**Answer:** B, C
+
+**Explanation:** Shared Redis and a common key namespace make sessions available to every pod (B, C). Per-pod memory remains fragile (A), and affinity does not make that memory durable across restarts (D).
+
+---
+
+### Q06
+
+**Answer:** B, C
+
+**Explanation:** Namespaced, stable shared keys improve reuse and operations (A, B). Omitting tenant or variant dimensions risks collisions (A), while unique request keys destroy reuse (D).
+
+---
+
+### Q07
+
+**Answer:** B, D
+
+**Explanation:** Cache-aside has the application load and populate misses, and it can bypass Redis during failure (A, B). It provides neither automatic write synchronization (C) nor immediate freshness from TTL alone (A).
+
+---
+
+### Q08
+
+**Answer:** B, C
+
+**Explanation:** DB first, then delete cache. Delete-before-commit races with stale refill (A). TTL-only for prices is risky (D).
+
+---
+
+### Q09
+
+**Answer:** C, D
+
+**Explanation:** Write-through synchronously updates the cache and database and fits immediate post-write reads (A, C). It wastes work on cold keys (B), especially when writes are high and updated keys are rarely read (A).
+
+---
+
+### Q10
+
+**Answer:** A, B
+
+**Explanation:** Write-back acknowledges cache-first writes and flushes asynchronously, making it fast but weakly consistent (A, B). It is unsuitable as a sole durable path for critical inventory or payments (C, D).
+
+---
+
+### Q11
+
+**Answer:** B, D
+
+**Explanation:** Every serving layer may require invalidation, and TTL alone leaves a stale window (A, D). Delete-before-commit can race with stale refill (A), while an unchanged URL does not force immediate CDN refresh (C).
+
+---
+
+### Q12
+
+**Answer:** C, D
+
+**Explanation:** Volatility-based TTLs and jitter reduce stale windows and synchronized expiry (B, C). Uniform expiration invites stampedes (A), and changing prices need invalidation rather than a long TTL alone (B).
+
+---
+
+### Q13
+
+**Answer:** A, C
+
+**Explanation:** This is a hot-key expiry stampede, and early or background refresh can smooth it (A, B). It is not penetration (D), and a larger connection pool does not prevent synchronized misses (B).
+
+---
+
+### Q14
+
+**Answer:** A, B
+
+**Explanation:** Negative caching and a Bloom filter can prevent repeated database misses (A, B). Disabling edge controls worsens the scan (D), and TTL jitter does not stop invalid-key penetration (C).
+
+---
+
+### Q15
+
+**Answer:** A, B
+
+**Explanation:** An empty cache creates an avalanche, while warm-up and highly available Redis reduce the blast radius (B, C). Cache-aside still shifts load to the database after restart (D), and unlimited retries amplify overload (C).
+
+---
+
+### Q16
+
+**Answer:** C, D
+
+**Explanation:** Redis Cluster provides horizontal sharding, and an L1/L2 design needs explicit coherence controls (A, B). L1 is not automatically shared (B), and `noeviction` returns errors rather than silently applying LRU (A).
+
+---
+
+### Q17
+
+**Answer:** A, C
+
+**Explanation:** Read replicas or key splitting and local caching can spread hot-key reads (A, B). Public content can also use a CDN, so claiming it cannot is false (D); adding shards alone does not split one key (B).
+
+---
+
+### Q18
+
+**Answer:** B, C
+
+**Explanation:** Cache-aside makes the application handle misses, while a CDN origin fetch is analogous to read-through (A, B). Read-through delegates loading to the cache layer rather than manual application code (D), and it does not eliminate database writes (A).
+
+---
+
+### Q19
+
+**Answer:** A, C
+
+**Explanation:** Cacheable public JSON can be served by both browser and CDN caches (A, C). MySQL 8 removed its query cache (D), and Redis remains a derived cache rather than the permanent category or pricing authority (B).
+
+---
+
+### Q20
+
+**Answer:** A, D
+
+**Explanation:** Fast increments and expiring state suit Redis rate limits, and small failover gaps may be acceptable (A, B). Per-pod counters do not enforce one fleet-wide limit (C), and rate limits are not a financial ledger (B).
+
+---
+
+### Q21
+
+**Answer:** A, D
+
+**Explanation:** Cache-aside deletes after a database update, while write-through synchronously updates both stores (A, B). Write-through does not skip the database (C), nor is it a universal default (B).
+
+---
+
+### Q22
+
+**Answer:** B, C
+
+**Explanation:** A short-lived approximate display is acceptable when it cannot authorize financial actions (A, C). Both proposed transfer-authorization uses of cached balance are unsafe (B, D).
+
+---
+
+### Q23
 
 **Answer:** A, B, C
 
-**Explanation:** Path-based routing and TLS termination require L7 awareness. L4 only sees IP/port (D).
+**Explanation:** `private`, long-lived public caching for fingerprinted assets, and `no-store` have the stated meanings (A, B, C). `s-maxage` controls shared caches, not how long a browser must retain a private response (D).
 
 ---
 
-### Q05 [Easy] [Case Study] — Nginx as the Public Face of ShopCore
+### Q24
+
+**Answer:** A, C
+
+**Explanation:** Preload before traffic — warming. Refresh-ahead is ongoing TTL-based (B). Warming does not replace invalidation (D).
+
+---
+
+### Q25
+
+**Answer:** B, C
+
+**Explanation:** Proactive refresh before expiry vs one-time warm-up. Some staleness possible during refresh (D). They differ (A).
+
+---
+
+### Q26
+
+**Answer:** A, C
+
+**Explanation:** Write-through offers strong typical cache consistency, while cache-aside with delete-on-write is a common default (A, C). TTL-only is weak (B), and write-back acknowledges before the asynchronous database flush rather than after a database commit (D).
+
+---
+
+### Q27
+
+**Answer:** A, B, D
+
+**Explanation:** Memory pressure, sudden hit-rate drops, and rising DB QPS signal cache trouble. Low hit rate on cold/uncached paths is expected (C).
+
+---
+
+### Q28
+
+**Answer:** A, B, D
+
+**Explanation:** Split/compress/reference — big keys hurt Redis single thread. Larger keys are not free wins (C).
+
+---
+
+### Q29
 
 **Answer:** A, C, D
 
-**Explanation:** Reverse proxies terminate TLS, route, and offload static files. Business logic stays in app servers (B).
+**Explanation:** Delete after commit; read primary or version on miss. Delete-before-commit worsens races (B).
 
 ---
 
-### Q06 [Easy] [Case Study] — Global Shoppers for StaticHub
+### Q30
 
-**Answer:** A, C, D
+**Answer:** B, C, D
 
-**Explanation:** CDNs optimize static, cacheable content geographically. Personalized financial data should not be cached at CDN edges (B).
-
----
-
-### Q07 [Easy] — Cache Layers in a Typical Web Stack
-
-**Answer:** A, B, C, D
-
-**Explanation:** Caches stack from browser → CDN → reverse proxy → app cache → DB buffer pool → durable store. Each layer catches what the one above missed.
+**Explanation:** Breaker protects DB; stale CDN/L1 may help briefly. Unlimited retries amplify outage (A).
 
 ---
 
-### Q08 [Easy] — Database Showing Early Strain
+### Q31
 
 **Answer:** A, B, C
 
-**Explanation:** Tune, cache, and replicate before sharding. Sharding is a late-stage step when earlier measures are exhausted (D).
+**Explanation:** Conditional requests save bandwidth. ETags complement — not replace — write invalidation (D).
 
 ---
 
-### Q09 [Easy] — When a Queue Beats a Synchronous Call
-
-**Answer:** A, B, D
-
-**Explanation:** Queues decouple producers from consumers with persistence and DLQs. Callers return without waiting for background work (C).
-
----
-
-### Q10 [Easy] — Microservices for a 200-Engineer Org
-
-**Answer:** A, B, D
-
-**Explanation:** Independent scale, ownership, and isolation are microservice benefits. Operational complexity increases compared to a monolith (C).
-
----
-
-### Q11 [Medium] [Case Study] — TTL Trap During Failover
-
-**Answer:** A, B, D
-
-**Explanation:** TTL controls cache lifetime; high TTL delays propagation during cutovers. Lower TTL **before** migration reduces stale answers (D is wrong during emergencies).
-
----
-
-### Q12 [Medium] — Picking a Load Balancing Algorithm
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four pairings match common algorithm selection guidance for homogeneous pools, persistent connections, stickiness, and heterogeneous capacity.
-
----
-
-### Q13 [Medium] — Nginx as Reverse Proxy and Load Balancer
+### Q32
 
 **Answer:** A, C, D
 
-**Explanation:** Nginx commonly combines both roles. They overlap heavily in production edge tiers (B).
+**Explanation:** SWR trades brief staleness for speed. Not for authoritative financial reads (B).
 
 ---
 
-### Q14 [Medium] — CDN vs Redis for Product Pages
+### Q33
+
+**Answer:** B, C, D
+
+**Explanation:** LRU evicts hot keys under pressure. Monitor and tune policy — not perfect hot-key preservation (A).
+
+---
+
+### Q34
 
 **Answer:** A, B, D
 
-**Explanation:** CDN and Redis operate at different layers for different content types. Production systems commonly use both (C).
+**Explanation:** Feature trade-offs between cache engines. Neither auto-syncs with PostgreSQL (C).
 
 ---
 
-### Q15 [Medium] — Cache Pattern for Write-Heavy Counters
+### Q35
 
-**Answer:** A, B, C, D
+**Answer:** A, B, D
 
-**Explanation:** All four patterns are standard choices with different consistency and latency trade-offs.
+**Explanation:** Miss coalescing saves DB load. Duplicate SET with same value wastes work but need not corrupt (C).
 
 ---
 
-### Q16 [Medium] [Case Study] — Stale Prices on Read Replicas
+### Q36
+
+**Answer:** B, C, D
+
+**Explanation:** Purge plus fingerprinted URLs. Global purge is not always instant (A).
+
+---
+
+### Q37
 
 **Answer:** A, B, C
 
-**Explanation:** Replicas scale reads with eventual lag. Read-your-writes fixes post-checkout consistency. Writes still go to one primary (D).
+**Explanation:** Split shared vs per-user caching. One key for full personalized page kills hit rate (D).
 
 ---
 
-### Q17 [Medium] — Queue vs Pub/Sub vs Stream
-
-**Answer:** A, C, D
-
-**Explanation:** Queues suit task workers; pub/sub fan-out suits events; streams suit replay and high throughput. They serve different purposes (B).
-
----
-
-### Q18 [Medium] — Should This Work Go on a Queue?
-
-**Answer:** A, B, D
-
-**Explanation:** Email, image processing, and batch reports are classic async jobs. Product list reads should be synchronous with caching (C).
-
----
-
-### Q19 [Medium] — Worker Types in a Production Stack
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four worker patterns handle async, scheduled, event-driven, and streaming workloads respectively.
-
----
-
-### Q20 [Medium] [Case Study] — DNS Round-Robin vs ALB
-
-**Answer:** A, B, C, D
-
-**Explanation:** Combining DNS to a stable LB endpoint with backend health checks fixes passive DNS round-robin limitations during failures.
-
----
-
-### Q21 [Hard] [Case Study] — Sticky Sessions During Server Loss
-
-**Answer:** A, C, D
-
-**Explanation:** Stickiness helps legacy in-memory sessions but worsens imbalance on failure. Shared session stores or stateless tokens are preferred. Stickiness is not universal (B).
-
----
-
-### Q22 [Hard] [Case Study] — Stale JavaScript After Deploy
-
-**Answer:** A, B, C, D
-
-**Explanation:** Immutable versioned filenames plus long TTL is safe; mutable filenames need purge or short TTL. Personalized APIs must not be cached at CDN (A).
-
----
-
-### Q23 [Hard] [Case Study] — Cache Stampede on Viral Product
-
-**Answer:** A, B, C, D
-
-**Explanation:** Stampede, penetration, staleness, and total cache loss are distinct failure modes with different mitigations — all relevant in large-scale caching design.
-
----
-
-### Q24 [Hard] [Case Study] — Premature Sharding Proposal
-
-**Answer:** A, B, C, D
-
-**Explanation:** Sharding is powerful but costly; skewed keys and premature sharding add complexity without fixing the actual bottleneck here.
-
----
-
-### Q25 [Hard] [Case Study] — Poison Messages in Order Email Queue
-
-**Answer:** A, C, D
-
-**Explanation:** Idempotency, safe retries, and DLQs isolate poison messages. Infinite retry blocks the queue (B).
-
----
-
-### Q26 [Hard] [Case Study] — Splitting Payment from ShopMonolith
-
-**Answer:** A, C, D
-
-**Explanation:** Domain boundaries and incremental extraction reduce risk. Big-bang splits fail on edge cases and coordination (B).
-
----
-
-### Q27 [Hard] [Case Study] — Place Order Saga Failure
-
-**Answer:** A, B, C, D
-
-**Explanation:** Sagas coordinate multi-service workflows with forward steps and compensating actions when a step fails — no single cross-service ACID transaction.
-
----
-
-### Q28 [Hard] — Production Stack Data Flow
+### Q38
 
 **Answer:** A, B, C
 
-**Explanation:** User traffic flows through DNS and edge tiers to apps, caches, queues, and workers; CDNs handle static assets. Databases are never browser-facing (D).
+**Explanation:** RDB/AOF durability trade-offs. Redis is not financial ledger (D).
 
 ---
 
-### Q29 [Hard] — Redis vs Memcached for Session Store
+### Q39
+
+**Answer:** A, C, D
+
+**Explanation:** Geo placement matters. US-only cache cannot equalize EU latency (B).
+
+---
+
+### Q40
+
+**Answer:** A, C, D
+
+**Explanation:** L1 needs invalidation, pub/sub, or short TTL. No automatic cross-pod coherence (B).
+
+---
+
+### Q41
 
 **Answer:** A, B, D
 
-**Explanation:** Redis's structures and optional durability suit sessions and varied cache patterns. Memcached is a simpler pure cache without pub/sub (C).
+**Explanation:** Authorize stock from DB with atomic update. TTL alone does not prevent oversell (C).
 
 ---
 
-### Q30 [Hard] [Case Study] — Architecture Evolution at GrowthCo
+### Q42
 
-**Answer:** A, B, C, D
+**Answer:** A, B, C
 
-**Explanation:** Teams typically evolve monolith → cache/replicas/queue → targeted extraction/sharding → broader service split as org and load demand — not jumping to the final stage on day one.
+**Explanation:** Vary manages cache variants. Authenticated responses often still need `private` (D).
+
+---
+
+### Q43
+
+**Answer:** A, B, D
+
+**Explanation:** SWR OK for low-risk visuals; purge/version critical content. SWR allows staleness (C).
+
+---
+
+### Q44
+
+**Answer:** A, B, D
+
+**Explanation:** Pattern choice is ops and control trade-off. App still owns writes (C).
+
+---
+
+### Q45
+
+**Answer:** B, C, D
+
+**Explanation:** Stagger warm-up/canary; L2 singleflight helps. TTL jitter does not fix simultaneous deploy cold start (A).
+
+---
+
+### Q46
+
+**Answer:** B, C, D
+
+**Explanation:** Cluster slot redirects and hot-key limits. One logical key does not auto-split (A).
+
+---
+
+### Q47
+
+**Answer:** B, C, D
+
+**Explanation:** TLS, minimize PII, managed at-rest encryption. Caching does not remove compliance duties (A).
+
+---
+
+### Q48
+
+**Answer:** A, B, D
+
+**Explanation:** Short TTL on null cache; tune Bloom filters. Infinite TTL blocks new records (C).
+
+---
+
+### Q49
+
+**Answer:** A, B, C
+
+**Explanation:** Tenant namespacing and isolation. Flat shared keyspace is unsafe (D).
+
+---
+
+### Q50
+
+**Answer:** A, C, D
+
+**Explanation:** Cache when read-heavy with staleness budget. Not universal for every endpoint (B).

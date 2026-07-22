@@ -1,213 +1,212 @@
-# Synthesis — Answer Key & Explanations (40)
-
-Answer key for [day-13-questions.md](../day-13-questions.md)
+# Synthesis — Answer Key (50)
 
 
 
 
----
-
-### Q01 [Easy] [Case Study] — DesignLab URL Shortener Writes
-
-**Answer:** A, B, D
-
-**Explanation:** Monthly writes ÷ seconds/month ≈ 40/s; reads dominate; ~600 GB/year order of magnitude. Multi-region day one is not required at this scale (C).
 
 ---
 
-### Q02 [Easy] — Estimation Constants
+### Q01
 
-**Answer:** A, B, D
+**Answer:** A, B
 
-**Explanation:** Day/month seconds and 2× vs 100× magnitude matter. Cross-region latency is ~50–150 ms, not in-DC (C).
-
----
-
-### Q03 [Easy] [Case Study] — DesignLab Chat Message Rate
-
-**Answer:** B, C, D
-
-**Explanation:** Average write rate from DAU × actions; fan-out/presence often dominate; peak factors apply. ~11K/s still needs partitioning and architecture analysis (A).
+**Explanation:** Monthly writes divided by seconds per month is about 40/s, and URL lookup traffic is commonly read-heavy. At the stated row size, annual raw storage is hundreds—not six—gigabytes (C), and active-active is not mandatory (D).
 
 ---
 
-### Q04 [Easy] [Case Study] — DesignLab Read-Heavy Feed
+### Q02
 
-**Answer:** A, C, D
+**Answer:** A, D
 
-**Explanation:** 100:1 read:write favors cache/replicas and separate estimates. Write-heavy levers (B) are wrong for this ratio.
-
----
-
-### Q05 [Easy] — Estimation Habits
-
-**Answer:** B, C, D
-
-**Explanation:** Round, state assumptions, split reads/writes. Technology-first (A) reverses the framework.
+**Explanation:** Rounded day/month constants support fast capacity math. Cross-region RTT is far above in-DC latency (C), and order-of-magnitude accuracy—not exact 1% precision—is the useful target (B).
 
 ---
 
-### Q06 [Easy] [Case Study] — DesignLab Traffic Tier
+### Q03
 
-**Answer:** A, B, C
+**Answer:** B, C
 
-**Explanation:** Scale tiers map to CDN/cache/shard needs gradually. Mandatory Cassandra at 50 req/s (D) ignores requirements.
-
----
-
-### Q07 [Easy] — Design Process Order
-
-**Answer:** B, C, D
-
-**Explanation:** Problem → constraints → scale → data/components → failures → observe. Kafka-first (A) skips requirements.
+**Explanation:** DAU × actions ÷ seconds/day gives roughly 11.5K messages/s, while fan-out and presence can dominate. SQLite is not automatically sufficient (A), and peak is not safely assumed equal to average (D).
 
 ---
 
-### Q08 [Easy] — Requirement Clarifiers
+### Q04
 
-**Answer:** A, B, C
+**Answer:** A, B
 
-**Explanation:** Users, consistency/money, latency/availability are core. UI chrome (D) is out of scope for system design.
-
----
-
-### Q09 [Easy] [Case Study] — DesignLab Post-Checkout Email
-
-**Answer:** A, B, D
-
-**Explanation:** Email is async fan-out with buffering. Payment result in HTTP response stays sync (C).
+**Explanation:** A 100:1 ratio calls for separate read/write estimates and bottleneck analysis. It is not primarily write-heavy (D), and the ratio generally increases rather than eliminates caching value (C).
 
 ---
 
-### Q10 [Easy] — Progressive Complexity
+### Q05
 
-**Answer:** A, B, C
+**Answer:** B, D
 
-**Explanation:** Evolve from single region to replicas/CDN to sharding/CQRS. Hyperscaler day-one (D) violates progressive complexity.
-
----
-
-### Q11 [Easy] — Terminology Basics
-
-**Answer:** A, C, D
-
-**Explanation:** Idempotent, SPOF, DLQ are standard. Eventual consistency is not linearizable everywhere (B).
+**Explanation:** Useful estimates round values and state assumptions explicitly. Technology-first reasoning is backward (A), and reads and writes should not be collapsed because their costs differ (C).
 
 ---
 
-### Q12 [Easy] [Case Study] — DesignLab Video Egress
+### Q06
 
-**Answer:** A, B, C
+**Answer:** A, C
 
-**Explanation:** Egress formula, separate media estimates, storage includes indexes/replicas. Large JSON egress still warrants math (D).
-
----
-
-### Q13 [Medium] — Peak and Headroom
-
-**Answer:** A, C, D
-
-**Explanation:** Peak factors, headroom, cache hit goals are rules of thumb. Pools should not multiply to max_connections × pods (B).
+**Explanation:** Roughly 100 req/s often permits a simpler architecture, while 10K req/s commonly motivates caching, replicas, and indexing. Neither 50 req/s mandates Cassandra (D) nor 100K req/s defaults to one unpartitioned process (B).
 
 ---
 
-### Q14 [Medium] [Case Study] — DesignLab Storage Planning
+### Q07
 
-**Answer:** A, B, D
+**Answer:** C, D
 
-**Explanation:** Include copies, indexes, state growth; round and revisit. Ignoring backups/logs when durability matters is risky (C).
-
----
-
-### Q15 [Medium] — Decision Tree: Transactions
-
-**Answer:** A, B, D
-
-**Explanation:** Local ACID in one service; saga/outbox cross-service; consistency question drives read path. Shared writable DB (C) breaks ownership.
+**Explanation:** Start with requirements, then model data and components before deepening bottlenecks and failures. Both Kafka-first selection (A) and vendor selection before scale/API analysis (B) reverse the decision order.
 
 ---
 
-### Q16 [Medium] [Case Study] — DesignLab Hot Product Page
+### Q08
 
-**Answer:** A, B, D
+**Answer:** A, B
 
-**Explanation:** Cache-aside, TTL/invalidation, stampede control for catalog reads. Do not cache money wrongly (C).
-
----
-
-### Q17 [Medium] — Messaging Defaults
-
-**Answer:** A, B, D
-
-**Explanation:** At-least-once + idempotency, partition by entity, outbox over dual-write. Kafka-as-CRUD-without-projections (C) is an anti-pattern.
+**Explanation:** Users, geography, latency, and availability are early architecture inputs. Logo color is irrelevant (D), while consistency and money-path requirements must be established early, not deferred (C).
 
 ---
 
-### Q18 [Medium] — Pattern Lookup: Infrastructure
+### Q09
 
-**Answer:** A, C, D
+**Answer:** A, C
 
-**Explanation:** CDN, gateway, outbox pairs are correct. Bloom filters give cheap “definitely not present” — not guaranteed presence (B).
-
----
-
-### Q19 [Medium] — Trade-Off: Consistency vs Availability
-
-**Answer:** A, B, C
-
-**Explanation:** CAP/PACELC tensions: strong vs stale, latency vs consistency. You cannot have all three under partition (D).
+**Explanation:** Email fan-out benefits from buffering, retries, and decoupling from the HTTP response. Long or spiky work is a reason to consider async—not force sync (D); payment authorization still belongs in the synchronous response (B).
 
 ---
 
-### Q20 [Medium] [Case Study] — DesignLab Static Assets
+### Q10
 
-**Answer:** A, B, D
+**Answer:** C, D
 
-**Explanation:** CDN for static, gateway for edge policy, LB for instances. Large blobs belong in object storage (C).
-
----
-
-### Q21 [Medium] — Component Selection: Data Stores
-
-**Answer:** A, B, C, D
-
-**Explanation:** All four mappings match the component selection guide for typical needs.
+**Explanation:** A simple single-region v1 can evolve with replicas, CDN, and queues as demand appears. Sharding/CQRS should follow measured justification (B), while active-active inventory and universal event sourcing are premature (A).
 
 ---
 
-### Q22 [Medium] [Case Study] — DesignLab Quorum Sketch
+### Q11
 
-**Answer:** A, B, C
+**Answer:** C, D
 
-**Explanation:** W+R>N overlap; prefer local ACID; DB constraints. Sharding on random UUID hurts range scans (D).
-
----
-
-### Q23 [Medium] — Observability Rules
-
-**Answer:** B, C, D
-
-**Explanation:** RED, USE, tracing with correlation IDs. Alert on SLO burn, not every CPU blip (A).
+**Explanation:** DLQ and SPOF are defined correctly. Idempotency means repeated application has the same effect, not guaranteed single execution (B), and eventual consistency is not global linearizability (A).
 
 ---
 
-### Q24 [Medium] [Case Study] — DesignLab Multi-Step Checkout
+### Q12
 
-**Answer:** A, C, D
+**Answer:** B, D
 
-**Explanation:** Saga, idempotency, circuit breaker fit external payment. 2PC with provider (B) is not the default.
-
----
-
-### Q25 [Medium] — Patterns: Reliability
-
-**Answer:** B, C, D
-
-**Explanation:** Breaker, bulkhead, degradation are core patterns. Blind retries on non-idempotent POSTs (A) are unsafe.
+**Explanation:** Egress is QPS × bytes × eight, and storage estimates include copies and indexes. Bandwidth is not automatically negligible (A), and large media needs its own estimate rather than inference from JSON (C).
 
 ---
 
-### Q26 [Medium] [Case Study] — DesignLab Service Boundaries
+### Q13
+
+**Answer:** A, B
+
+**Explanation:** High cache hit ratios and 30–50% capacity headroom are useful rules of thumb. Pool sizing must respect total database limits (C), and capacity should include peak factors rather than average load alone (D).
+
+---
+
+### Q14
+
+**Answer:** A, B
+
+**Explanation:** Storage math should make copies and index overhead explicit and be revisited as requirements change. Exact intermediate bytes without a growth horizon are misleading (D), and backups/logs cannot simply be ignored (C).
+
+---
+
+### Q15
+
+**Answer:** B, C
+
+**Explanation:** Local relational transactions suit one service, and consistency requirements determine read behavior. A shared writable schema weakens ownership (D), while long XA transactions through external providers are not the cross-service default (A).
+
+---
+
+### Q16
+
+**Answer:** B, D
+
+**Explanation:** TTL or invalidation and stampede protection are essential for hot catalog keys. Balances do not belong on this weak catalog path (A), and cache-aside does not guarantee zero staleness (C).
+
+---
+
+### Q17
+
+**Answer:** C, D
+
+**Explanation:** At-least-once with idempotent consumers and an outbox are sound defaults. Kafka-only CRUD without projections is unsuitable (B), and random per-event partitioning breaks per-entity order (A).
+
+---
+
+### Q18
+
+**Answer:** B, C
+
+**Explanation:** Gateways handle entry policy and CDNs cache edge assets. Bloom filters prove only definite absence (A), while an outbox commits the event row with database state rather than publishing first in a separate transaction (D).
+
+---
+
+### Q19
+
+**Answer:** A, B
+
+**Explanation:** AP paths may expose stale or conflicting data, while strong paths add coordination and may reject operations. Zero-latency strong availability is impossible under partition (C), and PACELC does include a healthy-network latency/consistency trade-off (D).
+
+---
+
+### Q20
+
+**Answer:** B, D
+
+**Explanation:** CDN serves static/media assets and a gateway applies API policy. Load balancers should avoid unhealthy instances rather than preserve stickiness to them (A), and databases are not the default store for large video blobs (C).
+
+---
+
+### Q21
+
+**Answer:** C, D
+
+**Explanation:** Relational databases fit constraints and transactions, while KV caches fit sessions and hot keys. Replayable facts require durable storage rather than memory only (B), and full-text search needs an index/search service rather than ordinary joins (A).
+
+---
+
+### Q22
+
+**Answer:** A, D
+
+**Explanation:** W+R>N provides quorum intersection, and uniqueness belongs in database constraints. Local ACID is preferable when data shares one database, not distributed 2PC (B); random UUID sharding harms creation-time scans (C).
+
+---
+
+### Q23
+
+**Answer:** A, D
+
+**Explanation:** USE and RED provide standard resource and service signals. End-to-end tracing needs a propagated correlation ID rather than unrelated IDs per hop (B), and alerts should focus on SLO impact rather than every CPU blip (C).
+
+---
+
+### Q24
+
+**Answer:** B, D
+
+**Explanation:** Idempotency and a circuit breaker fit external payment calls. Cross-provider 2PC is generally unavailable (A), and sagas require explicit compensations rather than automatic cross-service SQL rollback (C).
+
+---
+
+### Q25
+
+**Answer:** B, C
+
+**Explanation:** Bulkheads isolate resources and graceful degradation preserves the core path. Blind non-idempotent retries are unsafe (D), and indefinite retrying is not circuit-breaking behavior (A).
+
+---
+
+### Q26
 
 **Answer:** A, B, D
 
@@ -215,31 +214,31 @@ Answer key for [day-13-questions.md](../day-13-questions.md)
 
 ---
 
-### Q27 [Medium] — Trade-Off: SQL vs Event Log
-
-**Answer:** A, C, D
-
-**Explanation:** Relational, log, and document trade-offs as in the matrix. Event logs still need projections (B).
-
----
-
-### Q28 [Medium] — Terminology and Consistency Phrases
-
-**Answer:** A, B, C
-
-**Explanation:** RYW, PACELC, poison message are defined correctly. Linearizability is strong real-time order — not best-effort (D).
-
----
-
-### Q29 [Hard] [Case Study] — DesignLab ShopFast Checkout
+### Q27
 
 **Answer:** B, C, D
 
-**Explanation:** CDN/cache for browse, Postgres TX for inventory, outbox for events. v1 explicitly skips full event sourcing and multi-region active-active inventory (A).
+**Explanation:** Relational, log, and document trade-offs as in the matrix. Event logs still need projections (A).
 
 ---
 
-### Q30 [Hard] — Before You Call It Done
+### Q28
+
+**Answer:** B, C, D
+
+**Explanation:** RYW, PACELC, poison message are defined correctly. Linearizability is strong real-time order — not best-effort (A).
+
+---
+
+### Q29
+
+**Answer:** A, C, D
+
+**Explanation:** CDN/cache for browse, Postgres TX for inventory, outbox for events. v1 explicitly skips full event sourcing and multi-region active-active inventory (B).
+
+---
+
+### Q30
 
 **Answer:** A, B, C
 
@@ -247,15 +246,15 @@ Answer key for [day-13-questions.md](../day-13-questions.md)
 
 ---
 
-### Q31 [Hard] [Case Study] — DesignLab Checkout Failures
+### Q31
 
-**Answer:** A, C, D
+**Answer:** A, B, C
 
-**Explanation:** Idempotent payment handling, outbox survives broker outage, email lag OK. Failing checkout because Kafka is down (B) over-couples async path.
+**Explanation:** Idempotent payment handling, outbox survives broker outage, email lag OK. Failing checkout because Kafka is down (D) over-couples async path.
 
 ---
 
-### Q32 [Hard] [Case Study] — DesignLab Consistency Map
+### Q32
 
 **Answer:** A, B, C
 
@@ -263,15 +262,15 @@ Answer key for [day-13-questions.md](../day-13-questions.md)
 
 ---
 
-### Q33 [Hard] — Stream Architecture Trade-Offs
+### Q33
 
-**Answer:** A, C, D
+**Answer:** A, B, C
 
-**Explanation:** Lambda/Kappa/real-time trade-offs from the matrix. Batch-only checkout authorization (B) ignores latency UX.
+**Explanation:** Lambda/Kappa/real-time trade-offs from the matrix. Batch-only checkout authorization (D) ignores latency UX.
 
 ---
 
-### Q34 [Hard] [Case Study] — DesignLab 10× Inventory Pressure
+### Q34
 
 **Answer:** A, C, D
 
@@ -279,7 +278,7 @@ Answer key for [day-13-questions.md](../day-13-questions.md)
 
 ---
 
-### Q35 [Hard] — Latency Hierarchy and Caching
+### Q35
 
 **Answer:** A, B, C
 
@@ -287,23 +286,23 @@ Answer key for [day-13-questions.md](../day-13-questions.md)
 
 ---
 
-### Q36 [Hard] [Case Study] — DesignLab Observability Checklist
+### Q36
 
-**Answer:** A, B, C, D
+**Answer:** A, C, D
 
-**Explanation:** RED, saga/outbox/consumer lag, and idempotency/checkout tracing all appear in the ShopFast observability section.
-
----
-
-### Q37 [Hard] — Build vs Buy and Boring Tech
-
-**Answer:** A, B, D
-
-**Explanation:** Managed vs self-host vs boring vs novel costs. Novelty always lowers risk (C) contradicts the matrix.
+**Explanation:** Saga health, correlation IDs, and RED signals belong on checkout. Host CPU alone cannot reveal outbox or consumer lag, so D is not a sufficient observability strategy.
 
 ---
 
-### Q38 [Hard] — Sensible v1 Non-Goals
+### Q37
+
+**Answer:** A, B, C
+
+**Explanation:** Managed vs self-host vs boring vs novel costs. Novelty always lowers risk (D) contradicts the matrix.
+
+---
+
+### Q38
 
 **Answer:** A, B, C
 
@@ -311,16 +310,96 @@ Answer key for [day-13-questions.md](../day-13-questions.md)
 
 ---
 
-### Q39 [Hard] — Sync Path Decision Tree
+### Q39
 
-**Answer:** B, C, D
+**Answer:** A, C, D
 
-**Explanation:** User-waiting paths stay sync with strong paths for money/stock. Async-only when user waits (A) breaks UX.
+**Explanation:** User-waiting paths stay sync with strong paths for money/stock. Async-only when user waits (B) breaks UX.
 
 ---
 
-### Q40 [Hard] [Case Study] — DesignLab Interview Synthesis
+### Q40
+
+**Answer:** A, B, D
+
+**Explanation:** Template: requirements → numbers → diagram → because → consistency/failures/metrics. Alphabetical pattern listing (C) is not the process.
+
+---
+
+### Q41
+
+**Answer:** A, C, D
+
+**Explanation:** Stable idempotency and status reconciliation handle uncertain external effects without double charging.
+
+---
+
+### Q42
+
+**Answer:** B, C, D
+
+**Explanation:** The outbox preserves committed work while the relay and projections recover after the broker returns.
+
+---
+
+### Q43
+
+**Answer:** A, B, D
+
+**Explanation:** Commerce can combine strong stock updates, session freshness, and deliberately stale search.
+
+---
+
+### Q44
+
+**Answer:** A, C, D
+
+**Explanation:** Checkout SLIs, payment errors, and correlation IDs matter. Host CPU alone cannot replace asynchronous lag measurements, so C is not a valid signal as written.
+
+---
+
+### Q45
 
 **Answer:** A, B, C
 
-**Explanation:** Template: requirements → numbers → diagram → because → consistency/failures/metrics. Alphabetical pattern listing (D) is not the process.
+**Explanation:** Guarded writes, per-key serialization, and admission control protect scarce inventory.
+
+---
+
+### Q46
+
+**Answer:** A, B, C
+
+**Explanation:** Growth should trigger new estimates and targeted evolution, not indiscriminate replacement.
+
+---
+
+### Q47
+
+**Answer:** A, B, D
+
+**Explanation:** These omissions avoid unjustified complexity while preserving checkout correctness.
+
+---
+
+### Q48
+
+**Answer:** A, B, C
+
+**Explanation:** A defensible decision names trade-offs, decisive requirements, and reconsideration triggers.
+
+---
+
+### Q49
+
+**Answer:** B, C, D
+
+**Explanation:** Decomposition should pay for its operational cost through real domain or scaling needs.
+
+---
+
+### Q50
+
+**Answer:** A, B, C
+
+**Explanation:** A complete design connects requirements to operation and evolution, rather than listing products.

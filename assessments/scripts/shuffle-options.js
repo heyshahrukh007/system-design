@@ -14,19 +14,52 @@ const path = require('path');
 const ROOT = path.join(__dirname, '..');
 const LETTERS = ['A', 'B', 'C', 'D'];
 
+/** Mulberry32 — much less positional bias than LCG + `% (i+1)`. */
+function mulberry32(seed) {
+  let s = seed >>> 0;
+  return function nextU32() {
+    s = (s + 0x6d2b79f5) >>> 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return (t ^ (t >>> 14)) >>> 0;
+  };
+}
+
+/** Unbiased int in [0, maxExclusive) via rejection sampling. */
+function randInt(nextU32, maxExclusive) {
+  if (maxExclusive <= 1) return 0;
+  const limit = 0x100000000 - (0x100000000 % maxExclusive);
+  let x;
+  do {
+    x = nextU32();
+  } while (x >= limit);
+  return x % maxExclusive;
+}
+
 function seededShuffle(arr, seed) {
   const a = [...arr];
-  let s = seed >>> 0;
+  const nextU32 = mulberry32(seed);
   for (let i = a.length - 1; i > 0; i--) {
-    s = (Math.imul(s, 1664525) + 1013904223) >>> 0;
-    const j = s % (i + 1);
+    const j = randInt(nextU32, i + 1);
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
 }
 
+/** Mix day + question into a 32-bit seed (avoid tiny sequential seeds). */
 function seedFor(day, qNum) {
-  return (parseInt(day, 10) * 1000 + qNum) >>> 0;
+  let h = 0x811c9dc5 >>> 0; // FNV-ish offset
+  const material = `mcq-v2|${String(day).padStart(2, '0')}|Q${qNum}`;
+  for (let i = 0; i < material.length; i++) {
+    h ^= material.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  h ^= h >>> 16;
+  h = Math.imul(h, 0x7feb352d);
+  h ^= h >>> 15;
+  h = Math.imul(h, 0x846ca68b);
+  h ^= h >>> 16;
+  return h >>> 0;
 }
 
 function splitBySeparator(md) {
@@ -153,9 +186,16 @@ function shuffleDay(day) {
   fs.writeFileSync(qPath, newQMd);
   fs.writeFileSync(aPath, newAMd);
 
-  const includesA = newASections.filter((s) => /\*\*Answer:\*\* [^\n]*\bA\b/.test(s.body)).length;
+  const letterHits = { A: 0, B: 0, C: 0, D: 0 };
+  for (const s of newASections) {
+    const ans = (s.body.match(/\*\*Answer:\*\* (.+)/) || [])[1] || '';
+    for (const L of LETTERS) {
+      if (ans.split(',').map((x) => x.trim()).includes(L)) letterHits[L]++;
+    }
+  }
+  const n = newQSections.length;
   console.log(
-    `day-${day}: shuffled ${newQSections.length} questions | A correct in ${includesA}/${newQSections.length} (${Math.round((100 * includesA) / newQSections.length)}%)`
+    `day-${day}: shuffled ${n} | correct@A/B/C/D = ${letterHits.A}/${letterHits.B}/${letterHits.C}/${letterHits.D}`
   );
 }
 

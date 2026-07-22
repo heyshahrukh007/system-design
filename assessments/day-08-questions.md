@@ -1,13 +1,16 @@
 # API Gateway & Service Discovery — MCQ Questions (50)
 
-Multi-select format: each question has **two or more** correct answers. Questions tagged **[Case Study]** include a business context block.
+Multi-select format: each question has **two or more** correct answers.
 
 > **Answers and explanations:** see [answer-key/day-08-answers.md](./answer-key/day-08-answers.md)
 
 
+
+
 ---
 
-### Q01 [Easy] [Case Study] — CloudMart Deploy Bottleneck
+### Q01
+
 
 
 
@@ -17,14 +20,15 @@ Multi-select format: each question has **two or more** correct answers. Question
 
 Which signals favor splitting toward microservices over time?
 
-- [ ] A. Clear domain boundaries — catalog, orders, and payments are distinct
-- [ ] B. One module needs 10× scale while blog traffic stays flat
-- [ ] C. Deploy pain — any change requires full redeploy of unrelated modules
-- [ ] D. Small team of 4 engineers still validating product-market fit
+- [ ] A. Deploy pain — any change requires full redeploy of unrelated modules
+- [ ] B. Small team of 4 engineers still validating product-market fit
+- [ ] C. One module needs 10× scale while blog traffic stays flat
+- [ ] D. Split immediately whenever a monolith exceeds 100K lines, regardless of domain boundaries
 
 ---
 
-### Q02 [Easy] — Monolith Advantages
+### Q02
+
 
 
 
@@ -33,13 +37,14 @@ Which signals favor splitting toward microservices over time?
 Which are genuine advantages of a monolithic architecture?
 
 - [ ] A. Low operational overhead for early-stage products
-- [ ] B. ACID transactions across modules in one database
-- [ ] C. Simple local debugging — no network between modules
-- [ ] D. Independent per-service deploy without coordination
+- [ ] B. Simple local debugging — no network between modules
+- [ ] C. Independent per-service deploy without coordination
+- [ ] D. Automatic independent scaling of every module without deployment changes
 
 ---
 
-### Q03 [Easy] [Case Study] — CloudMart MVP Team Size
+### Q03
+
 
 
 
@@ -49,14 +54,15 @@ Which are genuine advantages of a monolithic architecture?
 
 When is staying monolithic (or modular monolith) the better default?
 
-- [ ] A. Every team needs separate repos on day one
-- [ ] B. Strong need for cross-module ACID transactions in one workflow
-- [ ] C. Product still finding fit — minimize ops surface area
-- [ ] D. Low traffic and simple domain reduce distributed complexity
+- [ ] A. Low traffic and simple domain reduce distributed complexity
+- [ ] B. Every team needs separate repos on day one
+- [ ] C. Strong need for cross-module ACID transactions in one workflow
+- [ ] D. Product uncertainty is best handled by maximizing the number of independently deployed services
 
 ---
 
-### Q04 [Easy] — Microservices Trade-offs
+### Q04
+
 
 
 
@@ -64,14 +70,15 @@ When is staying monolithic (or modular monolith) the better default?
 
 Which are real costs of adopting microservices?
 
-- [ ] A. Eliminates all need for API gateways and discovery
-- [ ] B. Distributed debugging and tracing across hops
-- [ ] C. Network latency and failure modes between services
-- [ ] D. Harder cross-service data consistency without careful design
+- [ ] A. Network latency and failure modes between services
+- [ ] B. Cross-service transactions remain as simple and atomic as in-process database transactions
+- [ ] C. Eliminates all need for API gateways and discovery
+- [ ] D. Distributed debugging and tracing across hops
 
 ---
 
-### Q05 [Easy] [Case Study] — CloudMart Strangler Fig
+### Q05
+
 
 
 
@@ -82,13 +89,14 @@ Which are real costs of adopting microservices?
 Which strangler-fig steps fit this migration?
 
 - [ ] A. Put a facade/gateway in front and shift traffic slice by slice with monitoring
-- [ ] B. Big-bang cutover of every module on the same weekend for consistency
+- [ ] B. Route all traffic to the new order service before validating any production path
 - [ ] C. Delete unused monolith order code only after the new path carries production traffic
-- [ ] D. Route `/orders/*` to a new order service while `/legacy/*` still hits the monolith
+- [ ] D. Big-bang cutover of every module on the same weekend for consistency
 
 ---
 
-### Q06 [Easy] [Case Study] — CloudMart Internal RPC Choice
+### Q06
+
 
 
 
@@ -98,14 +106,15 @@ Which strangler-fig steps fit this migration?
 
 Which protocol choices fit?
 
-- [ ] A. gRPC + Protobuf for high-throughput internal order → inventory calls
+- [ ] A. Queues for fire-and-forget side effects (email, analytics)
 - [ ] B. GraphQL between every internal microservice by default
-- [ ] C. REST/JSON for public client APIs — universal and debuggable
-- [ ] D. Queues for fire-and-forget side effects (email, analytics)
+- [ ] C. Plain-text email for synchronous high-throughput order → inventory calls
+- [ ] D. REST/JSON for public client APIs — universal and debuggable
 
 ---
 
-### Q07 [Easy] — Sync vs Async Between Services
+### Q07
+
 
 
 
@@ -113,14 +122,15 @@ Which protocol choices fit?
 
 When should service-to-service communication be asynchronous?
 
-- [ ] A. Decoupling producers from slow or flaky consumers
-- [ ] B. Fan-out to inventory, email, and analytics after order placed
-- [ ] C. Payment authorization shown in the HTTP response to the user
-- [ ] D. Side effects where the caller does not need an immediate result
+- [ ] A. Any operation whose result must be displayed before the HTTP response returns
+- [ ] B. Payment authorization shown in the HTTP response to the user
+- [ ] C. Fan-out to inventory, email, and analytics after order placed
+- [ ] D. Decoupling producers from slow or flaky consumers
 
 ---
 
-### Q08 [Easy] [Case Study] — CloudMart Mobile Data Needs
+### Q08
+
 
 
 
@@ -130,14 +140,15 @@ When should service-to-service communication be asynchronous?
 
 Which client-facing API approach helps?
 
-- [ ] A. GraphQL at the gateway — client requests exact fields in one round trip
+- [ ] A. GraphQL eliminates N+1 risk without server-side DataLoader design
 - [ ] B. GraphQL for flexible client queries; not necessarily between every internal service
-- [ ] C. GraphQL eliminates N+1 risk without server-side DataLoader design
-- [ ] D. BFF per client type is an alternative to a single flexible GraphQL layer
+- [ ] C. GraphQL at the gateway — client requests exact fields in one round trip
+- [ ] D. Expose every internal service directly so each mobile screen manages its own fan-out
 
 ---
 
-### Q09 [Medium] [Case Study] — CloudMart Internal Service Trust
+### Q09
+
 
 
 
@@ -147,14 +158,15 @@ Which client-facing API approach helps?
 
 Which internal authentication practices apply?
 
-- [ ] A. Service mesh can automate mTLS between sidecars
-- [ ] B. mTLS or service JWT — never trust VPC alone
-- [ ] C. Short-lived service tokens issued by a central auth component
-- [ ] D. Private network means any pod may impersonate any service safely
+- [ ] A. Private network means any pod may impersonate any service safely
+- [ ] B. One permanent shared password embedded in every service image
+- [ ] C. Service mesh can automate mTLS between sidecars
+- [ ] D. mTLS or service JWT — never trust VPC alone
 
 ---
 
-### Q10 [Medium] — gRPC Production Considerations
+### Q10
+
 
 
 
@@ -163,13 +175,14 @@ Which internal authentication practices apply?
 Which statements about gRPC in production are correct?
 
 - [ ] A. HTTP/2 long-lived connections need L7-aware load balancing
-- [ ] B. Strong contracts via Protobuf with code generation
+- [ ] B. Combine with timeouts, retries on idempotent reads, circuit breakers
 - [ ] C. Browser-native without grpc-web or gateway translation
-- [ ] D. Combine with timeouts, retries on idempotent reads, circuit breakers
+- [ ] D. Schemaless payloads with no generated clients or compatibility checks
 
 ---
 
-### Q11 [Easy] [Case Study] — CloudMart Client URL Sprawl
+### Q11
+
 
 
 
@@ -179,14 +192,15 @@ Which statements about gRPC in production are correct?
 
 How does an API gateway address this?
 
-- [ ] A. Centralize CORS, SSL termination, and routing in one place
-- [ ] B. Expose every microservice port directly for lower latency
-- [ ] C. Hide internal hostnames and topology from external consumers
-- [ ] D. Single public domain (api.cloudmart.com) — one TLS cert, simpler clients
+- [ ] A. Expose every microservice port directly for lower latency
+- [ ] B. Require clients to discover and pin every backend pod address
+- [ ] C. Centralize CORS, SSL termination, and routing in one place
+- [ ] D. Hide internal hostnames and topology from external consumers
 
 ---
 
-### Q12 [Easy] — API Gateway vs Load Balancer
+### Q12
+
 
 
 
@@ -195,13 +209,14 @@ How does an API gateway address this?
 How does an API gateway differ from a basic load balancer?
 
 - [ ] A. Gateway is application-aware — path routing, auth, transforms
-- [ ] B. LB typically distributes traffic to one pool; gateway routes to many services
-- [ ] C. LB always validates JWT and API keys; gateway never does
+- [ ] B. LB always validates JWT and API keys; gateway never does
+- [ ] C. A basic transport load balancer always performs per-resource authorization
 - [ ] D. Gateway can terminate TLS and apply rate limits per route
 
 ---
 
-### Q13 [Easy] — Gateway Cross-Cutting Concerns
+### Q13
+
 
 
 
@@ -209,14 +224,15 @@ How does an API gateway differ from a basic load balancer?
 
 Which concerns are commonly centralized at the API gateway?
 
-- [ ] A. All resource-level authorization (user owns order 123)
-- [ ] B. JWT validation and request logging at the edge
-- [ ] C. SSL/TLS termination for public HTTPS
-- [ ] D. Per-API-key rate limiting before backends
+- [ ] A. SSL/TLS termination for public HTTPS
+- [ ] B. Per-API-key rate limiting before backends
+- [ ] C. Persist all application business state in gateway-local memory
+- [ ] D. All resource-level authorization (user owns order 123)
 
 ---
 
-### Q14 [Medium] [Case Study] — CloudMart Mobile vs Web APIs
+### Q14
+
 
 
 
@@ -227,13 +243,14 @@ Which concerns are commonly centralized at the API gateway?
 Which architecture patterns help?
 
 - [ ] A. BFF replaces all need for a gateway — clients call BFF ports directly on internet
-- [ ] B. API gateway for shared routing/auth; BFF for tailored aggregation
+- [ ] B. Gateway → BFF → microservices is common at larger scale
 - [ ] C. BFF (Backend for Frontend) per client type behind the gateway
-- [ ] D. Gateway → BFF → microservices is common at larger scale
+- [ ] D. Put client-specific presentation logic into every domain service
 
 ---
 
-### Q15 [Medium] [Case Study] — CloudMart Gateway Routing Table
+### Q15
+
 
 
 
@@ -243,14 +260,15 @@ Which architecture patterns help?
 
 Which gateway routing responsibilities apply?
 
-- [ ] A. Path-based routing maps URL prefixes to backend services
-- [ ] B. Gateway should own all business rules and database queries
-- [ ] C. Host-based routing can separate public API from admin subdomain
-- [ ] D. API versioning routes /v1 and /v2 to different backend pools
+- [ ] A. Gateway should own all business rules and database queries
+- [ ] B. Rewrite every versioned request to the newest backend with no compatibility period
+- [ ] C. Path-based routing maps URL prefixes to backend services
+- [ ] D. Host-based routing can separate public API from admin subdomain
 
 ---
 
-### Q16 [Medium] — TLS at the Gateway
+### Q16
+
 
 
 
@@ -258,14 +276,15 @@ Which gateway routing responsibilities apply?
 
 Which SSL/TLS termination practices are sound?
 
-- [ ] A. Terminate HTTPS at gateway; forward HTTP on private network to backends
-- [ ] B. Backends must always terminate TLS again for security — double encryption required always
-- [ ] C. Central certificate management (ACM, Let's Encrypt) at the edge
-- [ ] D. Optional mTLS between gateway and services for stricter internal trust
+- [ ] A. Backends must always terminate TLS again for security — double encryption required always
+- [ ] B. Optional mTLS between gateway and services for stricter internal trust
+- [ ] C. Terminate HTTPS at gateway; forward HTTP on private network to backends
+- [ ] D. Commit private TLS keys to the application repository for easy rotation
 
 ---
 
-### Q17 [Medium] — Gateway Offloading and Transforms
+### Q17
+
 
 
 
@@ -273,14 +292,15 @@ Which SSL/TLS termination practices are sound?
 
 Which edge responsibilities are sound gateway offloading / transform patterns?
 
-- [ ] A. Store shopping cart state in gateway memory for all users
-- [ ] B. Path rewrite and protocol translation (REST client → gRPC backend)
-- [ ] C. Offload TLS, JWT validation, compression, and rate limits so services stay thin
-- [ ] D. Inject X-Request-Id and strip client-supplied spoofed identity headers
+- [ ] A. Offload TLS, JWT validation, compression, and rate limits so services stay thin
+- [ ] B. Let clients supply trusted identity headers unchanged to simplify authentication
+- [ ] C. Inject X-Request-Id and strip client-supplied spoofed identity headers
+- [ ] D. Store shopping cart state in gateway memory for all users
 
 ---
 
-### Q18 [Medium] [Case Study] — CloudMart Dashboard Aggregation
+### Q18
+
 
 
 
@@ -290,14 +310,15 @@ Which edge responsibilities are sound gateway offloading / transform patterns?
 
 How should the gateway or BFF handle this?
 
-- [ ] A. API composition at edge helps slow mobile networks
-- [ ] B. Keep aggregation thin — no heavy business rules in gateway
-- [ ] C. Parallel backend calls merged into one JSON response — reduces client round trips
-- [ ] D. Mobile client must call three services directly over the public internet
+- [ ] A. Parallel backend calls merged into one JSON response — reduces client round trips
+- [ ] B. Mobile client must call three services directly over the public internet
+- [ ] C. API composition at edge helps slow mobile networks
+- [ ] D. Move checkout invariants and payment state transitions into the gateway
 
 ---
 
-### Q19 [Medium] — TCP vs UDP for Service APIs
+### Q19
+
 
 
 
@@ -305,14 +326,15 @@ How should the gateway or BFF handle this?
 
 Which transport choices fit typical microservice APIs?
 
-- [ ] A. Choose UDP only when you need low latency and can tolerate or repair loss
-- [ ] B. TCP (HTTP/1.1, HTTP/2, TLS) is the default for service APIs and databases
-- [ ] C. UDP for all internal order → payment RPCs because it is always faster and reliable
+- [ ] A. Use UDP for payment RPCs because packet loss is automatically repaired by the protocol
+- [ ] B. UDP for all internal order → payment RPCs because it is always faster and reliable
+- [ ] C. TCP (HTTP/1.1, HTTP/2, TLS) is the default for service APIs and databases
 - [ ] D. UDP suits loss-tolerant real-time media, DNS, or metrics firehose when designed for it
 
 ---
 
-### Q20 [Medium] [Case Study] — CloudMart Path Routing Incident
+### Q20
+
 
 
 
@@ -323,13 +345,14 @@ Which transport choices fit typical microservice APIs?
 Which routing concepts prevent this class of failure?
 
 - [ ] A. Explicit path-based upstream mapping per service
-- [ ] B. Integration tests that hit gateway routes end-to-end
-- [ ] C. Path routing is optional — any service can handle any path
-- [ ] D. Separate admin and public routes by host or path prefix
+- [ ] B. Path routing is optional — any service can handle any path
+- [ ] C. Separate admin and public routes by host or path prefix
+- [ ] D. Skip route tests because configuration changes cannot affect upstream selection
 
 ---
 
-### Q21 [Medium] — Header-Based Routing
+### Q21
+
 
 
 
@@ -337,14 +360,15 @@ Which routing concepts prevent this class of failure?
 
 When is header-based routing at the gateway useful?
 
-- [ ] A. Replacing all need for authentication
+- [ ] A. Trust any client-provided tenant header without validation or normalization
 - [ ] B. API version selection without changing URL path
-- [ ] C. Canary releases — route small % to v2 via header or cookie
+- [ ] C. Replacing all need for authentication
 - [ ] D. Multi-tenant routing via X-Tenant header to tenant-specific pools
 
 ---
 
-### Q22 [Medium] [Case Study] — CloudMart Canary Release
+### Q22
+
 
 
 
@@ -355,13 +379,14 @@ When is header-based routing at the gateway useful?
 Which traffic-shaping practices apply?
 
 - [ ] A. Canary split at gateway or mesh — roll back by reducing v2 percentage
-- [ ] B. Monitor error rate and latency per upstream pool during canary
-- [ ] C. Blue-green flips all traffic at once after validation
-- [ ] D. Canary requires clients to change URLs for each version
+- [ ] B. Blue-green flips all traffic at once after validation
+- [ ] C. Canary requires clients to change URLs for each version
+- [ ] D. Evaluate the canary only from aggregate metrics that combine v1 and v2
 
 ---
 
-### Q23 [Hard] — gRPC Load Balancing
+### Q23
+
 
 
 
@@ -369,14 +394,15 @@ Which traffic-shaping practices apply?
 
 Why does naive TCP round-robin fail for gRPC?
 
-- [ ] A. HTTP/2 multiplexes many RPCs on one long-lived connection — uneven pinning
-- [ ] B. Need L7-aware proxy (Envoy) or client-side subchannel LB
-- [ ] C. gRPC always uses UDP so TCP LB does not apply
-- [ ] D. Proxy that balances per RPC, not per connection
+- [ ] A. Add more TCP connections while keeping all RPCs permanently pinned to one backend
+- [ ] B. HTTP/2 multiplexes many RPCs on one long-lived connection — uneven pinning
+- [ ] C. Proxy that balances per RPC, not per connection
+- [ ] D. gRPC always uses UDP so TCP LB does not apply
 
 ---
 
-### Q24 [Medium] [Case Study] — CloudMart Anti-Corruption Layer
+### Q24
+
 
 
 
@@ -386,14 +412,15 @@ Why does naive TCP round-robin fail for gRPC?
 
 How should an anti-corruption layer (ACL) help?
 
-- [ ] A. ACL maps legacy fields, IDs, and errors so the new domain stays clean
+- [ ] A. Makes replacing the legacy system later easier — swap behind the ACL
 - [ ] B. New services should import mainframe schemas into every microservice API
-- [ ] C. ACL sits between the new Payment Service and the legacy billing API/DB
-- [ ] D. Makes replacing the legacy system later easier — swap behind the ACL
+- [ ] C. Expose legacy field names and error codes directly in the public payment API
+- [ ] D. ACL sits between the new Payment Service and the legacy billing API/DB
 
 ---
 
-### Q25 [Medium] [Case Study] — CloudMart JWT at Edge
+### Q25
+
 
 
 
@@ -404,13 +431,14 @@ How should an anti-corruption layer (ACL) help?
 Which auth design fixes this?
 
 - [ ] A. Coarse auth at gateway; resource checks (user owns order) in order-service
-- [ ] B. Backends reject client-supplied identity headers — trust gateway only via network policy/mTLS
-- [ ] C. Gateway strips client X-User-Id; injects verified identity after JWT validation
+- [ ] B. Gateway strips client X-User-Id; injects verified identity after JWT validation
+- [ ] C. Accept X-User-Id from any caller as long as the header is syntactically valid
 - [ ] D. Services should trust any header if request comes from private IP
 
 ---
 
-### Q26 [Medium] — API Keys for Partners
+### Q26
+
 
 
 
@@ -419,13 +447,14 @@ Which auth design fixes this?
 Which API key practices at the gateway are correct?
 
 - [ ] A. Lookup key → tenant, rate tier, and permissions
-- [ ] B. API keys in gateway config git repo without secret manager
-- [ ] C. Common for partner and server-to-server integrations
-- [ ] D. Per-key rate limits enforce billing tiers
+- [ ] B. Common for partner and server-to-server integrations
+- [ ] C. Per-key rate limits enforce billing tiers
+- [ ] D. API keys in gateway config git repo without secret manager
 
 ---
 
-### Q27 [Medium] [Case Study] — CloudMart Admin Route Exposure
+### Q27
+
 
 
 
@@ -442,7 +471,8 @@ How should gateway and services split authorization?
 
 ---
 
-### Q28 [Hard] — Federated Identity and Tokens
+### Q28
+
 
 
 
@@ -450,14 +480,15 @@ How should gateway and services split authorization?
 
 Which federated identity / token practices at the gateway are production-safe?
 
-- [ ] A. Validate iss, aud, exp; trust external IdP (Google, Okta, Auth0) via OIDC
+- [ ] A. Short-lived access tokens; refresh handled by auth service / IdP flow
 - [ ] B. 30-day access JWT with no refresh — simplest UX
-- [ ] C. Short-lived access tokens; refresh handled by auth service / IdP flow
+- [ ] C. Validate iss, aud, exp; trust external IdP (Google, Okta, Auth0) via OIDC
 - [ ] D. Public routes (/health, catalog) explicitly allowlisted without auth
 
 ---
 
-### Q29 [Medium] — mTLS Gateway to Service
+### Q29
+
 
 
 
@@ -465,14 +496,15 @@ Which federated identity / token practices at the gateway are production-safe?
 
 What does mTLS between gateway and backends provide?
 
-- [ ] A. Eliminates need for any user authentication at gateway
-- [ ] B. Both sides present certificates — prevents impersonation inside VPC
-- [ ] C. Service mesh can automate certificate rotation for sidecars
-- [ ] D. Complements JWT user auth with service-to-service trust
+- [ ] A. Complements JWT user auth with service-to-service trust
+- [ ] B. Service mesh can automate certificate rotation for sidecars
+- [ ] C. Eliminates need for any user authentication at gateway
+- [ ] D. Both sides present certificates — prevents impersonation inside VPC
 
 ---
 
-### Q30 [Medium] [Case Study] — CloudMart Scraping Attack
+### Q30
+
 
 
 
@@ -482,14 +514,15 @@ What does mTLS between gateway and backends provide?
 
 Which gateway protections apply?
 
-- [ ] A. Rate limit by IP or API key before traffic reaches catalog-service
+- [ ] A. Rate limiting only inside catalog-service — gateway passes all traffic
 - [ ] B. Stricter limits on expensive routes like /search
-- [ ] C. Rate limiting only inside catalog-service — gateway passes all traffic
+- [ ] C. Rate limit by IP or API key before traffic reaches catalog-service
 - [ ] D. Return 429 with Retry-After when limit exceeded
 
 ---
 
-### Q31 [Easy] [Case Study] — CloudMart Login Brute Force
+### Q31
+
 
 
 
@@ -499,14 +532,15 @@ Which gateway protections apply?
 
 Which rate-limiting approaches help?
 
-- [ ] A. Sliding window smoother than fixed window for fairness
-- [ ] B. Fixed window has no burst boundary problem at minute rollovers
-- [ ] C. Token bucket allows controlled bursts while capping sustained abuse
-- [ ] D. Low limit on POST /login per IP (e.g., 5/min) — brute-force protection
+- [ ] A. Low limit on POST /login per IP (e.g., 5/min) — brute-force protection
+- [ ] B. Sliding window smoother than fixed window for fairness
+- [ ] C. Fixed window has no burst boundary problem at minute rollovers
+- [ ] D. Token bucket allows controlled bursts while capping sustained abuse
 
 ---
 
-### Q32 [Medium] — Throttling at the Gateway
+### Q32
+
 
 
 
@@ -514,14 +548,15 @@ Which rate-limiting approaches help?
 
 Which throttling mechanisms belong at the API gateway?
 
-- [ ] A. Rate limit — requests per second/minute (token bucket / sliding window)
-- [ ] B. Quota — total calls per day/month for billing tiers
-- [ ] C. HTTP 200 with silent drop — best UX for abusive clients
-- [ ] D. Concurrency limit — cap in-flight requests; return 429 with Retry-After when exceeded
+- [ ] A. HTTP 200 with silent drop — best UX for abusive clients
+- [ ] B. Concurrency limit — cap in-flight requests; return 429 with Retry-After when exceeded
+- [ ] C. Quota — total calls per day/month for billing tiers
+- [ ] D. Rate limit — requests per second/minute (token bucket / sliding window)
 
 ---
 
-### Q33 [Hard] — Distributed Rate Limiting
+### Q33
+
 
 
 
@@ -529,14 +564,15 @@ Which throttling mechanisms belong at the API gateway?
 
 CloudMart runs 6 gateway replicas. Which distributed limit designs work?
 
-- [ ] A. Quota (daily total) separate from per-second rate burst control
-- [ ] B. Shared Redis counters — all nodes see same count
-- [ ] C. Token bucket in Redis with atomic INCR/EXPIRE
+- [ ] A. Token bucket in Redis with atomic INCR/EXPIRE
+- [ ] B. Quota (daily total) separate from per-second rate burst control
+- [ ] C. Shared Redis counters — all nodes see same count
 - [ ] D. Per-node counters only — effective limit is limit × replica count
 
 ---
 
-### Q34 [Easy] [Case Study] — CloudMart Hardcoded Upstream IPs
+### Q34
+
 
 
 
@@ -553,7 +589,8 @@ What fixes instance discovery?
 
 ---
 
-### Q35 [Easy] — Service Registry Concepts
+### Q35
+
 
 
 
@@ -561,14 +598,15 @@ What fixes instance discovery?
 
 Which service discovery terms are correct?
 
-- [ ] A. Registration — instance announces itself on startup
-- [ ] B. Registry stores logical service name → list of instance addresses
-- [ ] C. Hardcoded IP lists are the cloud-native default for autoscaled pods
-- [ ] D. Deregistration — instance removes itself on graceful shutdown
+- [ ] A. Registry stores logical service name → list of instance addresses
+- [ ] B. Deregistration — instance removes itself on graceful shutdown
+- [ ] C. Registration — instance announces itself on startup
+- [ ] D. Hardcoded IP lists are the cloud-native default for autoscaled pods
 
 ---
 
-### Q36 [Medium] [Case Study] — CloudMart Kubernetes Service DNS
+### Q36
+
 
 
 
@@ -578,14 +616,15 @@ Which service discovery terms are correct?
 
 Which statements about K8s discovery are correct?
 
-- [ ] A. Stable DNS name with endpoints controller updating pod list on rollout
-- [ ] B. DNS TTL delays mean K8s never updates endpoints on pod death
+- [ ] A. DNS TTL delays mean K8s never updates endpoints on pod death
+- [ ] B. Stable DNS name with endpoints controller updating pod list on rollout
 - [ ] C. Built-in server-side discovery — no separate registry required for K8s-native apps
 - [ ] D. ClusterIP Service provides logical name decoupled from pod IPs
 
 ---
 
-### Q37 [Medium] — DNS-Based Discovery Trade-offs
+### Q37
+
 
 
 
@@ -593,14 +632,15 @@ Which statements about K8s discovery are correct?
 
 Which statements about DNS-based service discovery are correct?
 
-- [ ] A. DNS TTL can delay propagation after instance failure
-- [ ] B. Simple and universal — multiple A records for instances
+- [ ] A. Simple and universal — multiple A records for instances
+- [ ] B. Basic DNS may lack health awareness without health-checked registry
 - [ ] C. DNS always provides instant failover with zero stale traffic
-- [ ] D. Basic DNS may lack health awareness without health-checked registry
+- [ ] D. DNS TTL can delay propagation after instance failure
 
 ---
 
-### Q38 [Medium] — Health-Aware Registry
+### Q38
+
 
 
 
@@ -608,14 +648,15 @@ Which statements about DNS-based service discovery are correct?
 
 How do health-aware registries improve discovery?
 
-- [ ] A. Tie registration to periodic GET /health probes
-- [ ] B. Consul/Eureka/K8s endpoints filter unhealthy nodes
-- [ ] C. Only return instances passing health checks to callers
-- [ ] D. Return all registered instances including crashed ones for retry practice
+- [ ] A. Return all registered instances including crashed ones for retry practice
+- [ ] B. Only return instances passing health checks to callers
+- [ ] C. Consul/Eureka/K8s endpoints filter unhealthy nodes
+- [ ] D. Tie registration to periodic GET /health probes
 
 ---
 
-### Q39 [Medium] [Case Study] — CloudMart Polyglot Services
+### Q39
+
 
 
 
@@ -625,14 +666,15 @@ How do health-aware registries improve discovery?
 
 Which discovery pattern fits heterogeneous services?
 
-- [ ] A. Client-side discovery eliminates all load balancer hops
+- [ ] A. Server-side discovery via K8s Service DNS — simple HTTP clients
 - [ ] B. Client-side discovery requires per-language libraries — higher coupling
-- [ ] C. Server-side discovery via K8s Service DNS — simple HTTP clients
+- [ ] C. Client-side discovery eliminates all load balancer hops
 - [ ] D. External clients still use gateway + LB (server-side) regardless
 
 ---
 
-### Q40 [Medium] — Client-Side Discovery
+### Q40
+
 
 
 
@@ -640,14 +682,15 @@ Which discovery pattern fits heterogeneous services?
 
 Which describe client-side service discovery?
 
-- [ ] A. Zero discovery logic in application code
-- [ ] B. No intermediary LB hop — direct to chosen instance
-- [ ] C. Caller queries registry and picks instance (Ribbon, gRPC resolver)
-- [ ] D. Netflix Eureka + Ribbon is a classic Java stack example
+- [ ] A. Netflix Eureka + Ribbon is a classic Java stack example
+- [ ] B. Caller queries registry and picks instance (Ribbon, gRPC resolver)
+- [ ] C. No intermediary LB hop — direct to chosen instance
+- [ ] D. Zero discovery logic in application code
 
 ---
 
-### Q41 [Medium] [Case Study] — CloudMart Internal Call Pattern
+### Q41
+
 
 
 
@@ -657,14 +700,15 @@ Which describe client-side service discovery?
 
 Which server-side discovery characteristics apply?
 
-- [ ] A. Caller must embed Eureka client to resolve IPs
-- [ ] B. Extra hop through kube-proxy or LB compared to direct client-side pick
-- [ ] C. Client uses stable logical URL; platform picks healthy instance
-- [ ] D. Lower client complexity — any language with HTTP
+- [ ] A. Extra hop through kube-proxy or LB compared to direct client-side pick
+- [ ] B. Client uses stable logical URL; platform picks healthy instance
+- [ ] C. Lower client complexity — any language with HTTP
+- [ ] D. Caller must embed Eureka client to resolve IPs
 
 ---
 
-### Q42 [Hard] — Mesh Data Plane Discovery
+### Q42
+
 
 
 
@@ -673,13 +717,14 @@ Which server-side discovery characteristics apply?
 How does service mesh hide discovery from application code?
 
 - [ ] A. App calls localhost sidecar; sidecar has endpoint list from control plane
-- [ ] B. Discovery and mTLS handled in data plane without app changes
-- [ ] C. Istio/Envoy pushes routes and endpoints to proxies
-- [ ] D. Apps must import Eureka SDK for every outbound call
+- [ ] B. Istio/Envoy pushes routes and endpoints to proxies
+- [ ] C. A mesh automatically records business events and application state without application instrumentation
+- [ ] D. Discovery and mTLS handled in data plane without app changes
 
 ---
 
-### Q43 [Medium] [Case Study] — CloudMart Pod Restart Loop
+### Q43
+
 
 
 
@@ -689,14 +734,15 @@ How does service mesh hide discovery from application code?
 
 Which health check design fixes this?
 
-- [ ] A. Liveness lightweight — process up; readiness checks DB for traffic routing
-- [ ] B. Deep DB check on readiness, not liveness — avoid restart storm
-- [ ] C. Same heavy check for liveness and readiness is safest
-- [ ] D. Readiness failure removes pod from LB without killing container
+- [ ] A. Deep DB check on readiness, not liveness — avoid restart storm
+- [ ] B. Liveness lightweight — process up; readiness checks DB for traffic routing
+- [ ] C. Readiness failure removes pod from LB without killing container
+- [ ] D. Same heavy check for liveness and readiness is safest
 
 ---
 
-### Q44 [Medium] — Sidecar vs Ambassador
+### Q44
+
 
 
 
@@ -704,14 +750,15 @@ Which health check design fixes this?
 
 Which statements about sidecar and ambassador helpers are correct?
 
-- [ ] A. App business logic should embed mTLS and discovery SDKs instead of helpers
-- [ ] B. Ambassador focuses on outbound calls — local proxy to external/legacy dependencies
-- [ ] C. Sidecar sits beside the app (same pod) and often proxies mesh traffic both ways
-- [ ] D. Mesh data planes are a common sidecar implementation (e.g., Envoy)
+- [ ] A. Ambassador focuses on outbound calls — local proxy to external/legacy dependencies
+- [ ] B. Mesh data planes are a common sidecar implementation (e.g., Envoy)
+- [ ] C. App business logic should embed mTLS and discovery SDKs instead of helpers
+- [ ] D. Sidecar sits beside the app (same pod) and often proxies mesh traffic both ways
 
 ---
 
-### Q45 [Medium] [Case Study] — CloudMart Deploy Connection Drops
+### Q45
+
 
 
 
@@ -721,14 +768,15 @@ Which statements about sidecar and ambassador helpers are correct?
 
 Which graceful shutdown steps apply?
 
-- [ ] A. Finish in-flight requests within terminationGracePeriodSeconds
-- [ ] B. Mark readiness failing — LB stops new traffic to draining pod
+- [ ] A. Mark readiness failing — LB stops new traffic to draining pod
+- [ ] B. Finish in-flight requests within terminationGracePeriodSeconds
 - [ ] C. Align grace period with max request duration
 - [ ] D. Immediate SIGKILL is best for fastest deploy velocity
 
 ---
 
-### Q46 [Hard] — Health Check Cascading Failure
+### Q46
+
 
 
 
@@ -736,14 +784,15 @@ Which graceful shutdown steps apply?
 
 Database slow causes all apps to fail deep readiness and LB removes entire fleet. Which mitigations apply?
 
-- [ ] A. Readiness checks only truly critical deps; degraded mode for optional features
-- [ ] B. Fail deep readiness on any slow dependency always — safest
-- [ ] C. Circuit breaker on DB before readiness fails entirely
+- [ ] A. Circuit breaker on DB before readiness fails entirely
+- [ ] B. Readiness checks only truly critical deps; degraded mode for optional features
+- [ ] C. Fail deep readiness on any slow dependency always — safest
 - [ ] D. Feature flags disable DB-heavy paths while core stays ready
 
 ---
 
-### Q47 [Medium] [Case Study] — CloudMart Mesh Adoption Debate
+### Q47
+
 
 
 
@@ -753,14 +802,15 @@ Database slow causes all apps to fail deep readiness and LB removes entire fleet
 
 When is a full service mesh justified?
 
-- [ ] A. Small team on early MVP — mesh ops overhead may outweigh benefits
-- [ ] B. Start with gateway + K8s DNS + observability before mesh complexity
-- [ ] C. Mesh required on day one for any Kubernetes deployment
-- [ ] D. Many services needing mTLS, retries, and traffic policy without library sprawl
+- [ ] A. Mesh required on day one for any Kubernetes deployment
+- [ ] B. Many services needing mTLS, retries, and traffic policy without library sprawl
+- [ ] C. Small team on early MVP — mesh ops overhead may outweigh benefits
+- [ ] D. Start with gateway + K8s DNS + observability before mesh complexity
 
 ---
 
-### Q48 [Medium] [Case Study] — CloudMart Traffic Directions
+### Q48
+
 
 
 
@@ -771,13 +821,14 @@ When is a full service mesh justified?
 Which north-south vs east-west split is correct?
 
 - [ ] A. East-west: service-to-service inside cluster — mesh handles mTLS and retries
-- [ ] B. Service mesh replaces all need for public API gateway
+- [ ] B. Gateway for JWT and external rate limits; mesh for internal hop policy
 - [ ] C. North-south: external client → API gateway into cluster
-- [ ] D. Gateway for JWT and external rate limits; mesh for internal hop policy
+- [ ] D. Service mesh replaces all need for public API gateway
 
 ---
 
-### Q49 [Hard] — External Config Store and Edge Split
+### Q49
+
 
 
 
@@ -785,14 +836,15 @@ Which north-south vs east-west split is correct?
 
 CloudMart keeps payment timeouts and feature flags out of container images. Which practices fit?
 
-- [ ] A. Put secrets in git next to gateway config for simpler deploys
+- [ ] A. Both gateway (north-south) and mesh (east-west) can coexist with complementary scopes
 - [ ] B. Change flags/timeouts without redeploy; secrets stay in Vault/KMS
-- [ ] C. Both gateway (north-south) and mesh (east-west) can coexist with complementary scopes
+- [ ] C. Put secrets in git next to gateway config for simpler deploys
 - [ ] D. Central config store (etcd, Consul, AppConfig) for runtime-tunable keys
 
 ---
 
-### Q50 [Hard] [Case Study] — CloudMart Order Placement Flow
+### Q50
+
 
 
 
@@ -803,6 +855,6 @@ CloudMart keeps payment timeouts and feature flags out of container images. Whic
 Which statements about this architecture are correct?
 
 - [ ] A. Synchronous path must include 8-minute payment processor in HTTP request
-- [ ] B. User gets 201 before async payment completes — hybrid sync/async
+- [ ] B. Catalog gRPC timeout/circuit breaker prevents hung checkout thread
 - [ ] C. Gateway validates auth and routes before discovery picks order instance
-- [ ] D. Catalog gRPC timeout/circuit breaker prevents hung checkout thread
+- [ ] D. User gets 201 before async payment completes — hybrid sync/async
